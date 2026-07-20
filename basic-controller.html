@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Components</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f2f4f7;
+            padding: 40px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="www/component.css">
+</head>
+
+
+<body>
+
+
+    <div class="bs-panel" id="id-panel">
+
+
+
+
+        <!-- Combo -->
+
+        <!-- 
+        <div class="bs-group">
+            <label class="bs-title">
+                Combo Box
+            </label>
+            <div class="bs-combo">
+                <input class="bs-input" type="text" placeholder="Search word">
+                <button class="bs-button">
+                    Search
+                </button>
+            </div>
+        </div> -->
+
+
+
+
+
+
+    </div>
+
+
+
+    <script src="www/components.js"> </script>
+
+
+    <script>
+        const cmp = initComponents();
+
+        const panel = document.getElementById("id-panel");
+        panel.innerHTML = `${cmp.checkboxSource("xx", "Checkbox", ['Apple', 'Orange', 'Banan'], [1, 2])}
+        ${cmp.radioButtonSource("xx", "Radio Button", ['Easy', 'Hard'], 1)}
+        ${cmp.dropdownSource("xx", "Dropdown List", ['Beginner', 'Intermediate', 'Advanced'], 1)}
+        ${cmp.sliderSource("xx", "Slider", 0, 100, 55)}
+        ${cmp.inputSource("xx", "Input", "Enter a word")}
+        ${cmp.buttonGroupSource("xx", ["btnA",'btnB','btnC'], 2)}
+        ${cmp.progressBarSource("xx", 66)}
+        ${cmp.switcherSource("xx", "Switcher")}`;
+
+        const slider = document.getElementById("bsSlider");
+        const sliderValue = document.getElementById("bsSliderValue");
+        slider.addEventListener(
+            "input",
+            () => {
+
+                sliderValue.textContent =
+                    slider.value;
+
+            }
+        );
+    </script>
+</body>
+
+</html>

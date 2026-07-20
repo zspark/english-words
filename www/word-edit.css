@@ -1,0 +1,135 @@
+/* 悬浮卡片主容器 */
+.float-card {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    /* 悬浮在屏幕右下角 */
+    width: 360px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 8px 16px -6px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    z-index: 1000;
+    font-family: system-ui, -apple-system, sans-serif;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* 卡片头部 */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+/* 表单行级排版 */
+.word-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 20px 0px;
+}
+
+.form-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-2 {
+    flex: 2;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+/* 统一输入框与下拉框样式 */
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.tag-container {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.95rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    background-color: #f8fafc;
+    color: #1e293b;
+    resize: vertical;
+}
+
+/* 聚焦状态下的高亮 */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    background-color: #fff;
+    border-color: #3b82f6;
+    /* 主调蓝色 */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* 按钮组 */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.form-actions button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e8f0;
+}
+
+.hidden {
+    display: none !important;
+    opacity: 0;
+    transform: translateY(20px);
+}

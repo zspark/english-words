@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>English Vocabulary Quiz</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .container {
+            width: 700px;
+            margin: 50px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .bar {
+            width: 100%;
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.1s linear;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 50px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
+        }
+
+        .word {
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 18px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: .2s;
+            font-size: 18px;
+            background: white;
+        }
+
+        .option:hover {
+            background: #f2f2f2;
+        }
+
+        .correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .info {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>English Vocabulary Quiz</h1>
+
+        <div class="top">
+            <div>Score: <span id="score">0</span></div>
+            <div>Time: <span id="time">5</span>s</div>
+        </div>
+
+        <div class="progress">
+            <div class="bar" id="bar"></div>
+        </div>
+
+        <div class="card">
+            <div class="word" id="word"></div>
+            <div class="options" id="options"></div>
+            <div class="info" id="result"></div>
+        </div>
+
+    </div>
+
+    <script>
+
+        const quiz = [
+
+            {
+                word: "abandon",
+                meaning: "放弃"
+            },
+
+            {
+                word: "obtain",
+                meaning: "获得"
+            },
+
+            {
+                word: "reluctant",
+                meaning: "不情愿的"
+            },
+
+            {
+                word: "vivid",
+                meaning: "生动的"
+            },
+
+            {
+                word: "fragile",
+                meaning: "易碎的"
+            },
+
+            {
+                word: "diminish",
+                meaning: "减少"
+            },
+
+            {
+                word: "accurate",
+                meaning: "准确的"
+            },
+
+            {
+                word: "generate",
+                meaning: "产生"
+            }
+
+        ];
+
+        const allMeanings = quiz.map(e => e.meaning);
+
+        let score = 0;
+        let current;
+
+        let timer;
+        let remain;
+
+        const LIMIT = 5;
+
+        function shuffle(arr) {
+            return [...arr].sort(() => Math.random() - 0.5);
+        }
+
+        function newQuestion() {
+
+            clearInterval(timer);
+
+            document.getElementById("result").innerHTML = "";
+
+            current = quiz[Math.floor(Math.random() * quiz.length)];
+
+            document.getElementById("word").innerHTML = current.word;
+
+            let options = [current.meaning];
+
+            while (options.length < 4) {
+
+                const m = allMeanings[Math.floor(Math.random() * allMeanings.length)];
+
+                if (!options.includes(m))
+                    options.push(m);
+
+            }
+
+            options = shuffle(options);
+
+            const panel = document.getElementById("options");
+            panel.innerHTML = "";
+
+            options.forEach(text => {
+
+                const btn = document.createElement("button");
+
+                btn.className = "option";
+
+                btn.innerHTML = text;
+
+                btn.onclick = () => choose(btn, text);
+
+                panel.appendChild(btn);
+
+            });
+
+            startTimer();
+
+        }
+
+        function choose(button, text) {
+            const buttons = document.querySelectorAll(".option");
+            buttons.forEach(b => b.disabled = true);
+            if (text === current.meaning) {
+                score++;
+                document.getElementById("score").innerHTML = score;
+                button.classList.add("correct");
+                document.getElementById("result").innerHTML = "Correct!";
+            } else {
+                button.classList.add("wrong");
+                buttons.forEach(b => {
+                    if (b.innerHTML === current.meaning)
+                        b.classList.add("correct");
+                });
+                document.getElementById("result").innerHTML = "Wrong!";
+            }
+        }
+
+        function startTimer() {
+
+            remain = LIMIT;
+
+            updateBar();
+
+            timer = setInterval(() => {
+
+                remain--;
+
+                updateBar();
+
+                if (remain <= 0) {
+
+                    clearInterval(timer);
+
+                    newQuestion();
+
+                }
+
+            }, 1000);
+
+        }
+
+        function updateBar() {
+            document.getElementById("time").innerHTML = remain;
+            document.getElementById("bar").style.width = (remain / LIMIT * 100) + "%";
+        }
+
+        newQuestion();
+
+    </script>
+
+</body>
+
+</html>

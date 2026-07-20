@@ -1,0 +1,1317 @@
+{
+    "VERSION": "0.1.0",
+    "meta": {
+        "tags": [
+            "ANIMAL",
+            "FOOD",
+            "SPORT"
+        ]
+    },
+    "record": {},
+    "dict": {
+        "apple": {
+            "ipa": "英:/'æpl/ 美:/'æpl/",
+            "level": "A1",
+            "meaning": "n. 苹果",
+            "links": "apples, apple pie, apple juice",
+            "note": "He is eating a red apple.\nAn apple a day keeps the doctor away.",
+            "tags": "ANIMAL, FOOD"
+        },
+        "book": {
+            "ipa": "英:/bʊk/ 美:/bʊk/",
+            "level": "A1",
+            "meaning": "n. 书; vt. 预订",
+            "links": "books, booked, booking, bookstore",
+            "note": "I read a book every week.\nYou need to book your flight in advance.",
+            "tags": ""
+        },
+        "cat": {
+            "ipa": "英:/kæt/ 美:/kæt/",
+            "level": "A1",
+            "meaning": "n. 猫",
+            "links": "cats, kitten, catlike",
+            "note": "The cat is sleeping on the sofa.\nShe has a black cat.",
+            "tags": ""
+        },
+        "water": {
+            "ipa": "英:/'wɔːtə(r)/ 美:/'wɔːtər/",
+            "level": "A1",
+            "meaning": "n. 水; vt. 浇水",
+            "links": "waters, watered, watering, waterfall",
+            "note": "Please give me a glass of water.\nI water the flowers every morning.",
+            "tags": ""
+        },
+        "happy": {
+            "ipa": "英:/'hæpi/ 美:/'hæpi/",
+            "level": "A1",
+            "meaning": "adj. 高兴的;幸福的",
+            "links": "happier, happiest, happily, happiness",
+            "note": "He looks very happy today.\nHappy birthday to you!",
+            "tags": ""
+        },
+        "house": {
+            "ipa": "英:/haʊs/ 美:/haʊs/",
+            "level": "A1",
+            "meaning": "n. 房子;住宅",
+            "links": "houses, housing, household",
+            "note": "They live in a big house.\nThis house was built in 1990.",
+            "tags": ""
+        },
+        "school": {
+            "ipa": "英:/skuːl/ 美:/skuːl/",
+            "level": "A1",
+            "meaning": "n. 学校",
+            "links": "schools, schooling, schoolmate",
+            "note": "Children go to school on weekdays.\nHe is the headmaster of the school.",
+            "tags": ""
+        },
+        "friend": {
+            "ipa": "英:/frend/ 美:/frend/",
+            "level": "A1",
+            "meaning": "n. 朋友",
+            "links": "friends, friendly, friendship, befriend",
+            "note": "She is my best friend.\nThey have been friends for years.",
+            "tags": ""
+        },
+        "family": {
+            "ipa": "英:/'fæməli/ 美:/'fæməli/",
+            "level": "A1",
+            "meaning": "n. 家庭;家人",
+            "links": "families, familiar, family-owned",
+            "note": "I love my family very much.\nWe are a happy family.",
+            "tags": ""
+        },
+        "learn": {
+            "ipa": "英:/lɜːn/ 美:/lɜːrn/",
+            "level": "A1",
+            "meaning": "v. 学习;得知",
+            "links": "learns, learned, learning, learner",
+            "note": "I want to learn English.\nShe is learning how to drive.",
+            "tags": ""
+        },
+        "father": {
+            "ipa": "英:/'fɑːðə(r)/ 美:/'fɑːðər/",
+            "level": "A1",
+            "meaning": "n. 父亲",
+            "links": "fathers, fatherly, fatherhood",
+            "note": "My father is a doctor.\nHe looks just like his father.",
+            "tags": ""
+        },
+        "mother": {
+            "ipa": "英:/'mʌðə(r)/ 美:/'mʌðər/",
+            "level": "A1",
+            "meaning": "n. 母亲",
+            "links": "mothers, motherly, motherhood",
+            "note": "Her mother cooked a delicious dinner.\nShe became a mother of two.",
+            "tags": ""
+        },
+        "milk": {
+            "ipa": "英:/mɪlk/ 美:/mɪlk/",
+            "level": "A1",
+            "meaning": "n. 牛奶; v. 挤奶",
+            "links": "milks, milked, milking, milky",
+            "note": "I drink milk every morning.\nHe is milking the cows.",
+            "tags": ""
+        },
+        "bread": {
+            "ipa": "英:/bred/ 美:/bred/",
+            "level": "A1",
+            "meaning": "n. 面包",
+            "links": "breads, breadwinner, breadcrumb",
+            "note": "Would you like some bread?\nThey buy fresh bread daily.",
+            "tags": ""
+        },
+        "sleep": {
+            "ipa": "英:/sliːp/ 美:/sliːp/",
+            "level": "A1",
+            "meaning": "v. 睡觉; n. 睡眠",
+            "links": "sleeps, slept, sleeping, sleepy, sleepless",
+            "note": "I need to sleep early tonight.\nHe is fast asleep.",
+            "tags": ""
+        },
+        "animal": {
+            "ipa": "英:/'ænɪml/ 美:/'ænɪml/",
+            "level": "A2",
+            "meaning": "n. 动物",
+            "links": "animals, animalistic",
+            "note": "A dog is a loyal animal.\nThey went to the zoo to see wild animals.",
+            "tags": ""
+        },
+        "beautiful": {
+            "ipa": "英:/'bjuːtɪfl/ 美:/'bjuːtɪfl/",
+            "level": "A2",
+            "meaning": "adj. 美丽的;漂亮的",
+            "links": "beautifully, beautify, beauty",
+            "note": "What a beautiful sunset!\nShe sang a beautiful song.",
+            "tags": ""
+        },
+        "climate": {
+            "ipa": "英:/'klaɪmət/ 美:/'klaɪmət/",
+            "level": "A2",
+            "meaning": "n. 气候",
+            "links": "climates, climatic, climate change",
+            "note": "This region has a warm climate.\nThe local climate is dry.",
+            "tags": ""
+        },
+        "driver": {
+            "ipa": "英:/'draɪvə(r)/ 美:/'draɪvər/",
+            "level": "A2",
+            "meaning": "n. 司机;驾驶员",
+            "links": "drivers, drive, drove, driven, driving",
+            "note": "The bus driver was very polite.\nHe is a safe driver.",
+            "tags": ""
+        },
+        "expensive": {
+            "ipa": "英:/ɪk'spensɪv/ 美:/ɪk'spensɪv/",
+            "level": "A2",
+            "meaning": "adj. 昂贵的",
+            "links": "expensively, expense, expend, inexpensive",
+            "note": "That car is too expensive for me.\nEating out in this city is expensive.",
+            "tags": ""
+        },
+        "health": {
+            "ipa": "英:/helθ/ 美:/helθ/",
+            "level": "A2",
+            "meaning": "n. 健康",
+            "links": "healthy, healthier, healthily, unhealthy",
+            "note": "Exercise is good for your health.\nHe was restored to full health.",
+            "tags": ""
+        },
+        "journey": {
+            "ipa": "英:/'dʒɜːni/ 美:/'dʒɜːrni/",
+            "level": "A2",
+            "meaning": "n. 旅程;旅行",
+            "links": "journeys, journeyed, journeying",
+            "note": "It was a long and tiring journey.\nHave a safe journey!",
+            "tags": ""
+        },
+        "market": {
+            "ipa": "英:/'mɑːkɪt/ 美:/'mɑːrkɪt/",
+            "level": "A2",
+            "meaning": "n. 市场; vt. 营销",
+            "links": "markets, marketed, marketing, marketable",
+            "note": "I bought some fresh vegetables at the market.\nThey are trying to market their new product.",
+            "tags": ""
+        },
+        "nature": {
+            "ipa": "英:/'neɪtʃə(r)/ 美:/'neɪtʃər/",
+            "level": "A2",
+            "meaning": "n. 自然;天性",
+            "links": "natural, naturally, naturalist",
+            "note": "We should live in harmony with nature.\nIt is his nature to be quiet.",
+            "tags": ""
+        },
+        "opinion": {
+            "ipa": "英:/ə'pɪnjən/ 美:/ə'pɪnjən/",
+            "level": "A2",
+            "meaning": "n. 意见;看法",
+            "links": "opinions, opinionated",
+            "note": "In my opinion, this plan is perfect.\nI would like to hear your opinion.",
+            "tags": ""
+        },
+        "popular": {
+            "ipa": "英:/'pɒpjələ(r)/ 美:/'pɑːpjələr/",
+            "level": "A2",
+            "meaning": "adj. 受欢迎的;流行的",
+            "links": "popularity, popularize, popularly, unpopular",
+            "note": "Soccer is a very popular sport.\nShe is the most popular girl in class.",
+            "tags": ""
+        },
+        "science": {
+            "ipa": "英:/'saɪəns/ 美:/'saɪəns/",
+            "level": "A2",
+            "meaning": "n. 科学;理科",
+            "links": "sciences, scientific, scientist",
+            "note": "He is interested in science.\nScience has changed our lives.",
+            "tags": ""
+        },
+        "temperature": {
+            "ipa": "英:/'temprətʃə(r)/ 美:/'temprətʃər/",
+            "level": "A2",
+            "meaning": "n. 温度;体温",
+            "links": "temperatures, temperate",
+            "note": "The temperature dropped below freezing last night.\nShe has a high temperature.",
+            "tags": ""
+        },
+        "useful": {
+            "ipa": "英:/'juːsfl/ 美:/'juːsfl/",
+            "level": "A2",
+            "meaning": "adj. 有用的;有益的",
+            "links": "usefully, usefulness, useless",
+            "note": "This dictionary is very useful.\nHe gave me some useful advice.",
+            "tags": ""
+        },
+        "village": {
+            "ipa": "英:/'vɪlɪdʒ/ 美:/'vɪlɪdʒ/",
+            "level": "A2",
+            "meaning": "n. 村庄;村民",
+            "links": "villages, villager",
+            "note": "He grew up in a small fishing village.\nThe whole village was flooded.",
+            "tags": ""
+        },
+        "ability": {
+            "ipa": "英:/ə'bɪləti/ 美:/ə'bɪləti/",
+            "level": "B1",
+            "meaning": "n. 能力;才干",
+            "links": "abilities, able, enable, disability",
+            "note": "She has the ability to manage this project.\nHis ability to speak four languages is impressive.",
+            "tags": ""
+        },
+        "business": {
+            "ipa": "英:/'bɪznəs/ 美:/'bɪznəs/",
+            "level": "B1",
+            "meaning": "n. 商业;生意",
+            "links": "businesses, businessman, businesslike",
+            "note": "She is in the fashion business.\nNone of your business.",
+            "tags": ""
+        },
+        "challenge": {
+            "ipa": "英:/'tʃælɪndʒ/ 美:/'tʃælɪndʒ/",
+            "level": "B1",
+            "meaning": "n. 挑战; vt. 向...挑战",
+            "links": "challenges, challenged, challenging, challenger",
+            "note": "Learning a new language is a great challenge.\nShe challenged me to a game of chess.",
+            "tags": ""
+        },
+        "decision": {
+            "ipa": "英:/dɪ'sɪʒn/ 美:/dɪ'sɪʒn/",
+            "level": "B1",
+            "meaning": "n. 决定;决议",
+            "links": "decisions, decide, decided, decisive",
+            "note": "It was a difficult decision to make.\nHave you come to a decision yet?",
+            "tags": ""
+        },
+        "environment": {
+            "ipa": "英:/ɪn'vaɪrənmənt/ 美:/ɪn'vaɪrənmənt/",
+            "level": "B1",
+            "meaning": "n. 环境",
+            "links": "environments, environmental, environmentalist",
+            "note": "We must protect the environment.\nA pleasant working environment is important.",
+            "tags": ""
+        },
+        "future": {
+            "ipa": "英:/'fjuːtʃə(r)/ 美:/'fjuːtʃər/",
+            "level": "B1",
+            "meaning": "n. 未来;前途",
+            "links": "futures, futuristic",
+            "note": "What are your plans for the future?\nHe has a bright future ahead of him.",
+            "tags": ""
+        },
+        "government": {
+            "ipa": "英:/'gʌvənmənt/ 美:/'gʌvərnmənt/",
+            "level": "B1",
+            "meaning": "n. 政府",
+            "links": "governments, govern, governor, governmental",
+            "note": "The government announced a tax cut.\nHe works for the local government.",
+            "tags": ""
+        },
+        "history": {
+            "ipa": "英:/'hɪstri/ 美:/'hɪstri/",
+            "level": "B1",
+            "meaning": "n. 历史",
+            "links": "histories, historic, historical, historian",
+            "note": "She is studying European history.\nThis church is rich in history.",
+            "tags": ""
+        },
+        "improve": {
+            "ipa": "英:/ɪm'pruːv/ 美:/ɪm'pruːv/",
+            "level": "B1",
+            "meaning": "vi./vt. 提高;改善",
+            "links": "improves, improved, improving, improvement",
+            "note": "I want to improve my speaking skills.\nThe weather is starting to improve.",
+            "tags": ""
+        },
+        "knowledge": {
+            "ipa": "英:/'nɒlɪdʒ/ 美:/'nɑːlɪdʒ/",
+            "level": "B1",
+            "meaning": "n. 知识;学识",
+            "links": "know, knowledgeable, acknowledge",
+            "note": "He has a wide knowledge of history.\nKnowledge is power.",
+            "tags": ""
+        },
+        "method": {
+            "ipa": "英:/'meθəd/ 美:/'meθəd/",
+            "level": "B1",
+            "meaning": "n. 方法;办法",
+            "links": "methods, methodical, methodology",
+            "note": "We need to find a better method.\nThis method has been proven effective.",
+            "tags": ""
+        },
+        "necessary": {
+            "ipa": "英:/'nesəsəri/ 美:/'nesəseri/",
+            "level": "B1",
+            "meaning": "adj. 必要的;必需的",
+            "links": "necessarily, necessity, necessitate, unnecessary",
+            "note": "Is it necessary to sign the form now?\nTake only what is necessary.",
+            "tags": ""
+        },
+        "prevent": {
+            "ipa": "英:/prɪ'vent/ 美:/prɪ'vent/",
+            "level": "B1",
+            "meaning": "vt. 预防;阻止",
+            "links": "prevents, prevented, preventing, prevention, preventable",
+            "note": "Vaccines prevent diseases.\nNothing can prevent me from going.",
+            "tags": ""
+        },
+        "reduce": {
+            "ipa": "英:/rɪ'djuːs/ 美:/rɪ'duːs/",
+            "level": "B1",
+            "meaning": "vt. 减少;降低",
+            "links": "reduces, reduced, reducing, reduction",
+            "note": "We must reduce our expenses.\nThe price was reduced by twenty percent.",
+            "tags": ""
+        },
+        "society": {
+            "ipa": "英:/sə'saɪəti/ 美:/sə'saɪəti/",
+            "level": "B1",
+            "meaning": "n. 社会;社团",
+            "links": "societies, social, socialist, sociology",
+            "note": "These changes will benefit society as a whole.\nShe is a member of the local historical society.",
+            "tags": ""
+        },
+        "analysis": {
+            "ipa": "英:/ə'næləsɪs/ 美:/ə'næləsɪs/",
+            "level": "B2",
+            "meaning": "n. 分析",
+            "links": "analyses, analyze, analyst, analytical",
+            "note": "The expert performed a detailed analysis of the market.\nFurther analysis is needed to confirm the results.",
+            "tags": ""
+        },
+        "benefit": {
+            "ipa": "英:/'benɪfɪt/ 美:/'benɪfɪt/",
+            "level": "B2",
+            "meaning": "n. 利益;津贴; vt. 有益于; vi. 得益",
+            "links": "benefits, benefited, benefiting, beneficial",
+            "note": "The new law will benefit low-income families.\nHe derived great benefit from the exercise.",
+            "tags": ""
+        },
+        "consequence": {
+            "ipa": "英:/'kɒnsɪkwəns/ 美:/'kɑːnsəkwens/",
+            "level": "B2",
+            "meaning": "n. 后果;结果",
+            "links": "consequences, consequent, consequently, inconsequential",
+            "note": "You must accept the consequences of your actions.\nThe error had serious consequences.",
+            "tags": ""
+        },
+        "distribute": {
+            "ipa": "英:/dɪ'strɪbjuːt/ 美:/dɪ'strɪbjuːt/",
+            "level": "B2",
+            "meaning": "vt. 分发;分送;分配",
+            "links": "distributes, distributed, distributing, distribution, distributor",
+            "note": "The organizer distributed pamphlets to the crowd.\nProfits are distributed among shareholders.",
+            "tags": ""
+        },
+        "estimate": {
+            "ipa": "英:/'estɪmeɪt/ 美:/'estɪmeɪt/",
+            "level": "B2",
+            "meaning": "vt. 估计;估算; n. 估价",
+            "links": "estimates, estimated, estimating, estimation",
+            "note": "It is difficult to estimate the cost of the project.\nWe accepted the contractor's estimate.",
+            "tags": ""
+        },
+        "function": {
+            "ipa": "英:/'fʌŋkʃn/ 美:/'fʌŋkʃn/",
+            "level": "B2",
+            "meaning": "n. 功能;职责; vi. 起作用",
+            "links": "functions, functioned, functioning, functional",
+            "note": "The main function of the liver is to filter blood.\nThe machine stopped functioning properly.",
+            "tags": ""
+        },
+        "hypothesis": {
+            "ipa": "英:/haɪ'pɒθəsɪs/ 美:/haɪ'pɑːθəsɪs/",
+            "level": "B2",
+            "meaning": "n. 假设;假说",
+            "links": "hypotheses, hypothesize, hypothetical",
+            "note": "Our findings support the original hypothesis.\nHe formulated a hypothesis to explain the phenomenon.",
+            "tags": ""
+        },
+        "indicate": {
+            "ipa": "英:/'ɪndɪkeɪt/ 美:/'ɪndɪkeɪt/",
+            "level": "B2",
+            "meaning": "vt. 指出;指示;表明",
+            "links": "indicates, indicated, indicating, indication, indicator",
+            "note": "A red sky at night often indicates good weather.\nThe arrow indicates the direction of flow.",
+            "tags": ""
+        },
+        "lecture": {
+            "ipa": "英:/'lektʃə(r)/ 美:/'lektʃər/",
+            "level": "B2",
+            "meaning": "n. 演讲;讲课; vi. 演讲;讲评",
+            "links": "lectures, lectured, lecturing, lecturer",
+            "note": "He gave an interesting lecture on modern art.\nShe will lecture on biochemistry tomorrow.",
+            "tags": ""
+        },
+        "maintain": {
+            "ipa": "英:/meɪn'teɪn/ 美:/meɪn'teɪn/",
+            "level": "B2",
+            "meaning": "vt. 维持;保养;主张",
+            "links": "maintains, maintained, maintaining, maintenance",
+            "note": "They managed to maintain their lead in the race.\nThe company maintains that its products are safe.",
+            "tags": ""
+        },
+        "negotiate": {
+            "ipa": "英:/nɪ'gəʊʃieɪt/ 美:/nɪ'ɡoʊʃieɪt/",
+            "level": "B2",
+            "meaning": "vi./vt. 谈判;协商",
+            "links": "negotiates, negotiated, negotiating, negotiation, negotiator",
+            "note": "The union is trying to negotiate a new contract.\nWe managed to negotiate a better price.",
+            "tags": ""
+        },
+        "obtain": {
+            "ipa": "英:/əb'teɪn/ 美:/əb'teɪn/",
+            "level": "B2",
+            "meaning": "vt. 获得;得到",
+            "links": "obtains, obtained, obtaining, obtainable",
+            "note": "Further information can be obtained from the office.\nHe obtained a degree in computer science.",
+            "tags": ""
+        },
+        "policy": {
+            "ipa": "英:/'pɒləsi/ 美:/'pɑːləsi/",
+            "level": "B2",
+            "meaning": "n. 政策;方针;保险单",
+            "links": "policies, policymaker",
+            "note": "The government is reviewing its economic policy.\nHonesty is the best policy.",
+            "tags": ""
+        },
+        "require": {
+            "ipa": "英:/rɪ'kwaɪə(r)/ 美:/rɪ'kwaɪər/",
+            "level": "B2",
+            "meaning": "vt. 需要;要求",
+            "links": "requires, required, requiring, requirement",
+            "note": "This job requires a lot of patience.\nStudents are required to attend all lectures.",
+            "tags": ""
+        },
+        "source": {
+            "ipa": "英:/sɔːs/ 美:/sɔːrs/",
+            "level": "B2",
+            "meaning": "n. 来源;水源;根源",
+            "links": "sources, sourced, sourcing",
+            "note": "The sun is our primary source of energy.\nShe refused to name her sources.",
+            "tags": ""
+        },
+        "advocate": {
+            "ipa": "英:/'ædvəkeɪt/ 美:/'ædvəkeɪt/",
+            "level": "C1",
+            "meaning": "vt. 提倡;主张; n. 倡导者;拥护者",
+            "links": "advocates, advocated, advocating, advocacy",
+            "note": "Many experts advocate for reform in education.\nShe is a strong advocate of free trade.",
+            "tags": ""
+        },
+        "bias": {
+            "ipa": "英:/'baɪəs/ 美:/'baɪəs/",
+            "level": "C1",
+            "meaning": "n. 偏见;偏向; vt. 使有偏见",
+            "links": "biases, biased, biasing, unbiased",
+            "note": "The report was accused of political bias.\nWe must prevent bias from affecting our decision.",
+            "tags": ""
+        },
+        "compromise": {
+            "ipa": "英:/'kɒmprəmaɪz/ 美:/'kɑːmprəmaɪz/",
+            "level": "C1",
+            "meaning": "n. 妥协;折中; vi. 妥协; vt. 危害",
+            "links": "compromises, compromised, compromising",
+            "note": "After hours of discussion, we finally reached a compromise.\nWe cannot compromise on safety standards.",
+            "tags": ""
+        },
+        "depict": {
+            "ipa": "英:/dɪ'pɪkt/ 美:/dɪ'pɪkt/",
+            "level": "C1",
+            "meaning": "vt. 描绘;描述",
+            "links": "depicts, depicted, depicting, depiction",
+            "note": "The movie depicts the hardships of war.\nThe paintings depict local landscapes.",
+            "tags": ""
+        },
+        "exploit": {
+            "ipa": "英:/ɪk'splɔɪt/ 美:/ɪk'splɔɪt/",
+            "level": "C1",
+            "meaning": "vt. 剥削;开发;利用; n. 业绩;英勇行为",
+            "links": "exploits, exploited, exploiting, exploitation, exploitative",
+            "note": "They are accused of exploiting child labor.\nWe need to exploit our natural resources wisely.",
+            "tags": ""
+        },
+        "fluctuate": {
+            "ipa": "英:/'flʌktʃueɪt/ 美:/'flʌktʃueɪt/",
+            "level": "C1",
+            "meaning": "vi. 波动;起伏",
+            "links": "fluctuates, fluctuated, fluctuating, fluctuation",
+            "note": "Oil prices fluctuate wildly from day to day.\nMy weight fluctuates between 60 and 62 kilograms.",
+            "tags": ""
+        },
+        "guarantee": {
+            "ipa": "英:/ˌgærən'tiː/ 美:/ˌɡærən'tiː/",
+            "level": "C1",
+            "meaning": "vt. 保证;担保; n. 保证书;担保物",
+            "links": "guarantees, guaranteed, guaranteeing, guarantor",
+            "note": "I guarantee that you will be satisfied with the service.\nThe watch comes with a one-year guarantee.",
+            "tags": ""
+        },
+        "hierarchy": {
+            "ipa": "英:/'haɪərɑːki/ 美:/'haɪərɑːrki/",
+            "level": "C1",
+            "meaning": "n. 等级制度;阶层",
+            "links": "hierarchies, hierarchical, hierarchically",
+            "note": "She rose quickly through the corporate hierarchy.\nThere is a strict hierarchy in the military.",
+            "tags": ""
+        },
+        "incentive": {
+            "ipa": "英:/ɪn'sentɪv/ 美:/ɪn'sentɪv/",
+            "level": "C1",
+            "meaning": "n. 刺激;鼓励;动机",
+            "links": "incentives, incentivize",
+            "note": "The government offers tax incentives to small businesses.\nThere is little incentive for them to work harder.",
+            "tags": ""
+        },
+        "justify": {
+            "ipa": "英:/'dʒʌstɪfaɪ/ 美:/'dʒʌstɪfaɪ/",
+            "level": "C1",
+            "meaning": "vt. 证明...是正当的;替...辩护",
+            "links": "justifies, justified, justifying, justification",
+            "note": "How can you justify such high expenditure?\nThe results justify the costs.",
+            "tags": ""
+        },
+        "manipulate": {
+            "ipa": "英:/mə'nɪpjuleɪt/ 美:/mə'nɪpjuleɪt/",
+            "level": "C1",
+            "meaning": "vt. 操纵;控制;操作",
+            "links": "manipulates, manipulated, manipulating, manipulation, manipulative",
+            "note": "She knows how to manipulate people to get what she wants.\nHe manipulated the clay into a bowl.",
+            "tags": ""
+        },
+        "novelty": {
+            "ipa": "英:/'nɒvlti/ 美:/'nɑːvlti/",
+            "level": "C1",
+            "meaning": "n. 新奇;新奇的事物",
+            "links": "novelties, novel",
+            "note": "The novelty of the new toy soon wore off.\nElectric cars are no longer a novelty.",
+            "tags": ""
+        },
+        "paradox": {
+            "ipa": "英:/'pærədɒks/ 美:/'pærədɑːks/",
+            "level": "C1",
+            "meaning": "n. 悖论;自相矛盾的人或事",
+            "links": "paradoxes, paradoxical, paradoxically",
+            "note": "It is a paradox that light can behave as both a wave and a particle.\nHe is a paradox: a quiet man who loves noisy parties.",
+            "tags": ""
+        },
+        "reconcile": {
+            "ipa": "英:/'rekənsaɪl/ 美:/'rekənsaɪl/",
+            "level": "C1",
+            "meaning": "vt. 使和解;调和;使一致",
+            "links": "reconciles, reconciled, reconciling, reconciliation",
+            "note": "It is difficult to reconcile these two opposing views.\nThey finally reconciled after a long argument.",
+            "tags": ""
+        },
+        "subtle": {
+            "ipa": "英:/'sʌtl/ 美:/'sʌtl/",
+            "level": "C1",
+            "meaning": "adj. 微妙的;细微的;敏锐的",
+            "links": "subtler, subtlest, subtly, subtlety",
+            "note": "There is a subtle difference between the two colors.\nHe gave a subtle hint that he was not pleased.",
+            "tags": ""
+        },
+        "anomaly": {
+            "ipa": "英:/ə'nɒməli/ 美:/ə'nɑːməli/",
+            "level": "C2",
+            "meaning": "n. 异常;反常事物",
+            "links": "anomalies, anomalous",
+            "note": "A temperature of 30 degrees in winter is a weather anomaly.\nWe are trying to explain this scientific anomaly.",
+            "tags": ""
+        },
+        "cacophony": {
+            "ipa": "英:/kə'kɒfəni/ 美:/kə'kɑːfəni/",
+            "level": "C2",
+            "meaning": "n. 嘈杂的喧嚣声;刺耳的杂音",
+            "links": "cacophonies, cacophonous",
+            "note": "The city streets were a cacophony of car horns and shouting.\nA cacophony of protest greeted the politician's speech.",
+            "tags": ""
+        },
+        "dichotomy": {
+            "ipa": "英:/daɪ'kɒtəmi/ 美:/daɪ'kɑːtəmi/",
+            "level": "C2",
+            "meaning": "n. 二分法;分裂",
+            "links": "dichotomies, dichotomous",
+            "note": "There is a false dichotomy between science and art.\nShe analyzed the dichotomy of nature and nurture.",
+            "tags": ""
+        },
+        "ephemeral": {
+            "ipa": "英:/ɪ'femərəl/ 美:/ɪ'femərəl/",
+            "level": "C2",
+            "meaning": "adj. 短暂的;瞬息即逝的",
+            "links": "ephemerally, ephemera",
+            "note": "Fame is often ephemeral and easily forgotten.\nSpring flowers are beautiful but ephemeral.",
+            "tags": ""
+        },
+        "garrulous": {
+            "ipa": "英:/'gærələs/ 美:/'gærələs/",
+            "level": "C2",
+            "meaning": "adj. 喋喋不休的;饶舌的",
+            "links": "garrulously, garrulousness, garrulity",
+            "note": "The garrulous old man talked to anyone who would listen.\nShe became quite garrulous after a few glasses of wine.",
+            "tags": ""
+        },
+        "idiosyncrasy": {
+            "ipa": "英:/ˌɪdiə'sɪŋkrəsi/ 美:/ˌɪdiə'sɪŋkrəsi/",
+            "level": "C2",
+            "meaning": "n. 习性;癖好;特质",
+            "links": "idiosyncrasies, idiosyncratic, idiosyncratically",
+            "note": "Wearing mismatched socks was one of his idiosyncrasies.\nEvery language has its own idiosyncrasies.",
+            "tags": ""
+        },
+        "juxtapose": {
+            "ipa": "英:/ˌdʒʌkstə'pəʊz/ 美:/ˌdʒʌkstə'poʊz/",
+            "level": "C2",
+            "meaning": "vt. 并置;并列以作对比",
+            "links": "juxtaposes, juxtaposed, juxtaposing, juxtaposition",
+            "note": "The exhibition juxtaposes modern art with traditional sculptures.\nBy juxtaposing the two stories, the author highlights the contrast.",
+            "tags": ""
+        },
+        "laconic": {
+            "ipa": "英:/lə'kɒnɪk/ 美:/lə'kɑːnɪk/",
+            "level": "C2",
+            "meaning": "adj. 简洁的;言简意赅的;冷漠的",
+            "links": "laconically, laconism",
+            "note": "He sent a laconic reply: 'No.'\nHis laconic manner made him seem distant.",
+            "tags": ""
+        },
+        "malleable": {
+            "ipa": "英:/'mæliəbl/ 美:/'mæliəbl/",
+            "level": "C2",
+            "meaning": "adj. 有延展性的;易受影响的",
+            "links": "malleability, nonmalleable",
+            "note": "Gold is a highly malleable metal.\nYoung minds are malleable and easily influenced.",
+            "tags": ""
+        },
+        "nefarious": {
+            "ipa": "英:/nɪ'feəriəs/ 美:/nɪ'feriəs/",
+            "level": "C2",
+            "meaning": "adj. 邪恶的;极坏的",
+            "links": "nefariously, nefariousness",
+            "note": "They conspired in a nefarious scheme to cheat the public.\nHis nefarious deeds were eventually exposed.",
+            "tags": ""
+        },
+        "obfuscate": {
+            "ipa": "英:/'ɒbfʌskeɪt/ 美:/'ɑːbfʌskeɪt/",
+            "level": "C2",
+            "meaning": "vt. 使模糊;使混乱;故意使人糊涂",
+            "links": "obfuscates, obfuscated, obfuscating, obfuscation",
+            "note": "She tried to obfuscate the issue with irrelevant statistics.\nDo not use jargon to obfuscate the truth.",
+            "tags": ""
+        },
+        "pragmatic": {
+            "ipa": "英:/præg'mætɪk/ 美:/præɡ'mætɪk/",
+            "level": "C2",
+            "meaning": "adj. 务实的;重实效的",
+            "links": "pragmatically, pragmatism, pragmatist",
+            "note": "We must take a pragmatic approach to solve this crisis.\nShe is a pragmatic politician who values results over ideology.",
+            "tags": ""
+        },
+        "quintessential": {
+            "ipa": "英:/ˌkwɪntɪ'senʃl/ 美:/ˌkwɪntɪ'senʃl/",
+            "level": "C2",
+            "meaning": "adj. 最典型的;最具代表性的",
+            "links": "quintessentially, quintessence",
+            "note": "He is the quintessential British gentleman.\nThis cottage is the quintessential country home.",
+            "tags": ""
+        },
+        "recalcitrant": {
+            "ipa": "英:/rɪ'kælsɪtrənt/ 美:/rɪ'kælsɪtrənt/",
+            "level": "C2",
+            "meaning": "adj. 顽抗的;不驯服的;难对付的",
+            "links": "recalcitrance, recalcitrate",
+            "note": "The recalcitrant horse refused to jump the fence.\nStaff members were frustrated by recalcitrant students.",
+            "tags": ""
+        },
+        "scintillating": {
+            "ipa": "英:/'sɪntɪleɪtɪŋ/ 美:/'sɪntɪleɪtɪŋ/",
+            "level": "C2",
+            "meaning": "adj. 闪烁的;才华横溢的;生动有趣的",
+            "links": "scintillate, scintillates, scintillated, scintillation",
+            "note": "She gave a scintillating performance on stage.\nThe conversation was scintillating and full of wit.",
+            "tags": ""
+        },
+        "taciturn": {
+            "ipa": "英:/'tæsɪtɜːn/ 美:/'tæsɪtɜːrn/",
+            "level": "C2",
+            "meaning": "adj. 沉默寡言的;不苟言笑的",
+            "links": "taciturnity, tacit",
+            "note": "He was a quiet, taciturn man who rarely spoke.\nHer taciturn nature was often mistaken for coldness.",
+            "tags": ""
+        },
+        "ubiquitous": {
+            "ipa": "英:/juː'bɪkwɪtəs/ 美:/juː'bɪkwɪtəs/",
+            "level": "C2",
+            "meaning": "adj. 无处不在的;普遍存在的",
+            "links": "ubiquitously, ubiquity, ubiquitousness",
+            "note": "Smartphones have become ubiquitous in daily life.\nFast food chains are ubiquitous in this country.",
+            "tags": ""
+        },
+        "vacillate": {
+            "ipa": "英:/'væsɪleɪt/ 美:/'væsɪleɪt/",
+            "level": "C2",
+            "meaning": "vi. 犹豫不决;摇摆;波动",
+            "links": "vacillates, vacillated, vacillating, vacillation",
+            "note": "He vacillated between the two job offers for weeks.\nHer opinions vacillate according to who she is speaking to.",
+            "tags": ""
+        },
+        "winnow": {
+            "ipa": "英:/'wɪnəʊ/ 美:/'wɪnoʊ/",
+            "level": "C2",
+            "meaning": "vt. 筛选;甄别;簸(谷物)",
+            "links": "winnows, winnowed, winnowing",
+            "note": "The selection committee will winnow down the list of candidates.\nWe must winnow the truth from the rumors.",
+            "tags": ""
+        },
+        "zealot": {
+            "ipa": "英:/'zelət/ 美:/'zelət/",
+            "level": "C2",
+            "meaning": "n. 狂热者;狂热信徒",
+            "links": "zealots, zealous, zealously, zeal",
+            "note": "He was labeled a religious zealot.\nOnly a zealot would agree with such extreme measures.",
+            "tags": ""
+        },
+        "abundant": {
+            "ipa": "英:/ə'bʌndənt/ 美:/ə'bʌndənt/",
+            "level": "B2",
+            "meaning": "adj. 丰富的;充裕的",
+            "links": "abundantly, abundance",
+            "note": "The region is abundant in natural resources.\nThey had an abundant supply of food for the winter.",
+            "tags": ""
+        },
+        "coincide": {
+            "ipa": "英:/ˌkəʊɪn'saɪd/ 美:/ˌkoʊɪn'saɪd/",
+            "level": "B2",
+            "meaning": "vi. 同时发生;相符;一致",
+            "links": "coincides, coincided, coinciding, coincidence, coincident",
+            "note": "My holiday plans coincide with yours.\nThe interests of the two companies coincide.",
+            "tags": ""
+        },
+        "diverse": {
+            "ipa": "英:/daɪ'vɜːs/ 美:/daɪ'vɜːrs/",
+            "level": "B2",
+            "meaning": "adj. 各种各样的;不同的;多元的",
+            "links": "diversely, diversity, diversify",
+            "note": "The student body is very culturally diverse.\nWe hold diverse opinions on this subject.",
+            "tags": ""
+        },
+        "evidence": {
+            "ipa": "英:/'evɪdəns/ 美:/'evɪdəns/",
+            "level": "B2",
+            "meaning": "n. 证据;迹象; vt. 证明",
+            "links": "evidences, evidenced, evidencing, evident, evidently",
+            "note": "There is no evidence to support his claim.\nThe police are gathering evidence against the suspect.",
+            "tags": ""
+        },
+        "fluency": {
+            "ipa": "英:/'fluːənsi/ 美:/'fluːənsi/",
+            "level": "B2",
+            "meaning": "n. 流利;流畅",
+            "links": "fluent, fluently",
+            "note": "One of the requirements for the job is fluency in French.\nShe spoke with great fluency and confidence.",
+            "tags": ""
+        },
+        "genuine": {
+            "ipa": "英:/'dʒenjuɪn/ 美:/'dʒenjuɪn/",
+            "level": "B2",
+            "meaning": "adj. 真实的;真诚的;真正的",
+            "links": "genuinely, genuineness",
+            "note": "Is this a genuine leather jacket?\nHe showed a genuine interest in our project.",
+            "tags": ""
+        },
+        "hostile": {
+            "ipa": "英:/'hɒstaɪl/ 美:/'hɑːstl/",
+            "level": "B2",
+            "meaning": "adj. 敌对的;敌方的;不友好的",
+            "links": "hostility, hostilities",
+            "note": "They received a hostile reception from the crowd.\nThe environment is extremely hostile to life.",
+            "tags": ""
+        },
+        "influence": {
+            "ipa": "英:/'ɪnfluəns/ 美:/'ɪnfluəns/",
+            "level": "B2",
+            "meaning": "n. 影响;势力; vt. 影响",
+            "links": "influences, influenced, influencing, influential",
+            "note": "My parents had a major influence on my career choice.\nDon't let him influence your decision.",
+            "tags": ""
+        },
+        "jealous": {
+            "ipa": "英:/'dʒeləs/ 美:/'dʒeləs/",
+            "level": "B2",
+            "meaning": "adj. 嫉妒的;吃醋的",
+            "links": "jealously, jealousy",
+            "note": "She was jealous of her sister's success.\nHe gets jealous when she talks to other men.",
+            "tags": ""
+        },
+        "limit": {
+            "ipa": "英:/'lɪmɪt/ 美:/'lɪmɪt/",
+            "level": "B2",
+            "meaning": "n. 限制;限度; vt. 限制;限定",
+            "links": "limits, limited, limiting, limitation, limitless",
+            "note": "There is a strict speed limit here.\nWe must limit the number of attendees to fifty.",
+            "tags": ""
+        },
+        "motivate": {
+            "ipa": "英:/'məʊtɪveɪt/ 美:/'moʊtɪveɪt/",
+            "level": "B2",
+            "meaning": "vt. 激发;刺激;作为...的动机",
+            "links": "motivates, motivated, motivating, motivation, motivational",
+            "note": "How do you motivate your staff to work harder?\nFear of failure can motivate us to try harder.",
+            "tags": ""
+        },
+        "notion": {
+            "ipa": "英:/'nəʊʃn/ 美:/'noʊʃn/",
+            "level": "B2",
+            "meaning": "n. 概念;见解;意图",
+            "links": "notions, notional",
+            "note": "He has a vague notion of what he wants to do.\nShe challenged the traditional notion of marriage.",
+            "tags": ""
+        },
+        "obstacle": {
+            "ipa": "英:/'ɒbstəkl/ 美:/'ɑːbstəkl/",
+            "level": "B2",
+            "meaning": "n. 障碍;阻碍",
+            "links": "obstacles",
+            "note": "Lack of funding is the main obstacle to our progress.\nShe overcame many obstacles to achieve her dream.",
+            "tags": ""
+        },
+        "predict": {
+            "ipa": "英:/prɪ'dɪkt/ 美:/prɪ'dɪkt/",
+            "level": "B2",
+            "meaning": "vt. 预测;预言",
+            "links": "predicts, predicted, predicting, prediction, predictable, unpredictable",
+            "note": "It is difficult to predict the future accurately.\nScientists predict that the volcano will erupt soon.",
+            "tags": ""
+        },
+        "quote": {
+            "ipa": "英:/kwəʊt/ 美:/kwoʊt/",
+            "level": "B2",
+            "meaning": "vt. 引用;引述;报价; n. 引文;报价",
+            "links": "quotes, quoted, quoting, quotation",
+            "note": "Can you quote a price for this repair work?\nHe quoted a passage from Shakespeare.",
+            "tags": ""
+        },
+        "reject": {
+            "ipa": "英:/rɪ'dʒekt/ 美:/rɪ'dʒekt/",
+            "level": "B2",
+            "meaning": "vt. 拒绝;排斥;丢弃",
+            "links": "rejects, rejected, rejecting, rejection",
+            "note": "The publisher rejected his new novel.\nShe rejected his offer of marriage.",
+            "tags": ""
+        },
+        "secure": {
+            "ipa": "英:/sɪ'kjʊə(r)/ 美:/sɪ'kjʊr/",
+            "level": "B2",
+            "meaning": "adj. 安全的;可靠的; vt. 获得;保护",
+            "links": "secures, secured, securing, securely, security",
+            "note": "Please make sure your seatbelt is secure.\nHe managed to secure a loan from the bank.",
+            "tags": ""
+        },
+        "tolerate": {
+            "ipa": "英:/'tɒləreɪt/ 美:/'tɑːləreɪt/",
+            "level": "B2",
+            "meaning": "vt. 宽容;容忍;忍受",
+            "links": "tolerates, tolerated, tolerating, tolerance, tolerant, tolerable",
+            "note": "I cannot tolerate this noisy environment any longer.\nWe must learn to tolerate different opinions.",
+            "tags": ""
+        },
+        "urgent": {
+            "ipa": "英:/'ɜːdʒənt/ 美:/'ɜːrdʒənt/",
+            "level": "B2",
+            "meaning": "adj. 紧急的;迫切的",
+            "links": "urgently, urgency",
+            "note": "This is an urgent matter that needs immediate attention.\nWe received an urgent message from headquarters.",
+            "tags": ""
+        },
+        "vivid": {
+            "ipa": "英:/'vɪvɪd/ 美:/'vɪvɪd/",
+            "level": "B2",
+            "meaning": "adj. 生动的;鲜艳的;清晰的",
+            "links": "vividly, vividness",
+            "note": "He gave a vivid description of his journey.\nI have a vivid memory of my first day at school.",
+            "tags": ""
+        },
+        "wonder": {
+            "ipa": "英:/'wʌndə(r)/ 美:/'wʌndər/",
+            "level": "B1",
+            "meaning": "vi. 想知道;感到惊讶; n. 惊奇;奇迹",
+            "links": "wonders, wondered, wondering, wonderful, wonderfully",
+            "note": "I wonder why he didn't show up.\nIt is a wonder that he survived the crash.",
+            "tags": ""
+        },
+        "youth": {
+            "ipa": "英:/juːθ/ 美:/juːθ/",
+            "level": "B1",
+            "meaning": "n. 青年;青春;年轻人",
+            "links": "youths, youthful",
+            "note": "He spent his youth traveling the world.\nShe was a famous athlete in her youth.",
+            "tags": ""
+        },
+        "zone": {
+            "ipa": "英:/zəʊn/ 美:/zoʊn/",
+            "level": "B1",
+            "meaning": "n. 地区;地带;区域",
+            "links": "zones, zoned, zoning",
+            "note": "This is a smoke-free zone.\nThey divided the city into different commercial zones.",
+            "tags": ""
+        },
+        "yield": {
+            "ipa": "英:/jiːld/ 美:/jiːld/",
+            "level": "C1",
+            "meaning": "vt. 产生;屈服;让步; n. 产量;收益",
+            "links": "yields, yielded, yielding",
+            "note": "The investment yields high returns.\nHe refused to yield to their demands.",
+            "tags": ""
+        },
+        "xenophobia": {
+            "ipa": "英:/ˌzenə'fəʊbiə/ 美:/ˌzenə'foʊbiə/",
+            "level": "C2",
+            "meaning": "n. 惧外;排外;仇外心理",
+            "links": "xenophobic",
+            "note": "The rise of nationalism has led to increased xenophobia.\nWe must work together to combat racism and xenophobia.",
+            "tags": ""
+        },
+        "withstand": {
+            "ipa": "英:/wɪð'stænd/ 美:/wɪð'stænd/",
+            "level": "C1",
+            "meaning": "vt. 抵挡;禁得起;反抗",
+            "links": "withstands, withstood, withstanding",
+            "note": "The building was designed to withstand strong earthquakes.\nHe could not withstand the pressure from his peers.",
+            "tags": ""
+        },
+        "vulnerable": {
+            "ipa": "英:/'vʌlnərəbl/ 美:/'vʌlnərəbl/",
+            "level": "C1",
+            "meaning": "adj. 易受伤害的;脆弱的;有弱点的",
+            "links": "vulnerability, vulnerably",
+            "note": "Older people are more vulnerable to the flu.\nThe city is vulnerable to sea-level rise.",
+            "tags": ""
+        },
+        "unprecedented": {
+            "ipa": "英:/ʌn'presɪdentɪd/ 美:/n'presɪdentɪd/",
+            "level": "C1",
+            "meaning": "adj. 空前的;前所未有的",
+            "links": "precedent",
+            "note": "The country is experiencing unprecedented economic growth.\nThis level of rain is unprecedented in recent history.",
+            "tags": ""
+        },
+        "trivial": {
+            "ipa": "英:/'trɪviəl/ 美:/'trɪviəl/",
+            "level": "C1",
+            "meaning": "adj. 微不足道的;琐碎的;无价值的",
+            "links": "trivially, trivia, triviality, trivialize",
+            "note": "Don't waste your time on such trivial matters.\nIt seemed a trivial objection at the time.",
+            "tags": ""
+        },
+        "scrutinize": {
+            "ipa": "英:/'skruːtənaɪz/ 美:/'skruːtənaɪz/",
+            "level": "C1",
+            "meaning": "vt. 仔细检查;细审",
+            "links": "scrutinizes, scrutinized, scrutinizing, scrutiny",
+            "note": "The bank will scrutinize your financial records before approving the loan.\nEvery detail of the contract was closely scrutinized.",
+            "tags": ""
+        },
+        "redundant": {
+            "ipa": "英:/rɪ'dʌndənt/ 美:/rɪ'dʌndənt/",
+            "level": "C1",
+            "meaning": "adj. 多余的;过剩的;被解雇的",
+            "links": "redundancy, redundantly",
+            "note": "The computer system has redundant servers in case of failure.\nHe was made redundant after the company downsized.",
+            "tags": ""
+        },
+        "prerequisite": {
+            "ipa": "英:/ˌpriː'rekwəzɪt/ 美:/ˌpriː'rekwəzɪt/",
+            "level": "C1",
+            "meaning": "n. 先决条件;前提; adj. 必备的",
+            "links": "prerequisites",
+            "note": "A high score on the test is a prerequisite for admission.\nThis course is a prerequisite for advanced chemistry.",
+            "tags": ""
+        },
+        "paradigm": {
+            "ipa": "英:/'pærədaɪm/ 美:/'pærədaɪm/",
+            "level": "C1",
+            "meaning": "n. 范例;典范;范式",
+            "links": "paradigms, paradigmatic",
+            "note": "The study represents a major paradigm shift in physics.\nHe is considered a paradigm of professional integrity.",
+            "tags": ""
+        },
+        "obsolete": {
+            "ipa": "英:/'ɒbsəliːt/ 美:/ˌɑːbsə'liːt/",
+            "level": "C1",
+            "meaning": "adj. 淘汰的;废弃的;过时的",
+            "links": "obsoleteness, obsolescence",
+            "note": "New technology has made the old machines obsolete.\nGas lamps became obsolete after the invention of electric lights.",
+            "tags": ""
+        },
+        "meticulous": {
+            "ipa": "英:/mə'tɪkjələs/ 美:/mə'tɪkjələs/",
+            "level": "C1",
+            "meaning": "adj. 一丝不苟的;周密的;小心翼翼的",
+            "links": "meticulously, meticulousness, meticulosity",
+            "note": "She is meticulous about keeping her room clean.\nHe made a meticulous plan for the expedition.",
+            "tags": ""
+        },
+        "lucrative": {
+            "ipa": "英:/'luːkrətɪv/ 美:/'luːkrətɪv/",
+            "level": "C1",
+            "meaning": "adj. 获利丰厚的;赚大钱的",
+            "links": "lucratively, lucrativeness",
+            "note": "He runs a very lucrative export business.\nThe merger proved to be highly lucrative for both companies.",
+            "tags": ""
+        },
+        "jeopardize": {
+            "ipa": "英:/'dʒepədaɪz/ 美:/'dʒepərdaɪz/",
+            "level": "C1",
+            "meaning": "vt. 危害;使受危及",
+            "links": "jeopardizes, jeopardized, jeopardizing, jeopardy",
+            "note": "His careless actions could jeopardize the whole mission.\nDo not jeopardize your health by working too hard.",
+            "tags": ""
+        },
+        "inherent": {
+            "ipa": "英:/ɪn'hɪərənt/ 美:/ɪn'hɪrənt/",
+            "level": "C1",
+            "meaning": "adj. 固有的;内在的;与生俱来的",
+            "links": "inherently",
+            "note": "There is an inherent risk in any financial investment.\nLove of freedom is inherent in human nature.",
+            "tags": ""
+        },
+        "grandiose": {
+            "ipa": "英:/'grændiəʊs/ 美:/'grændiəʊs/",
+            "level": "C1",
+            "meaning": "adj. 宏伟的;华而不实的;浮夸的",
+            "links": "grandiosely, grandiosity",
+            "note": "He has grandiose plans for starting a multinational company.\nThey live in a grandiose mansion with thirty rooms.",
+            "tags": ""
+        },
+        "formidable": {
+            "ipa": "英:/fə'mɪdəbl/ 美:/'fɔːrmɪdəbl/",
+            "level": "C1",
+            "meaning": "adj. 可怕的;难对付的;令人敬畏的",
+            "links": "formidably, formidability",
+            "note": "The champion proved to be a formidable opponent.\nThey faced a formidable task of rebuilding the city.",
+            "tags": ""
+        },
+        "exacerbate": {
+            "ipa": "英:/ɪɡ'zæsəbeɪt/ 美:/ɪɡ'zæsərbeɪt/",
+            "level": "C1",
+            "meaning": "vt. 使加剧;使恶化",
+            "links": "exacerbates, exacerbated, exacerbating, exacerbation",
+            "note": "The cold weather will only exacerbate his joint pain.\nHis aggressive comments exacerbated the tension.",
+            "tags": ""
+        },
+        "diversity": {
+            "ipa": "英:/daɪ'vɜːsəti/ 美:/daɪ'vɜːrsəti/",
+            "level": "B2",
+            "meaning": "n. 多样性;差异",
+            "links": "diversities, diverse, diversify",
+            "note": "The biology class studied the diversity of life on Earth.\nThere is a great diversity of opinions on this issue.",
+            "tags": ""
+        },
+        "cognitive": {
+            "ipa": "英:/'kɒɡnətɪv/ 美:/'kɑːɡnətɪv/",
+            "level": "C1",
+            "meaning": "adj. 认知的;认识的",
+            "links": "cognitively, cognition",
+            "note": "We studied the cognitive development of young children.\nHer cognitive skills remained sharp even in her nineties.",
+            "tags": ""
+        },
+        "bureaucracy": {
+            "ipa": "英:/bjʊə'rɒkrəsi/ 美:/bjʊ'rɑːkrəsi/",
+            "level": "C1",
+            "meaning": "n. 官僚主义;官僚机构",
+            "links": "bureaucracies, bureaucrat, bureaucratic",
+            "note": "We must cut through the government bureaucracy to get things done.\nMany businesses complain about excessive bureaucracy.",
+            "tags": ""
+        },
+        "alleviate": {
+            "ipa": "英:/ə'liːvieɪt/ 美:/ə'liːvieɪt/",
+            "level": "C1",
+            "meaning": "vt. 减轻;缓和",
+            "links": "alleviates, alleviated, alleviating, alleviation",
+            "note": "A warm bath can help alleviate muscle tension.\nThe government introduced measures to alleviate poverty.",
+            "tags": ""
+        },
+        "benevolent": {
+            "ipa": "英:/bə'nevələnt/ 美:/bə'nevələnt/",
+            "level": "C1",
+            "meaning": "adj. 仁慈的;好慈善的",
+            "links": "benevolently, benevolence",
+            "note": "A benevolent neighbor offered to look after our dog.\nThe organization was founded by a benevolent businessman.",
+            "tags": ""
+        },
+        "aesthetic": {
+            "ipa": "英:/iːs'θetɪk/ 美:/es'θetɪk/",
+            "level": "C1",
+            "meaning": "adj. 美学的;审美的; n. 审美观",
+            "links": "aesthetics, aesthetically",
+            "note": "The building was designed with both practical and aesthetic considerations.\nShe has a highly developed aesthetic sense.",
+            "tags": ""
+        },
+        "synthesize": {
+            "ipa": "英:/'sɪnθəsaɪz/ 美:/'sɪnθəsaɪz/",
+            "level": "C1",
+            "meaning": "vt. 合成;综合",
+            "links": "synthesizes, synthesized, synthesizing, synthesis, synthetic",
+            "note": "He tried to synthesize the results of several different studies.\nThis laboratory can synthesize new compounds.",
+            "tags": ""
+        },
+        "resilient": {
+            "ipa": "英:/rɪ'zɪliənt/ 美:/rɪ'zɪliənt/",
+            "level": "C1",
+            "meaning": "adj. 有弹性的;能迅速恢复的;适应力强的",
+            "links": "resiliently, resilience",
+            "note": "She is a resilient girl who quickly recovers from setbacks.\nThe local economy proved resilient to the global crisis.",
+            "tags": ""
+        },
+        "profound": {
+            "ipa": "英:/prə'faʊnd/ 美:/prə'faʊnd/",
+            "level": "C1",
+            "meaning": "adj. 深奥的;渊博的;极度的",
+            "links": "profoundly, profundity",
+            "note": "The book had a profound influence on my thinking.\nHe expressed profound sympathy for the victims.",
+            "tags": ""
+        },
+        "opulent": {
+            "ipa": "英:/'ɒpjʊlənt/ 美:/'ɑːpjʊlənt/",
+            "level": "C2",
+            "meaning": "adj. 豪华的;奢侈的;富裕的",
+            "links": "opulently, opulence",
+            "note": "They lived an opulent lifestyle in a luxury penthouse.\nThe hotel is decorated in an opulent style.",
+            "tags": ""
+        },
+        "metamorphosis": {
+            "ipa": "英:/ˌmetə'mɔːfəsɪs/ 美:/ˌmetə'mɔːrfəsɪs/",
+            "level": "C2",
+            "meaning": "n. 变形;蜕变;质变",
+            "links": "metamorphoses, metamorphic, metamorphose",
+            "note": "A caterpillar undergoes metamorphosis to become a butterfly.\nThe company went through a complete metamorphosis under the new CEO.",
+            "tags": ""
+        },
+        "gregarious": {
+            "ipa": "英:/ɡrɪ'ɡeəriəs/ 美:/ɡrɪ'ɡeriəs/",
+            "level": "C2",
+            "meaning": "adj. 社交的;群居的;爱交际的",
+            "links": "gregariously, gregariousness",
+            "note": "She is a gregarious person who loves going to parties.\nSheep are highly gregarious animals.",
+            "tags": ""
+        },
+        "esoteric": {
+            "ipa": "英:/ˌiːsə'terɪk/ 美:/ˌesə'terɪk/",
+            "level": "C2",
+            "meaning": "adj. 秘传的;深奥难懂的;限于少数人的",
+            "links": "esoterically, esotericism",
+            "note": "The specialist published a paper on an esoteric aspect of physics.\nHe has an esoteric interest in ancient languages.",
+            "tags": ""
+        },
+        "dilatory": {
+            "ipa": "英:/'dɪlətəri/ 美:/'dɪlətɔːri/",
+            "level": "C2",
+            "meaning": "adj. 拖延的;缓慢的",
+            "links": "dilatorily, dilatoriness",
+            "note": "The government was criticized for its dilatory response to the crisis.\nHis dilatory tactics delayed the progress of the negotiations.",
+            "tags": ""
+        },
+        "connoisseur": {
+            "ipa": "英:/ˌkɒnə'sɜː(r)/ 美:/ˌkɑːnə'sɜːr/",
+            "level": "C2",
+            "meaning": "n. 鉴赏家;行家",
+            "links": "connoisseurs, connoisseurship",
+            "note": "He is a connoisseur of fine French wines.\nShe is an art connoisseur who works for a gallery.",
+            "tags": ""
+        },
+        "belligerent": {
+            "ipa": "英:/bə'lɪdʒərənt/ 美:/bə'lɪdʒərənt/",
+            "level": "C2",
+            "meaning": "adj. 好战的;交战的;好斗的; n. 交战国",
+            "links": "belligerents, belligerently, belligerence",
+            "note": "The country adopted a belligerent foreign policy.\nHis belligerent attitude led to a fight.",
+            "tags": ""
+        },
+        "acquiesce": {
+            "ipa": "英:/ˌækwi'es/ 美:/ˌækwi'es/",
+            "level": "C2",
+            "meaning": "vi. 默许;默认;勉强同意",
+            "links": "acquiesces, acquiesced, acquiescing, acquiescence",
+            "note": "She chose to acquiesce in her husband's decision.\nWe cannot acquiesce to their unfair demands.",
+            "tags": ""
+        },
+        "capricious": {
+            "ipa": "英:/kə'prɪʃəs/ 美:/kə'prɪʃəs/",
+            "level": "C2",
+            "meaning": "adj. 反复无常的;善变的;任性的",
+            "links": "capriciously, capriciousness, caprice",
+            "note": "The weather in this area is notoriously capricious.\nShe was guided by capricious whims rather than reason.",
+            "tags": ""
+        },
+        "dogmatic": {
+            "ipa": "英:/dɒɡ'mætɪk/ 美:/dɔːɡ'mætɪk/",
+            "level": "C2",
+            "meaning": "adj. 武断的;教条的;独断的",
+            "links": "dogmatically, dogmatism, dogmatist",
+            "note": "He was so dogmatic that he refused to listen to anyone else.\nShe rejected his dogmatic assertions about religion.",
+            "tags": ""
+        },
+        "equivocal": {
+            "ipa": "英:/ɪ'kwɪvəkl/ 美:/ɪ'kwɪvəkl/",
+            "level": "C2",
+            "meaning": "adj. 模棱两可的;可疑的;含糊的",
+            "links": "equivocally, equivocalness, equivocate, equivocation",
+            "note": "His political record is somewhat equivocal.\nHe gave an equivocal answer that satisfied no one.",
+            "tags": ""
+        },
+        "fastidious": {
+            "ipa": "英:/fæ'stɪdiəs/ 美:/fæ'stɪdiəs/",
+            "level": "C2",
+            "meaning": "adj. 挑剔的;过分讲究的;苛求的",
+            "links": "fastidiously, fastidiousness",
+            "note": "She is fastidious about her personal appearance.\nHe is a fastidious planner who leaves nothing to chance.",
+            "tags": ""
+        },
+        "iconoclast": {
+            "ipa": "英:/aɪ'kɒnəklæst/ 美:/aɪ'kɑːnəklæst/",
+            "level": "C2",
+            "meaning": "n. 特立独行的人;反传统的人;打破旧习者",
+            "links": "iconoclasts, iconoclastic, iconoclasm",
+            "note": "As an iconoclast, he challenged all established artistic rules.\nShe was seen as an iconoclast in the field of politics.",
+            "tags": ""
+        },
+        "loquacious": {
+            "ipa": "英:/lə'kweɪʃəs/ 美:/loʊ'kweɪʃəs/",
+            "level": "C2",
+            "meaning": "adj. 多话的;话多的;喋喋不休的",
+            "links": "loquaciously, loquaciousness, loquacity",
+            "note": "The loquacious host kept the guests entertained for hours.\nHe became quite loquacious after drinking a glass of wine.",
+            "tags": ""
+        },
+        "obsequious": {
+            "ipa": "英:/əb'siːkwiəs/ 美:/əb'siːkwiəs/",
+            "level": "C2",
+            "meaning": "adj. 谄媚的;奉承的;卑躬屈膝的",
+            "links": "obsequiously, obsequiousness",
+            "note": "The manager was surrounded by obsequious assistants.\nHe resented their obsequious behavior towards the boss.",
+            "tags": ""
+        },
+        "perfidious": {
+            "ipa": "英:/pə'fɪdiəs/ 美:/pər'fɪdiəs/",
+            "level": "C2",
+            "meaning": "adj. 背信弃义的;不忠实的",
+            "links": "perfidiously, perfidy",
+            "note": "We were betrayed by a perfidous ally.\nHe condemned their perfidious behavior.",
+            "tags": ""
+        },
+        "superfluous": {
+            "ipa": "英:/suː'pɜːfluəs/ 美:/suː'pɜːrfluəs/",
+            "level": "C2",
+            "meaning": "adj. 多余的;过剩的;累赘的",
+            "links": "superfluously, superfluousness, superfluity",
+            "note": "The writer cut several superfluous paragraphs from the article.\nYour explanation is helpful but superfluous.",
+            "tags": ""
+        },
+        "vociferous": {
+            "ipa": "英:/və'sɪfərəs/ 美:/voʊ'sɪfərəs/",
+            "level": "C2",
+            "meaning": "adj. 大声疾呼的;喧嚷的",
+            "links": "vociferously, vociferousness, vociferate",
+            "note": "He was a vociferous critic of the government's economic policies.\nThe proposal met with vociferous opposition.",
+            "tags": ""
+        }
+    }
+}

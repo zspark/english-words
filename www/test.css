@@ -1,0 +1,144 @@
+body {
+
+    background: #f5f7fb;
+
+    font-family:
+        Segoe UI,
+        Arial,
+        sans-serif;
+
+    margin: 40px;
+
+}
+
+.container {
+
+    max-width: 900px;
+
+    margin: auto;
+
+}
+
+h1 {
+
+    margin-bottom: 20px;
+
+}
+
+input {
+
+    width: 100%;
+
+    padding: 15px;
+
+    font-size: 18px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    box-sizing: border-box;
+
+}
+
+#card {
+
+    margin-top: 20px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+
+    display: none;
+
+}
+
+.word {
+
+    font-size: 34px;
+
+    font-weight: bold;
+
+}
+
+.ipa {
+
+    font-size: 20px;
+
+    color: #666;
+
+    margin-top: 5px;
+
+}
+
+.meaning {
+
+    margin-top: 20px;
+
+    line-height: 1.8;
+
+    font-size: 18px;
+
+}
+
+.toolbar {
+
+    margin-top: 30px;
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+button {
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    background: #3478f6;
+
+    color: white;
+
+    font-size: 16px;
+
+}
+
+button:hover {
+
+    opacity: .9;
+
+}
+
+#list {
+
+    margin-top: 20px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+}
+
+.item {
+
+    padding: 8px 14px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+
+}

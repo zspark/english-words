@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Word Pronunciation Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Word Pronunciation Generator (v0.1)</h2>
+    <p>This demo is going to generate pronouncation of English words.</p>
+    <p>You may open console to look for more details.</p>
+    <p><strong>Use Chrome or Edge to run the function.</strong></p>
+
+    <button id="btn">Select Folder</button>
+
+    <pre id="output"></pre>
+
+    <textarea id="text" placeholder="input your words, with comma(,) as a saparation."></textarea>
+    <br>
+    <button onclick="speak()">Speak</button>
+
+    <script src="www/pronunciation.js"> </script>
+    <script>
+        const pron = initSectionPronunciation()
+
+        async function speak() {
+            const words = document.getElementById("text").value;
+            const array = words.split(',').filter(w => w.trim() !== "");
+
+            const uniqueArray = [];
+            for (let i = 0, N = array.length; i < N; ++i) {
+                let w = array[i];
+                if (!wordsExist[w]) {
+                    uniqueArray.push(w);
+                    outputConfig[w] = true;
+                }
+            };
+
+            console.log(`You inserted ${array.length} words, but ${array.length - uniqueArray.length} of them have already done.`);
+            console.log(`So, we are going to deal with the rest ${uniqueArray.length} words`);
+            const N = uniqueArray.length;
+            for (let i = 0, N = uniqueArray.length; i < N; ++i) {
+                let w = uniqueArray[i];
+                console.log(`\tgenerating ${w} (${i + 1}/${N})`);
+                pron.read(w, w)
+            };
+
+            // saveConfig();
+        }
+
+        function saveConfig() {
+            const json = JSON.stringify(outputConfig, null, 4);
+            const blob = new Blob(
+                [json],
+                {
+                    type: "application/json"
+                }
+            );
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "audio.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        const outputConfig = {};
+        async function traverseDirectory(dirHandle, files) {
+            for await (const entry of dirHandle.values()) {
+                if (entry.kind === "file") {
+                    const name = entry.name;
+                    const baseName = name.substring(0, name.lastIndexOf('.'));
+                    files.push(baseName);
+                    wordsExist[baseName] = true;
+                    outputConfig[baseName] = true;
+                }
+            }
+        }
+
+        const wordsExist = {};
+        document.getElementById("btn").onclick = async () => {
+            try {
+                const dirHandle = await window.showDirectoryPicker();
+                const files = []
+                await traverseDirectory(dirHandle, files);
+                document.getElementById("output").textContent = `There are ${files.length} files under the folder.`
+                console.log(`They are ${files.join(',')}`);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+
+    </script>
+
+</body>
+
+</html>
