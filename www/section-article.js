@@ -7,7 +7,7 @@ function initArticleSection(ai, dictionary, cmp, card) {
 
     const articleSource = `
 <div id="panel-left" class="panel-left lh2p4">
-    ${cmp.buttonGroupSource('id-btns', ['Clear', 'Generate', 'Delete'], -1)}
+    ${cmp.buttonGroupSource('id-action', ['Clear', 'Generate', 'Delete'])}
     <div id="article-content"></div>
 </div>
 
@@ -19,7 +19,7 @@ function initArticleSection(ai, dictionary, cmp, card) {
     const ele_root = document.createElement('div');
     ele_root.className = "container";
     ele_root.innerHTML = articleSource;
-    const ele_action_gen = ele_root.querySelector("#id-btns");
+    const ele_action_gen = ele_root.querySelector("#id-action");
     const ele_article = ele_root.querySelector("#article-content");
     const ele_panel = ele_root.querySelector("#panel-right");
 
@@ -36,9 +36,17 @@ function initArticleSection(ai, dictionary, cmp, card) {
             ele_article.innerHTML = "AI正在构思故事中...";
 
             const wordsListString = pickedArray.join(', ');
-            const systemPrompt = "你是一个优秀的英语创意写作导师。";
-            const userPrompt = `请使用以下指定的英语单词串联编写一篇简短、流畅且富有创意的英语短文或小故事（字数在 100-150 字左右）。\n\n必须包含的单词是：[ ${wordsListString} ]。\n\n要求：\n1. 文中的这些目标单词请用<span class="word">（HTML元素）标注出来。\n2. 语言要自然，不要生硬堆砌。\n3. 指定单词可以重复。\n4. 必要的时候用\n开启新的段落。`;
-            const resultText = await ai.askAI(systemPrompt, userPrompt);
+            const _question = `你是一个优秀的英语创意写作导师。
+
+请使用以下指定的英语单词串联编写一篇简短、流畅且富有创意的英语短文或小故事（字数在 100-150 字左右）。
+必须包含的单词是：[ ${wordsListString} ]。
+要求：
+ 1. 文中的这些目标单词请用<span class="word">（HTML元素）标注出来。
+ 2. 语言要自然，不要生硬堆砌。
+ 3. 指定单词可以重复。
+ 4. 必要的时候用\n开启新的段落。
+`;
+            const resultText = await ai.askChatGPT(_question);
             _rts.generatedArticle = resultText;
             dictionary.saveRuntimeStatus();
             _renderArticle();
@@ -61,10 +69,10 @@ function initArticleSection(ai, dictionary, cmp, card) {
     });
 
     function _renderArticle() {
-        const paragraphs = _rts.generatedArticle.split(/\n/).filter(para => para.trim() !== '');
-        const finalHtml = paragraphs.map(para => { return `<p>${para}</p>`; }).join('');
+        const _paragraphs = _rts.generatedArticle?.split(/\n/).filter(para => para.trim() !== '');
+        const finalHtml = _paragraphs?.map(para => { return `<p>${para}</p>`; }).join('');
 
-        ele_article.innerHTML = finalHtml;
+        ele_article.innerHTML = finalHtml ?? "";
     }
 
     function update() {

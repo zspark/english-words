@@ -1,6 +1,6 @@
 
 
-function initTestSection(ai, dictionary, cmp, secWords) {
+function initTestSection(ai, dictionary, pronunciation, cmp, secWords) {
     const _rts = dictionary.getRuntimeStatus('sec_test');
     _rts.requirement = _rts.requirement || {
         repeat: 1,
@@ -25,7 +25,7 @@ function initTestSection(ai, dictionary, cmp, secWords) {
     ${cmp.sliderSource("id-repeat", "Each Question Repeat n Times?", 1, 4, _rts.requirement.repeat)}
     ${cmp.switcherSource("id-case", "Capitalize Word?", _rts.requirement.upperCase)}
 
-    ${cmp.buttonGroupSource("id-actions", ["Reset", 'Start', 'Delete'], -1)}
+    ${cmp.buttonGroupSource("id-actions", ["Reset", 'Start', 'Delete'])}
 </div>
 <div id="id-test" class='bs-panel'>
     <div class="cc-test">
@@ -43,7 +43,7 @@ function initTestSection(ai, dictionary, cmp, secWords) {
             
             <div id="id-input-container">
                 <div class="cc-options" id="id-options"></div>
-                <div id="id-input" contenteditable="true"></div>
+                <input id="id-test-input" contenteditable="true"></input>
                 <div id="id-voice">voice</div>
             </div>
         </div>
@@ -54,7 +54,7 @@ function initTestSection(ai, dictionary, cmp, secWords) {
 <div id="id-result" class="bs-panel">
     <div class="bs-test-summary bs-group"></div>
     <ul id="wordList" class="word-list" style="list-style: none;"></ul>
-    ${cmp.buttonGroupSource("id-post-actions", ['ReConfig', "Restart"], -1)}
+    ${cmp.buttonGroupSource("id-post-actions", ['ReConfig', "Restart"])}
 </div>
 `;
 
@@ -81,7 +81,7 @@ function initTestSection(ai, dictionary, cmp, secWords) {
     const ele_action_word = ele_test.querySelector("#id-word");
     const ele_input_container = ele_test.querySelector("#id-input-container");
     const ele_action_options = ele_input_container.querySelector("#id-options");
-    const ele_action_input = ele_input_container.querySelector("#id-input");
+    const ele_action_input = ele_input_container.querySelector("#id-test-input");
     const ele_action_voice = ele_input_container.querySelector("#id-voice");
     ele_input_container.replaceChildren();
 
@@ -96,11 +96,10 @@ function initTestSection(ai, dictionary, cmp, secWords) {
         let _s = _getQuestionStemSource(e.target.value);
         ele_question.outerHTML = _s;
 
-
         _s = "";
         switch (e.target.value) {
             case "Word":
-                _s = cmp.dropdownOptionSource(['Multichoice', 'Input', 'Voice'], 0);
+                _s = cmp.dropdownOptionSource(['Multichoice', 'Input', 'Voice'], _rts.requirement.answerForm);
                 break;
             case "IPA":
             case "Meaning":
@@ -167,26 +166,19 @@ function initTestSection(ai, dictionary, cmp, secWords) {
 
     ele_action_options.addEventListener("click", (e) => {
         if (e.target.tagName === "BUTTON") {
-            _choose(e.target.dataset.index);
+            _checkByIndex(e.target.dataset.index);
         }
     });
 
     ele_action_input.addEventListener("keydown", function(e) {
-
         if (e.key !== "Enter")
             return;
 
         e.preventDefault();
 
-        const value = ele_action_input.innerText.trim();
-        if (value.toLowerCase() === _runtimeContext.currentWord.toLowerCase()) {
-            ele_action_input.style.color = "green";
-            ele_action_input.textContent = "✔ Correct!";
-        } else {
-            ele_action_input.style.color = "red";
-            ele_action_input.textContent = `✘ Wrong! Correct answer: ${_runtimeContext.currentWord}`;
-        }
-
+        const value = ele_action_input.value.trim();
+        _checkByWord(value);
+        ele_action_input.value = '';
     });
 
 
@@ -233,11 +225,25 @@ ${JSON.stringify(_requirement, null, 4)}`);
             case "word":
                 _s = _rts.requirement.upperCase ? word.toUpperCase() : word.toLowerCase();
                 break;
-            case "ips":
+            case "ipa":
                 _s = _detail.ipa
                 break;
             case "pronunciation":
-                _s = _detail.ipa
+                _s = `<button id="btn-pronounce" class="icon-btn s28px" title="发音">
+    <svg xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+</button>`;
+                pronunciation.pronounce(word);
                 break;
             case "meaning":
                 _s = _detail.meaning;
@@ -255,8 +261,12 @@ ${JSON.stringify(_requirement, null, 4)}`);
                 if (_w === word) {
                     _runtimeContext.currentWordRandomNumber = i + "";
                 }
-                let _detail = dictionary.getWord(_w);
-                _s += `<button class="cc-option" data-index=${i}>${_detail[_rts.requirement.toTest]}</button> `
+                if (_rts.requirement.toTest == 'word') {
+                    _s += `<button class="cc-option" data-index=${i}>${_w}</button> `
+                } else {
+                    let _detail = dictionary.getWord(_w);
+                    _s += `<button class="cc-option" data-index=${i}>${_detail[_rts.requirement.toTest]}</button> `
+                }
             };
             ele_action_options.innerHTML = _s;
         } else if (_rts.requirement.answerForm === "input") {
@@ -295,12 +305,18 @@ ${JSON.stringify(_requirement, null, 4)}`);
             _runtimeContext.remain--;
             _updateBar();
             if (_runtimeContext.remain <= 0) {
-                _choose(-1);
+                _checkByIndex(-1);
             }
         }, 1000);
     }
 
-    function _choose(index) {
+    function _checkByWord(word) {
+        const pass = word.toLowerCase() === _runtimeContext.currentWord.toLowerCase();
+        _runtimeContext.results.push({ word: _runtimeContext.currentWord, yours: word, correct: pass });
+        _newQuestion();
+    }
+
+    function _checkByIndex(index) {
         const pass = index === _runtimeContext.currentWordRandomNumber;
         _runtimeContext.results.push({ word: _runtimeContext.currentWord, correct: pass });
         _newQuestion();
@@ -400,7 +416,7 @@ ${JSON.stringify(_requirement, null, 4)}`);
         <label>
             <span class="word-name ${result.correct ? "bs-word-correct" : "bs-word-wrong"}" >${word}</span>
             <span class="word-ipa">${detail.ipa}</span>
-            <span class="word-level">${detail.level}</span>
+            <span class="tag word-level">${detail.level}</span>
             <span class="word-meaning">${detail.meaning}</span>
         </label>
     </div>

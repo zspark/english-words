@@ -6,7 +6,7 @@ function initConfigPanel(dictionary, cmp) {
 <div class="bs-panel">
     ${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
     ${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", false)}
-    ${cmp.buttonGroupSource("id-actions", ["Save"], -1)}
+    ${cmp.buttonGroupSource("id-actions", ["Save"])}
 </div>`
 
     const ele_root = document.createElement("div");

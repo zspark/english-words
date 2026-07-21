@@ -326,30 +326,31 @@ body {
     margin-bottom: 16px;
 }
 
-.word-level {
+.tag{
     font-size: 13px;
     font-weight: 700;
     color: #2563eb;
-    background: #eff6ff;
     padding: 2px 8px;
     border-radius: 4px;
     display: inline-block;
 }
 
-.word-tags {
-    font-size: 13px;
-    font-weight: 700;
-    color: #2563eb;
-    padding: 2px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    margin: 0px 2px;
+.word-tag-edit{
+    background: #d9eaff;
+    margin:0 2px;
     cursor: pointer;
-    background: #c7d9f1;
 }
 
-/* 如果Level为空时，隐藏这个小标签盒子 */
-#level:empty {
+.word-tag{
+    background: #d9eaff;
+}
+
+.word-level {
+    background: #eff6ff;
+}
+
+.word-tag:empty,
+.word-level:empty {
     display: none;
 }
 
@@ -603,19 +604,8 @@ details[open] summary::after {
     margin-bottom: 1rem;
 }
 
-.search-input {
+#id-searchInput {
     flex: 1;
-    padding: 9px 11px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.search-input:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .filter-select {
@@ -1141,27 +1131,28 @@ details[open] summary::after {
     font-size: 18px;
 }
 
-#id-input {
-    min-width: 500px;
-    min-height: 70px;
-    padding: 15px 20px;
+#id-test-input {
+    width: 100%;
+    height: 70px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 
     font-size: 48px;
     font-weight: bold;
-    text-align: center;
 
-    border: 3px solid #666;
-    border-radius: 10px;
-    background: white;
+    border: none;
+    border-bottom: 3px solid #666;
+    background: transparent;
 
     outline: none;
-}
+    caret-color: black;
 
-#id-input:empty:before {
-    content: "Type the word...";
-    color: #aaa;
+    appearance: none;
+    -webkit-appearance: none;
 }
-
 
 .bs-word-result{
     padding:6px;
@@ -1209,3 +1200,4 @@ details[open] summary::after {
     80%  { background: #f59e0b; } /* Orange */
     100% { background: #4f46e5; }
 }
+

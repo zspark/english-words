@@ -35,7 +35,7 @@ function initComponents() {
         let _titleElem = title ? `<label class="bs-title">${title}</label>` : ``;
         let _s = `<div id="${id}">
     ${_titleElem}
-    <select class="bs-select">
+    <select class="bs-component">
         ${dropdownOptionSource(list, selectedIndex)}
     </select>
 </div>`;
@@ -85,8 +85,17 @@ function initComponents() {
     function sliderSource(id, title, min, max, current) {
         let _s = `<div id="${id}">
             <label class="bs-title"> ${title} </label>
-            <input class="bs-slider" id="bsSlider" type="range" min="${min}" max="${max}" value="${current}">
-            <div class="bs-value"> Value: <span id="bsSliderValue"> ${current} </span> </div>
+            <div class="bs-slider-wrapper">
+                <input
+                    class="bs-component"
+                    type="range"
+                    min="${min}"
+                    max="${max}"
+                    value="${current}"
+                    oninput="this.nextElementSibling.textContent = this.value"
+                >
+                <div class="bs-value">  ${current}  </div>
+            </div>
         </div>`
 
 
@@ -104,15 +113,6 @@ function initComponents() {
         return _s;
     }
 
-    function inputSource(id, title, placeholder = '') {
-        let _s = `<div id="${id}">
-            <label class="bs-title">${title}</label>
-            <input class="bs-input" type="text" placeholder="${placeholder}">
-        </div>`
-
-        return _s;
-    }
-
     function switcherSource(id, title, checked = false) {
         let _s = `<div id="${id}">
             <label class="bs-switch">
@@ -124,11 +124,11 @@ function initComponents() {
         return _s;
     }
 
-    function buttonGroupSource(id, list, activeIndex = 0) {
+    function buttonGroupSource(id, list, classList = []) {
         let _b = '';
         for (let i = 0, N = list.length; i < N; ++i) {
-            let o = list[i];
-            _b += `<button class="bs-btn ${i == activeIndex ? "active" : ''}" data-index="${i}">${o}</button>`
+            let _cls = classList[i] || "";
+            _b += `<button class="${_cls} bs-btn" data-index="${i}">${list[i]}</button>`
         }
         let _s = `<div id="${id}" class="bs-btn-group"> ${_b} </div>`
         return _s;
@@ -142,14 +142,30 @@ function initComponents() {
     }
 
     function inputSource(id, title, placeholder = '', required = false) {
+        const _t = title ? `<label class="bs-title">${title}</label>` : "";
         return `<div id="${id}">
-        <label class="bs-title">${title}</label>
-        <input class="bs-input" type="text" placeholder="${placeholder}" ${required ? "required" : ""} autocomplete="off">
+    ${_t}
+    <input class="bs-input" type="text" placeholder="${placeholder}" ${required ? "required" : ""} autocomplete="off">
+</div>`
+    }
+
+    function textareaSource(id, title, additionalClasses = '', placeholder = '') {
+        return `<div id="${id}">
+    <label class="bs-title">${title}</label>
+    <textarea class="bs-input ${additionalClasses}" placeholder="${placeholder}"></textarea>
+</div>`
+    }
+
+    function clickableBlockSource(id, title) {
+        return `<div id="${id}">
+    <label class="bs-title">${title}</label>
+    <div id="id-A" class="bs-component" style="margin-bottom:5px"> </div>
+    <div id="id-B" class="bs-component"> </div>
 </div>`
     }
 
     return {
-        inputSource,
+        clickableBlockSource,
         progressBarSource,
         buttonGroupSource,
         checkboxSource,
@@ -158,6 +174,7 @@ function initComponents() {
         dropdownOptionSource,
         sliderSource,
         inputSource,
+        textareaSource,
         switcherSource
     }
 }

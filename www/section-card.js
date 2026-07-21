@@ -1,6 +1,9 @@
 
 
-function initCardSection(ai, dictionary, pronunciation) {
+function initCardSection(ai, dictionary, cmp, pronunciation) {
+
+    const EVT_MODE_EDIT = "evt_mode_edit";
+    const EVT_MODE_READ = "evt_mode_read";
 
     const source = `
 <div id="card-display" class="card">
@@ -11,10 +14,8 @@ function initCardSection(ai, dictionary, pronunciation) {
         </svg>
     </button>
 
-    <div id="vocab"></div>
     <div class="vocab-header">
-        <div id="level" class="word-level"></div>
-        <div id="tags" class="word-tags"></div>
+        <div id="vocab"></div>
         <button id="btn-pronounce" class="icon-btn s28px" title="发音">
             <svg xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -30,6 +31,10 @@ function initCardSection(ai, dictionary, pronunciation) {
             </svg>
         </button>
     </div>
+    <div class="vocab-header">
+        <div id="level" class="tag word-level"></div>
+        <div id="tags" class="tag word-tag"></div>
+    </div>
     <div id="ipa"></div>
     <div id="meaning"></div>
     <div id="note"></div>
@@ -38,63 +43,15 @@ function initCardSection(ai, dictionary, pronunciation) {
 
 <div id="card-edit" class="card">
 
-    <div id="new-word-form" class="word-form">
-        <div class="form-group">
-            <input type="text" id="new-vocab" placeholder="单词" required autocomplete="off">
-        </div>
-
-        <div class="form-group flex-1">
-            <label for="new-level">Level</label>
-            <select id="new-level">
-                <option value="">None</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-                <option value="C2">C2</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Tags</label>
-            <div>
-                <div id="available-tags" class="tag-container">
-                </div>
-            </div>
-            <div>
-                <div id="selected-tags" class="tag-container">
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group flex-2">
-            <label for="new-ipa">Phonetic (IPA)</label>
-            <input type="text" id="new-ipa" placeholder="音标" autocomplete="off">
-        </div>
-
-        <div class="form-group">
-            <label for="new-meaning">Meaning</label>
-            <input type="text" id="new-meaning" placeholder="示意" required autocomplete="off">
-        </div>
-
-        <div class="form-group">
-            <label for="new-note">Notes</label>
-            <textarea id="new-note" placeholder="笔记" class="h150px"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="new-links">Linked Words (Comma separated)</label>
-            <input type="text" id="new-links" placeholder="关联词" autocomplete="off">
-        </div>
-
-        
-        <div class="btn-group">
-            <button id="ai-btn">auto fill</button>
-            <button id="cancel-btn">cancel</button>
-            <button id="save-btn">save</button>
-            <button id="delete-btn">delete</button>
-        </div>
+    <div id="new-word-form" class='bs-panel-plain'>
+        ${cmp.inputSource("id-new-vocab", "", "word", true)}
+        ${cmp.dropdownSource("id-new-level", "Level", ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 0)}
+        ${cmp.clickableBlockSource("id-new-tags", "Tags")}
+        ${cmp.inputSource("id-new-ipa", "Phonetic (IPA)", "", false)}
+        ${cmp.inputSource("id-new-meaning", "Meaning", "", false)}
+        ${cmp.textareaSource("id-new-note", "Note", "h150px", "note ...", false)}
+        ${cmp.inputSource("id-new-links", "Linked Words (Comma Separated)", "", false)}
+        ${cmp.buttonGroupSource('id-actions', ['auto fill', 'cancel', 'save', 'delete'], ['clr-blue', '', '', 'clr-red'])}
     </div>
 </div>`
 
@@ -105,11 +62,8 @@ function initCardSection(ai, dictionary, pronunciation) {
     ele_root.className = "fixed";
     const ele_card_display = ele_root.querySelector("#card-display");
     const ele_card_edit = ele_root.querySelector("#card-edit");
+    ele_card_edit.remove();
     const editBtnCard = ele_root.querySelector("#card-edit-btn");
-    const apiBtn = ele_root.querySelector("#ai-btn");
-    const cancelBtn = ele_root.querySelector("#cancel-btn");
-    const saveBtn = ele_root.querySelector("#save-btn");
-    const deleteBtn = ele_root.querySelector("#delete-btn");
 
     const ele_voc = ele_card_display.querySelector("#vocab");
     const ele_btn_pronounce = ele_root.querySelector("#btn-pronounce")
@@ -120,16 +74,18 @@ function initCardSection(ai, dictionary, pronunciation) {
     const ele_note = ele_card_display.querySelector("#note");
     const ele_linkedWords = ele_card_display.querySelector("#linked-words");
 
-    const ele_new_voc = ele_card_edit.querySelector("#new-vocab");
-    const ele_new_ipa = ele_card_edit.querySelector("#new-ipa");
-    const ele_new_meaning = ele_card_edit.querySelector("#new-meaning");
-    const ele_new_level = ele_card_edit.querySelector("#new-level");
-    const ele_new_note = ele_card_edit.querySelector("#new-note");
-    const ele_new_linkedWords = ele_card_edit.querySelector("#new-links");
+    const ele_new_voc = ele_card_edit.querySelector("#id-new-vocab input");
+    const ele_new_ipa = ele_card_edit.querySelector("#id-new-ipa input");
+    const ele_new_meaning = ele_card_edit.querySelector("#id-new-meaning input");
+    const ele_new_level = ele_card_edit.querySelector("#id-new-level select");
+    const ele_new_note = ele_card_edit.querySelector("#id-new-note textarea");
+    const ele_new_linkedWords = ele_card_edit.querySelector("#id-new-links input");
 
+    const ele_action = ele_card_edit.querySelector("#id-actions");
 
-    const ele_available = ele_card_edit.querySelector("#available-tags");
-    const ele_selected = ele_card_edit.querySelector("#selected-tags");
+    const ele_jumpToConfig = ele_card_edit.querySelector("#id-new-tags #id-jump-to-config");
+    const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
+    const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
 
     function moveTag(event) {
         if (!event.target.classList.contains("tag")) return;
@@ -145,17 +101,22 @@ function initCardSection(ai, dictionary, pronunciation) {
     ele_available.addEventListener("click", moveTag);
     ele_selected.addEventListener("click", moveTag);
 
-    ele_card_edit.remove();
 
+    let lastExistWord = "";
     let currentWord = "";
+    const MODE_EDIT = 1;
+    const MODE_READ = 2;
+    let _currentMode = MODE_READ;
 
-    function _updateCardContentInEditMode(detail = {}) {
-        ele_new_ipa.value = detail.ipa || "";
-        ele_new_meaning.value = detail.meaning || "";
-        ele_new_level.value = detail.level || "";
-        ele_new_note.value = detail.note || "";
-        ele_new_linkedWords.value = detail.links || "";
-        const sTag = detail.tags?.split(',').map(t => t.trim()).filter(s => s.length > 0) || [];
+
+    function _updateCardContentInEditMode(word, detail) {
+        ele_new_voc.value = word || "";
+        ele_new_ipa.value = detail?.ipa || "";
+        ele_new_meaning.value = detail?.meaning || "";
+        ele_new_level.value = detail?.level || "";
+        ele_new_note.value = detail?.note || "";
+        ele_new_linkedWords.value = detail?.links || "";
+        const sTag = detail?.tags?.split(',').map(t => t.trim()).filter(s => s.length > 0) || [];
         _updateTagList(sTag);
     }
 
@@ -165,50 +126,56 @@ function initCardSection(ai, dictionary, pronunciation) {
         let _s = ''; let _a = '';
         aTags.forEach(tag => {
             if (sTags.includes(tag)) {
-                _s += `<span class="tag word-tags">${tag.toUpperCase()}</span>`;
+                _s += `<span class="tag word-tag-edit">${tag}</span>`;
             } else {
-                _a += `<span class="tag word-tags">${tag.toUpperCase()}</span>`;
+                _a += `<span class="tag word-tag-edit">${tag}</span>`;
             }
         });
         ele_available.innerHTML = _a;
         ele_selected.innerHTML = _s;
     }
 
-    function renderCard(word, toEditMode = false) {
+    function enterEditMode() {
+        if (_currentMode === MODE_EDIT) return;
+        _currentMode = MODE_EDIT;
+    }
+
+    function enterReadMode() {
+        if (_currentMode === MODE_READ) return;
+        _currentMode = MODE_READ;
+    }
+
+    function renderCard(word) {
         currentWord = word;
-        const details = dictionary.getWord(word);
-        if (toEditMode) {
-            ele_new_voc.value = word;
-            _updateCardContentInEditMode(details);
+        const _detail = dictionary.getWord(word);
+        lastExistWord = _detail ? word : lastExistWord;
+
+        if (_currentMode === MODE_EDIT) {
+            //if (_hasModifications()) return;
+            _updateCardContentInEditMode(word, _detail);
+            //_recordOriginalValues();
             ele_root.replaceChildren(ele_card_edit);
+            __this__.dispatchEvent(new CustomEvent(EVT_MODE_EDIT, { detail: {} }));
 
         } else {
-
             ele_voc.textContent = word;
-            if (details) {
-
-                ele_ipa.textContent = details.ipa;
-                ele_meaning.textContent = details.meaning;
-                ele_level.textContent = details.level;
-                ele_tag.textContent = details.tags.toUpperCase();
-                const notes = details.note.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            ele_ipa.textContent = _detail?.ipa || "<need implement>";
+            ele_meaning.textContent = _detail?.meaning || "<need implement>";
+            ele_level.textContent = _detail?.level || "";
+            ele_tag.textContent = _detail?.tags || "";
+            ele_note.innerHTML = ((notes) => {
                 let _s = '';
                 notes.forEach(s => { _s += `<p>${s}</p>`; })
-                ele_note.innerHTML = _s;
-
-                const links = details.links.split(',').map(line => line.trim()).filter(line => line.length > 0);
-                _s = '';
+                return _s;
+            })(_detail?.note?.split('\n').map(line => line.trim()).filter(line => line.length > 0) || []);
+            ele_linkedWords.innerHTML = ((links) => {
+                let _s = '';
                 links.forEach(w => { _s += `<a>${w}</a>`; });
-                ele_linkedWords.innerHTML = _s;
-            } else {
-                ele_ipa.innerHTML = "";
-                ele_meaning.innerHTML = "";
-                ele_linkedWords.innerHTML = "";
-                ele_note.innerHTML = "";
-                ele_level.innerHTML = "";
-            }
+                return _s;
+            })(_detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0) || []);
 
             ele_root.replaceChildren(ele_card_display);
+            __this__.dispatchEvent(new CustomEvent(EVT_MODE_READ, { detail: {} }));
         }
 
     };
@@ -218,18 +185,21 @@ function initCardSection(ai, dictionary, pronunciation) {
         if (!word) return;
         pronunciation.pronounce(word);
     });
+
     ele_new_voc.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             const word = ele_new_voc.value.trim();
             if (word.length <= 0) return;
-            renderCard(word, true);
+            enterEditMode();
+            renderCard(word);
         }
     });
 
-    apiBtn.addEventListener("click", async e => {
-        const word = ele_new_voc.value.trim();
-        if (word.length <= 0) return;
-        const question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
+    ele_action.addEventListener("click", async e => {
+        if (e.target.dataset.index === "0") {//delete
+            const word = ele_new_voc.value.trim();
+            if (word.length <= 0) return;
+            const _question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
 
 这些单词或者短语是: ${word}
 格式如下：
@@ -249,49 +219,54 @@ function initCardSection(ai, dictionary, pronunciation) {
 2）例句一个就好，极少数可以最多有2个例句；
 3）提供的单词在json中全部用小写；`
 
+            const resultText = await ai.askChatGPT(_question);
+            const _detail = JSON.parse(resultText)[word];
+            _updateCardContentInEditMode(word, _detail);
+            //saveBtn.classList.add('bs-bg-twinkle');
+        } else if (e.target.dataset.index === "1") {
+            //canel
+            enterReadMode();
+            renderCard(dictionary.hasWord(currentWord) ? currentWord : lastExistWord);
+        } else if (e.target.dataset.index === "2") {
+            const word = ele_new_voc.value.trim();
+            const ipa = ele_new_ipa.value.trim();
+            const meaning = ele_new_meaning.value.trim();
+            const level = ele_new_level.value.trim();
+            const note = ele_new_note.value.trim();
+            const links = ele_new_linkedWords.value.trim();
+            const tags = [...ele_selected.querySelectorAll(".tag")].map(span => span.textContent.trim()).join(", ");
 
-        const resultText = await ai.askChatGPT(question);
-        const _detail = JSON.parse(resultText)[word];
-        _updateCardContentInEditMode(_detail);
-        saveBtn.classList.add('bs-bg-twinkle');
-    })
+            dictionary.updateWord(word, ipa, meaning, level, note, links, tags)
 
-    cancelBtn.addEventListener("click", e => {
-        renderCard(currentWord, false);
+            enterReadMode();
+            renderCard(word);
+            //saveBtn.classList.remove('bs-bg-twinkle');
+
+        } else if (e.target.dataset.index === "3") {
+            //delete;
+            dictionary.deleteWord(currentWord);
+            enterReadMode();
+            renderCard('');
+        } else if (e.target.dataset.index === "4") {
+        } else if (e.target.dataset.index === "5") {
+        }
     })
 
     editBtnCard.addEventListener("click", e => {
-        renderCard(currentWord, true);
+        enterEditMode();
+        renderCard(currentWord);
     })
-
-    deleteBtn.addEventListener("click", e => {
-        dictionary.deleteWord(currentWord);
-        currentWord = '';
-        renderCard('', false);
-    })
-
-    saveBtn.addEventListener("click", () => {
-        const word = ele_new_voc.value.trim();
-        const ipa = ele_new_ipa.value.trim();
-        const meaning = ele_new_meaning.value.trim();
-        const level = ele_new_level.value.trim();
-        const note = ele_new_note.value.trim();
-        const links = ele_new_linkedWords.value.trim();
-        const tags = [...ele_selected.querySelectorAll(".tag")].map(span => span.textContent.trim()).join(",");
-
-        dictionary.updateWord(word, ipa, meaning, level, note, links, tags)
-
-        currentWord = word;
-        renderCard(currentWord, false);
-        saveBtn.classList.remove('bs-bg-twinkle');
-
-    });
 
     ele_linkedWords.addEventListener("click", (e) => {
         // console.log(e.target);
         if (e.target.tagName === "A") {
-            currentWord = e.target.outerText
-            renderCard(currentWord, false);
+            const _w = e.target.outerText;
+            if (dictionary.hasWord(_w)) {
+                enterReadMode();
+            } else {
+                enterEditMode();
+            }
+            renderCard(_w);
         }
     })
 
@@ -300,7 +275,7 @@ function initCardSection(ai, dictionary, pronunciation) {
         if (c) {
             ele_root.remove()
         }
-        renderCard(currentWord, false);
+        renderCard(currentWord);
 
         if (c) {
             ele_container.replaceChildren(ele_root)
@@ -314,11 +289,19 @@ function initCardSection(ai, dictionary, pronunciation) {
     }
 
     _updateTagList([]);
-    return {
+    //_recordOriginalValues();
+
+    const __this__ = new EventTarget()
+    Object.assign(__this__, {
         ele_root,
         update,
         renderCard,
         getShownWord,
         pronounceShownWord,
-    }
+        enterEditMode,
+        enterReadMode,
+        EVT_MODE_EDIT,
+        EVT_MODE_READ,
+    })
+    return __this__;
 }

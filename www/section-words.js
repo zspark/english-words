@@ -16,15 +16,16 @@ function initDictionarySection(ai, dictionary, cmp, card) {
     const wordListSource = `
 <div id="panel-left" class="panel-left">
     <div class="controls">
-        <input type="text" id="searchInput" class="search-input" placeholder="输入单词或释义搜索...">
+
+        ${cmp.inputSource("id-searchInput", null, "输入单词或释义搜索...")}
         ${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], 0)}
         ${cmp.dropdownSource("id-tagFilter", null, [], -1)}
-        ${cmp.buttonGroupSource('id-resetFilter', ['Reset'], -1)}
+        ${cmp.buttonGroupSource('id-resetFilter', ['Reset'])}
     </div>
 
     <div class="controls">
-        ${cmp.buttonGroupSource('id-btns', ['Clear Pick', 'Pick 5', 'Pick 10', 'Pick 20', 'Pick All'], -1)}
-        ${cmp.buttonGroupSource('id-actions', ['Delete'], -1)}
+        ${cmp.buttonGroupSource('id-btns', ['Clear Pick', 'Pick 5', 'Pick 10', 'Pick 20', 'Pick All'])}
+        ${cmp.buttonGroupSource('id-actions', ['Delete'])}
     </div>
 
     <div id="current-status" class="status-bar">
@@ -50,13 +51,13 @@ function initDictionarySection(ai, dictionary, cmp, card) {
     const ele_btns = ele_root.querySelector('#id-btns');
     const ele_actions = ele_root.querySelector('#id-actions');
     const ele_wordList = ele_root.querySelector('#wordList');
-    const searchInput = ele_root.querySelector('#searchInput');
+    const searchInput = ele_root.querySelector('#id-searchInput');
     const levelFilter = ele_root.querySelector('#id-levelFilter select');
     const tagFilter = ele_root.querySelector('#id-tagFilter select');
     tagFilter.innerHTML = cmp.dropdownOptionSource(["ALL", ...dictionary.getTags()], 0);
 
     let _filteredCount = 0;
-    function renderWords() {
+    function _renderWords() {
         // _clearSelected();
 
         const words = Object.entries(dictionary.getWords(searchInput.value, levelFilter.value, tagFilter.value));
@@ -75,7 +76,7 @@ function initDictionarySection(ai, dictionary, cmp, card) {
         <label>
             <span class="word-name">${word}</span>
             <span class="word-ipa">${details.ipa}</span>
-            <span class="word-level">${details.level}</span>
+            <span class="tag word-level">${details.level}</span>
             <span class="word-meaning">${details.meaning}</span>
         </label>
     </div>
@@ -103,7 +104,7 @@ function initDictionarySection(ai, dictionary, cmp, card) {
         _rts.filter.level = levelFilter.value;
         _rts.filter.tag = tagFilter.value;
         dictionary.saveRuntimeStatus();
-        renderWords()
+        _renderWords()
     }
     searchInput.addEventListener('input', _updateFilterAndRender);
     levelFilter.addEventListener('change', _updateFilterAndRender);
@@ -122,7 +123,7 @@ function initDictionarySection(ai, dictionary, cmp, card) {
             })
             selectedWords.length = 0;
             dictionary.saveRuntimeStatus();
-            renderWords();
+            _renderWords();
         }
     });
 
@@ -179,16 +180,16 @@ function initDictionarySection(ai, dictionary, cmp, card) {
     });
 
     function _activeWord(wordElem) {
-        if (!wordElem) return;
         if (_activedWordElem === wordElem) return;
 
         if (_activedWordElem) {
             _activedWordElem.removeAttribute("active");
         }
         _activedWordElem = wordElem
-        _activedWordElem.setAttribute('active', "");
-
-        card.renderCard(wordElem.dataset.word)
+        if (_activedWordElem) {
+            _activedWordElem.setAttribute('active', "");
+            card.renderCard(wordElem.dataset.word)
+        }
     }
 
 
@@ -258,7 +259,7 @@ function initDictionarySection(ai, dictionary, cmp, card) {
         tagFilter.value = _rts.filter.tag;
         searchInput.value = _rts.filter.search;
 
-        renderWords();
+        _renderWords();
         ele_panel.replaceChildren(card.ele_root)
 
         if (c) {
@@ -284,6 +285,12 @@ function initDictionarySection(ai, dictionary, cmp, card) {
     function getSelectedWords() {
         return readOnly(selectedWords)
     }
+
+    dictionary.addEventListener(dictionary.EVT_WORD, e => {
+        console.debug(e.detail.word, e.detail.action);
+        _activeWord(null);
+        _renderWords();
+    });
 
     return {
         ele_root,

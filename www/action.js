@@ -171,12 +171,24 @@ document.addEventListener("DOMContentLoaded", (e) => {
     panel_config = initConfigPanel(dictionary, components);
     pronunciation = initSectionPronunciation(dictionary);
 
-    section_card = initCardSection(_ai, dictionary, pronunciation);
+    section_card = initCardSection(_ai, dictionary, components, pronunciation);
     section_article = initArticleSection(_ai, dictionary, components, section_card);
     section_words = initDictionarySection(_ai, dictionary, components, section_card);
     section_import = initSectionImport(_ai, dictionary);
-    section_test = initTestSection(_ai, dictionary, components, section_words);
+    section_test = initTestSection(_ai, dictionary, pronunciation, components, section_words);
     section_result = initResultSection(components, dictionary, section_card);
+
+    function _globalKeyEventHandler(event) {
+        // console.debug(event.key);
+        _currentSection?.keyEvent(event);
+        event.stopImmediatePropagation()
+    }
+    section_card.addEventListener(section_card.EVT_MODE_EDIT, e => {
+        document.removeEventListener("keydown", _globalKeyEventHandler);
+    });
+    section_card.addEventListener(section_card.EVT_MODE_READ, e => {
+        document.addEventListener("keydown", _globalKeyEventHandler);
+    });
 
 
     ele_sections.addEventListener('click', (e) => {
@@ -199,12 +211,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     });
 
     _switchToSection(_rts.sectionID);
+    document.addEventListener("keydown", _globalKeyEventHandler);
 
-});
-
-document.addEventListener("keydown", (event) => {
-    // console.debug(event.key);
-    _currentSection?.keyEvent(event);
-    event.stopImmediatePropagation()
 });
 

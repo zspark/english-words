@@ -137,15 +137,22 @@ function initDictionary() {
     function updateWord(word, ipa, meaning, level, note, links, tags) {
         if (!word) return;
 
-        const data = dict[word] || {};
-        _fillDetailInfosIfMissing(data);
-        const oldLinks = data.links;
-        data.ipa = ipa || '';
-        data.meaning = meaning || '';
-        data.level = level || '';
-        data.note = note || '';
-        data.links = links || '';
-        data.tags = tags || '';
+        let _action = "";
+        let _detail = dict[word];
+        if (_detail) {
+            _action = "modify";
+        } else {
+            _detail = {};
+            _action = "add";
+        }
+        _fillDetailInfosIfMissing(_detail);
+        const oldLinks = _detail.links;
+        _detail.ipa = ipa || '';
+        _detail.meaning = meaning || '';
+        _detail.level = level || '';
+        _detail.note = note || '';
+        _detail.links = links || '';
+        _detail.tags = tags || '';
 
         if (links != oldLinks) {
             const parseLinks = (str) => str.split(',').map(w => w.trim()).filter(w => w.length > 0);
@@ -165,8 +172,8 @@ function initDictionary() {
             }
         }
 
-        // 5. 写回字典并持久化
-        dict[word] = data;
+        dict[word] = _detail;
+        _dispEvt(word, _action);
         _wordsProxy.save();
     }
 
@@ -213,7 +220,12 @@ function initDictionary() {
 
         // 4. 从内存字典中彻底删除该单词
         delete dict[word];
+        _dispEvt(word, "delete");
         _wordsProxy.save();
+    }
+
+    function _dispEvt(word, action) {
+        __this__.dispatchEvent(new CustomEvent(EVT_WORD, { detail: { word, action } }));
     }
 
     function getWords(searchQuery, level, tag) {
@@ -235,8 +247,13 @@ function initDictionary() {
         return out;
     }
 
+    function hasWord(word) {
+        if ((!word) || (word.length <= 0)) return false;
+        return !!dict[word];
+    }
+
     function getWord(word) {
-        if (!word) return null;
+        if ((!word) || (word.length <= 0)) return null;
         const _out = dict[word];
         _fillDetailInfosIfMissing(_out);
         return _out;
@@ -314,14 +331,18 @@ function initDictionary() {
         _AIProxy.save();
     }
 
+    const EVT_WORD = "evt_word";
+    const __this__ = new EventTarget()
+    Object.assign(__this__, {
+        EVT_WORD,
 
-    return {
         exportDictionary,
         importDictionaryByContent,
         importDictionaryByFile,
         clearDictionary,
         getWords,
         getWord,
+        hasWord,
         updateWord,
         deleteWord,
         getTags,
@@ -335,5 +356,6 @@ function initDictionary() {
 
         getAPI,
         setAPI,
-    }
+    })
+    return __this__;
 }
