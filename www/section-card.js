@@ -49,7 +49,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         ${cmp.clickableBlockSource("id-new-tags", "Tags")}
         ${cmp.inputSource("id-new-ipa", "Phonetic (IPA)", "", false)}
         ${cmp.inputSource("id-new-meaning", "Meaning", "", false)}
-        ${cmp.textareaSource("id-new-note", "Note", "h150px", "note ...", false)}
+        ${cmp.textareaSource("id-new-note", "Note", "h150px", "", false)}
         ${cmp.inputSource("id-new-links", "Linked Words (Comma Separated)", "", false)}
         ${cmp.buttonGroupSource('id-actions', ['auto fill', 'cancel', 'save', 'delete'], ['clr-blue', '', '', 'clr-red'])}
     </div>
@@ -189,7 +189,13 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         if (e.target.dataset.index === "0") {
             //fill by ai
             const word = ele_new_voc.value.trim();
-            if (word.length <= 0) return;
+            if (word.length <= 0) {
+                ele_new_voc.focus();
+                const _s = `Word input is essential, this is the key to database`;
+                console.warn(_s);
+                alert(_s);
+                return;
+            }
             const resultText = await ai.askChatGPTForWordsInfo(word);
             if (!resultText) return;
             const _detail = JSON.parse(resultText)[word];
