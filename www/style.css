@@ -768,20 +768,6 @@ details[open] summary::after {
     margin-bottom: 8px;
 }
 
-/* 单选框排列 */
-.radio-group {
-    display: flex;
-    gap: 16px;
-}
-
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    cursor: pointer;
-}
-
 /* 标签页导航 (Tabs) */
 .tab-header {
     display: flex;

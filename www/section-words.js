@@ -1,6 +1,6 @@
 
 
-function initDictionarySection(ai, dictionary, cmp, card) {
+function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     const _rts = dictionary.getRuntimeStatus('sec_dict');
     _rts.selectedWords = _rts.selectedWords || [];
     _rts.activedWord = _rts.activedWord || '';
@@ -17,7 +17,7 @@ function initDictionarySection(ai, dictionary, cmp, card) {
 <div id="panel-left" class="panel-left">
     <div class="controls">
 
-        ${cmp.inputSource("id-searchInput", null, "输入单词或释义搜索...")}
+        ${cmp.inputSource("id-searchInput", null, "Search word while inputting")}
         ${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], 0)}
         ${cmp.dropdownSource("id-tagFilter", null, [], -1)}
         ${cmp.buttonGroupSource('id-resetFilter', ['Reset'])}
@@ -25,11 +25,10 @@ function initDictionarySection(ai, dictionary, cmp, card) {
 
     <div class="controls">
         ${cmp.buttonGroupSource('id-btns', ['Clear Pick', 'Pick 5', 'Pick 10', 'Pick 20', 'Pick All'])}
-        ${cmp.buttonGroupSource('id-actions', ['Delete'])}
     </div>
 
     <div id="current-status" class="status-bar">
-        当前过滤显示了 <span id="_filteredCount">0</span> 个单词，已选中 <span id="selectedCount">0</span> 个单词。
+        <span id="selectedCount">0</span> word(s) selected, <span id="_filteredCount">0</span> word(s) filtered,
     </div>
 
     <ul id="wordList" class="word-list" style="list-style: none;"></ul>
@@ -49,9 +48,8 @@ function initDictionarySection(ai, dictionary, cmp, card) {
     const selectedCountSpan = ele_root.querySelector('#selectedCount');
     const btnRestFilter = ele_root.querySelector('#id-resetFilter');
     const ele_btns = ele_root.querySelector('#id-btns');
-    const ele_actions = ele_root.querySelector('#id-actions');
     const ele_wordList = ele_root.querySelector('#wordList');
-    const searchInput = ele_root.querySelector('#id-searchInput');
+    const searchInput = ele_root.querySelector('#id-searchInput input');
     const levelFilter = ele_root.querySelector('#id-levelFilter select');
     const tagFilter = ele_root.querySelector('#id-tagFilter select');
     tagFilter.innerHTML = cmp.dropdownOptionSource(["ALL", ...dictionary.getTags()], 0);
@@ -90,12 +88,6 @@ function initDictionarySection(ai, dictionary, cmp, card) {
             ele_wordList.innerHTML = htmlBuffer;
         }
 
-        let _elem = ele_wordList.querySelector(".word-card[active]");
-        if (!_elem) {
-            _elem = ele_wordList.firstElementChild;
-        }
-        _activeWord(_elem);
-
         _updateStatus();
     }
 
@@ -116,21 +108,9 @@ function initDictionarySection(ai, dictionary, cmp, card) {
         _updateFilterAndRender('', "ALL", "ALL");
     });
 
-    ele_actions.addEventListener('click', (e) => {
-        if (e.target.dataset.index === "0") {//delete
-            selectedWords.forEach(w => {
-                dictionary.deleteWord(w);
-            })
-            selectedWords.length = 0;
-            dictionary.saveRuntimeStatus();
-            _renderWords();
-        }
-    });
-
     function _updateStatus() {
         filteredCountSpan.textContent = _filteredCount;
         selectedCountSpan.textContent = selectedWords.length;
-        ele_actions.toggleAttribute("hidden", selectedWords.length <= 0)
     }
 
     ele_wordList.addEventListener('change', (event) => {
@@ -275,10 +255,19 @@ function initDictionarySection(ai, dictionary, cmp, card) {
         } else if (event.key === "e") {
             _activeWord(_activedWordElem.previousElementSibling);
         } else if (event.key === "f") {
-            card.pronounceShownWord();
+            pronunciation.pronounce(_activedWordElem?.dataset?.word)
         } else if (event.key === "s") {
             _toggleWordSelection(_activedWordElem, true);
             _updateStatus();
+        } else if (event.key === "Delete") {
+            if (selectedWords.length != 0) {
+                selectedWords.forEach(w => {
+                    dictionary.deleteWord(w);
+                })
+                selectedWords.length = 0;
+                dictionary.saveRuntimeStatus();
+                _renderWords();
+            }
         }
     }
 

@@ -82,8 +82,8 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_new_linkedWords = ele_card_edit.querySelector("#id-new-links input");
 
     const ele_action = ele_card_edit.querySelector("#id-actions");
+    const ele_btnSave = ele_action.querySelector("button[data-index='2']");
 
-    const ele_jumpToConfig = ele_card_edit.querySelector("#id-new-tags #id-jump-to-config");
     const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
     const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
 
@@ -102,7 +102,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     ele_selected.addEventListener("click", moveTag);
 
 
-    let lastExistWord = "";
     let currentWord = "";
     const MODE_EDIT = 1;
     const MODE_READ = 2;
@@ -135,48 +134,39 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         ele_selected.innerHTML = _s;
     }
 
-    function enterEditMode() {
+    function _enterEditMode() {
         if (_currentMode === MODE_EDIT) return;
         _currentMode = MODE_EDIT;
+        ele_root.replaceChildren(ele_card_edit);
+        __this__.dispatchEvent(new CustomEvent(EVT_MODE_EDIT, { detail: {} }));
     }
 
-    function enterReadMode() {
+    function _enterReadMode() {
         if (_currentMode === MODE_READ) return;
         _currentMode = MODE_READ;
+        ele_root.replaceChildren(ele_card_display);
+        __this__.dispatchEvent(new CustomEvent(EVT_MODE_READ, { detail: {} }));
     }
 
     function renderCard(word) {
         currentWord = word;
         const _detail = dictionary.getWord(word);
-        lastExistWord = _detail ? word : lastExistWord;
 
-        if (_currentMode === MODE_EDIT) {
-            //if (_hasModifications()) return;
-            _updateCardContentInEditMode(word, _detail);
-            //_recordOriginalValues();
-            ele_root.replaceChildren(ele_card_edit);
-            __this__.dispatchEvent(new CustomEvent(EVT_MODE_EDIT, { detail: {} }));
-
-        } else {
-            ele_voc.textContent = word;
-            ele_ipa.textContent = _detail?.ipa || "<need implement>";
-            ele_meaning.textContent = _detail?.meaning || "<need implement>";
-            ele_level.textContent = _detail?.level || "";
-            ele_tag.textContent = _detail?.tags || "";
-            ele_note.innerHTML = ((notes) => {
-                let _s = '';
-                notes.forEach(s => { _s += `<p>${s}</p>`; })
-                return _s;
-            })(_detail?.note?.split('\n').map(line => line.trim()).filter(line => line.length > 0) || []);
-            ele_linkedWords.innerHTML = ((links) => {
-                let _s = '';
-                links.forEach(w => { _s += `<a>${w}</a>`; });
-                return _s;
-            })(_detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0) || []);
-
-            ele_root.replaceChildren(ele_card_display);
-            __this__.dispatchEvent(new CustomEvent(EVT_MODE_READ, { detail: {} }));
-        }
+        ele_voc.textContent = word;
+        ele_ipa.textContent = _detail?.ipa || "<need implement>";
+        ele_meaning.textContent = _detail?.meaning || "<need implement>";
+        ele_level.textContent = _detail?.level || "";
+        ele_tag.textContent = _detail?.tags || "";
+        ele_note.innerHTML = ((notes) => {
+            let _s = '';
+            notes.forEach(s => { _s += `<p>${s}</p>`; })
+            return _s;
+        })(_detail?.note?.split('\n').map(line => line.trim()).filter(line => line.length > 0) || []);
+        ele_linkedWords.innerHTML = ((links) => {
+            let _s = '';
+            links.forEach(w => { _s += `<a>${w}</a>`; });
+            return _s;
+        })(_detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0) || []);
 
     };
 
@@ -190,44 +180,27 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         if (event.key === "Enter") {
             const word = ele_new_voc.value.trim();
             if (word.length <= 0) return;
-            enterEditMode();
+            _enterEditMode();
             renderCard(word);
         }
     });
 
     ele_action.addEventListener("click", async e => {
-        if (e.target.dataset.index === "0") {//delete
+        if (e.target.dataset.index === "0") {
+            //fill by ai
             const word = ele_new_voc.value.trim();
             if (word.length <= 0) return;
-            const _question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
-
-这些单词或者短语是: ${word}
-格式如下：
-{
-    "generic": {
-        "ipa": "/dʒǝ'nerɪk/ (美英为主)",
-        "level": "B2",
-        "meaning": "adj. 一般的;属的;类的;非商标的",
-        "links": "一些关联的词语，比如它的名词形式，动词形式，三单，ing等等，用英文逗号隔开",
-        "note": "例句，多个例句用'\n'隔开"，
-    },
-    ...
-}
-    
-要求：
-1）只有meaning使用中文，其他一律英文；
-2）例句一个就好，极少数可以最多有2个例句；
-3）提供的单词在json中全部用小写；`
-
-            const resultText = await ai.askChatGPT(_question);
+            const resultText = await ai.askChatGPTForWordsInfo(word);
+            if (!resultText) return;
             const _detail = JSON.parse(resultText)[word];
             _updateCardContentInEditMode(word, _detail);
-            //saveBtn.classList.add('bs-bg-twinkle');
+            ele_btnSave.classList.add('bs-bg-twinkle');
         } else if (e.target.dataset.index === "1") {
             //canel
-            enterReadMode();
-            renderCard(dictionary.hasWord(currentWord) ? currentWord : lastExistWord);
+            renderCard(currentWord);
+            _enterReadMode();
         } else if (e.target.dataset.index === "2") {
+            //save
             const word = ele_new_voc.value.trim();
             const ipa = ele_new_ipa.value.trim();
             const meaning = ele_new_meaning.value.trim();
@@ -235,26 +208,29 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             const note = ele_new_note.value.trim();
             const links = ele_new_linkedWords.value.trim();
             const tags = [...ele_selected.querySelectorAll(".tag")].map(span => span.textContent.trim()).join(", ");
-
             dictionary.updateWord(word, ipa, meaning, level, note, links, tags)
 
-            enterReadMode();
-            renderCard(word);
-            //saveBtn.classList.remove('bs-bg-twinkle');
-
+            renderCard(currentWord);
+            _enterReadMode();
         } else if (e.target.dataset.index === "3") {
             //delete;
-            dictionary.deleteWord(currentWord);
-            enterReadMode();
-            renderCard('');
+            const word = ele_new_voc.value.trim();
+            dictionary.deleteWord(word);
+
+            renderCard(currentWord);
+            _enterReadMode();
         } else if (e.target.dataset.index === "4") {
         } else if (e.target.dataset.index === "5") {
+        }
+
+        if (e.target.dataset.index != "0") {
+            ele_btnSave.classList.remove('bs-bg-twinkle');
         }
     })
 
     editBtnCard.addEventListener("click", e => {
-        enterEditMode();
-        renderCard(currentWord);
+        _renderEditPanel(currentWord);
+        _enterEditMode();
     })
 
     ele_linkedWords.addEventListener("click", (e) => {
@@ -262,13 +238,19 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         if (e.target.tagName === "A") {
             const _w = e.target.outerText;
             if (dictionary.hasWord(_w)) {
-                enterReadMode();
+                renderCard(_w);
+                _enterReadMode();
             } else {
-                enterEditMode();
+                _renderEditPanel(_w);
+                _enterEditMode();
             }
-            renderCard(_w);
         }
     })
+
+    function _renderEditPanel(word) {
+        const _detail = dictionary.getWord(word);
+        _updateCardContentInEditMode(word, _detail);
+    }
 
     function update() {
         const c = ele_root.isConnected;
@@ -284,10 +266,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     function getShownWord() { return currentWord; }
 
-    function pronounceShownWord() {
-        pronunciation.pronounce(currentWord);
-    }
-
     _updateTagList([]);
     //_recordOriginalValues();
 
@@ -297,9 +275,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         update,
         renderCard,
         getShownWord,
-        pronounceShownWord,
-        enterEditMode,
-        enterReadMode,
         EVT_MODE_EDIT,
         EVT_MODE_READ,
     })

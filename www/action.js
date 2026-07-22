@@ -19,7 +19,16 @@ function readOnly(obj) {
     });
 }
 
+function isEditing() {
+    const el = document.activeElement;
 
+    return (
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement ||
+        el.isContentEditable
+    );
+}
 
 const ele_container = document.getElementById("middle");
 
@@ -34,89 +43,8 @@ const ele_btn_config = document.getElementById("config-btn")
 
 // Export JSON
 document.getElementById("export-btn").addEventListener("click", () => {
-    dictionary.exportDictionary();
+    dictionary.exportDatabase();
 });
-
-// Clear cache
-document.getElementById("clear-btn").addEventListener("click", () => {
-    dictionary.clearDictionary()
-    _currentSection.update();
-});
-
-
-// 优雅渲染 API 返回的排版结构
-function renderExternalResult(word) {
-    const container = document.getElementById("dict-external-result");
-    container.innerHTML = "";
-
-    if (!word.meanings || word.meanings.length === 0) {
-        container.innerHTML = `<div class="api-error">未找到详细释义。</div>`;
-        return;
-    }
-
-    // 1. Extract Phonetics (IPA)
-    let ipa = "";
-    if (word.phonetics) {
-        const p = word.phonetics.find(x => x.text);
-        if (p) ipa = p.text;
-    }
-
-    // 2. Extract Audio
-    let audio = "";
-    if (word.phonetics) {
-        const a = word.phonetics.find(x => x.audio);
-        if (a) audio = a.audio;
-    }
-
-    // 3. Build Header Header & IPA 
-    let html = `
-        <div class="dict-word-wrap">
-            <span class="dict-word">${word.word}</span>
-            ${ipa ? `<span class="dict-ipa">${normalizeIPA(ipa)}</span>` : ''}
-        </div>
-    `;
-
-    // 4. Add Audio Button if available
-    if (audio) {
-        html += `
-            <button onclick="new Audio('${audio}').play()" class="dict-pronounce" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
-                🔊 Listen
-            </button>
-        `;
-    }
-
-    // 5. Build Meanings, Definitions, and Examples using your CSS classes
-    for (const meaning of word.meanings) {
-        // Class: dict-partOfSpeech
-        html += `<div class="dict-partOfSpeech">${meaning.partOfSpeech}</div>`;
-
-        for (const [index, def] of meaning.definitions.slice(0, 3).entries()) {
-            // Class: dict-definition
-            html += `
-                <div class="dict-definition">
-                    ${index + 1}. ${def.definition}
-                </div>
-            `;
-
-            // Class: dict-example
-            if (def.example) {
-                html += `
-                    <div class="dict-example">
-                        “${def.example}”
-                    </div>
-                `;
-            }
-        }
-    }
-
-    container.innerHTML = html;
-}
-
-function normalizeIPA(ipa) {
-    return ipa
-        .replace(/\(?ɹ\)?/g, "r");
-}
-
 
 let pronunciation = null;
 let dictionary = null;
@@ -172,23 +100,27 @@ document.addEventListener("DOMContentLoaded", (e) => {
     pronunciation = initSectionPronunciation(dictionary);
 
     section_card = initCardSection(_ai, dictionary, components, pronunciation);
-    section_article = initArticleSection(_ai, dictionary, components, section_card);
-    section_words = initDictionarySection(_ai, dictionary, components, section_card);
-    section_import = initSectionImport(_ai, dictionary);
-    section_test = initTestSection(_ai, dictionary, pronunciation, components, section_words);
-    section_result = initResultSection(components, dictionary, section_card);
+    section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation);
+    section_article = initArticleSection(_ai, dictionary, components, section_card, pronunciation);
+    section_test = initTestSection(_ai, dictionary, components, section_words, pronunciation);
+    section_result = initResultSection(dictionary, components, section_card, pronunciation);
+    section_import = initSectionImport(_ai, dictionary, components);
 
     function _globalKeyEventHandler(event) {
         // console.debug(event.key);
+        if (isEditing()) return;
         _currentSection?.keyEvent(event);
         event.stopImmediatePropagation()
     }
+
+    /*
     section_card.addEventListener(section_card.EVT_MODE_EDIT, e => {
         document.removeEventListener("keydown", _globalKeyEventHandler);
     });
     section_card.addEventListener(section_card.EVT_MODE_READ, e => {
         document.addEventListener("keydown", _globalKeyEventHandler);
     });
+    */
 
 
     ele_sections.addEventListener('click', (e) => {
@@ -205,6 +137,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
     });
 
     ele_btn_config.addEventListener("click", (e) => {
+        if (e.altKey && e.ctrlKey && e.shiftKey) {
+            dictionary.clearDictionary()
+            _currentSection.update();
+            return;
+        }
         _currentSection = panel_config;
         _currentSection.update();
         ele_container.replaceChildren(_currentSection.ele_root)

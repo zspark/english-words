@@ -22,39 +22,9 @@
 
 
 <body>
-
-
-    <div class="bs-panel" id="id-panel">
-
-
-
-
-        <!-- Combo -->
-
-        <!-- 
-        <div class="bs-group">
-            <label class="bs-title">
-                Combo Box
-            </label>
-            <div class="bs-combo">
-                <input class="bs-input" type="text" placeholder="Search word">
-                <button class="bs-button">
-                    Search
-                </button>
-            </div>
-        </div> -->
-
-
-
-
-
-
-    </div>
-
-
+    <div class="bs-panel" id="id-panel"> </div>
 
     <script src="www/components.js"> </script>
-
 
     <script>
         const cmp = initComponents();
@@ -67,6 +37,7 @@
         ${cmp.inputSource("xx", "Input", "Enter a word")}
         ${cmp.buttonGroupSource("xx", ["btnA",'btnB','btnC'])}
         ${cmp.progressBarSource("xx", 66)}
+        ${cmp.textareaSource("xx", "TextArea")}
         ${cmp.switcherSource("xx", "Switcher")}`;
 
         const slider = document.getElementById("bsSlider");

@@ -1,6 +1,6 @@
 
 
-function initTestSection(ai, dictionary, pronunciation, cmp, secWords) {
+function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     const _rts = dictionary.getRuntimeStatus('sec_test');
     _rts.requirement = _rts.requirement || {
         repeat: 1,

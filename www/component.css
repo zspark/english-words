@@ -1,3 +1,8 @@
+.bs-right-align{
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
 
 .bs-panel {
     width: 600px;
@@ -254,4 +259,44 @@
     background: #cc1224;
     border-color: #b51121;
     color: #fff;
+}
+
+.bs-file-box {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 3px dashed #64748b;
+    border-radius: 16px;
+
+    background: #f8fafc;
+    color: #334155;
+
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+
+.bs-file-box:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.bs-file-icon {
+    font-size: 56px;
+    margin-bottom: 15px;
+}
+
+.bs-file-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.bs-file-desc {
+    margin-top: 8px;
+    font-size: 15px;
+    color: #64748b;
 }

@@ -1,10 +1,7 @@
 function initSectionPronunciation(dictionary) {
-    const CONFIG = "audio.json";
     const MP3_PATH = "./audio/";
 
-    function _stopCurrentAudio(audio) {
-
-    }
+    function _stopCurrentAudio(audio) { }
 
     function printMissings() {
         console.debug(`These words have no audio files:
@@ -17,22 +14,6 @@ done!`)
     let _currentAudio = null;
     let _currentLoadingAudio = null;
     const _missingAudios = new Set();
-    let _db = null;
-    async function _loadJSON(url) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(
-                    `Failed to load ${url}`
-                );
-            }
-            const data = await response.json();
-            _db = data;
-            console.log(`Audio config file loaded.`);
-        } catch (err) {
-            console.error(err);
-        }
-    }
 
     function _playExistMp3(word) {
         const _p = new Promise((resolve, reject) => {
@@ -159,7 +140,6 @@ done!`)
         await _generateByAI(sentence, fileName);
     }
 
-    // _loadJSON(`${MP3_PATH}${CONFIG}`);
     return {
         pronounce,
         read,

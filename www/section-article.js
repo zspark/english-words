@@ -1,13 +1,11 @@
 
 
-function initArticleSection(ai, dictionary, cmp, card) {
+function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
-    const _rts = dictionary.getRuntimeStatus('sec_article');
-    _rts.generatedArticle = _rts.generatedArticle || "";
 
     const articleSource = `
 <div id="panel-left" class="panel-left lh2p4">
-    ${cmp.buttonGroupSource('id-action', ['Clear', 'Generate', 'Delete'])}
+    ${cmp.buttonGroupSource('id-action', ['Generate'])}
     <div id="article-content"></div>
 </div>
 
@@ -24,7 +22,7 @@ function initArticleSection(ai, dictionary, cmp, card) {
     const ele_panel = ele_root.querySelector("#panel-right");
 
     ele_action_gen.addEventListener("click", async (e) => {
-        if (e.target.dataset.index === "1") {
+        if (e.target.dataset.index === "0") {
             const pickedArray = section_words.getSelectedWords();
 
             if (pickedArray.length === 0) {
@@ -96,7 +94,7 @@ function initArticleSection(ai, dictionary, cmp, card) {
         } else if (event.key === "e") {
             // _activeWord(_activedWordElem.previousElementSibling);
         } else if (event.key === "f") {
-            card.pronounceShownWord();
+            pronunciation.pronounce(ele_actived_word?.outerText)
         } else if (event.key === "s") {
             // _toggleWordSelection(_activedWordElem, true);
             // _updateStatus();
@@ -104,6 +102,21 @@ function initArticleSection(ai, dictionary, cmp, card) {
 
     }
 
+    let _rts;
+    function _getRTS() {
+        _rts = dictionary.getRuntimeStatus('sec_article');
+        _rts.generatedArticle = _rts.generatedArticle || "";
+    }
+    dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
+        console.debug("[article]");
+        if (e.detail.action === "exported") return;
+        _getRTS();
+        if (ele_root.isConnected) {
+            _renderArticle();
+        }
+    });
+
+    _getRTS();
     return {
         ele_root,
         update,

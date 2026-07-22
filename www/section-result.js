@@ -1,6 +1,6 @@
 
 
-function initResultSection(cmp, dictionary, card) {
+function initResultSection(dictionary, cmp, card, pronunciation) {
 
     const _source = `
 <div id="panel-left" class="panel-left">
@@ -69,7 +69,7 @@ function initResultSection(cmp, dictionary, card) {
         } else if (event.key === "e") {
             _activeWord(_activedWordElem.previousElementSibling);
         } else if (event.key === "f") {
-            card.pronounceShownWord();
+            pronunciation.pronounce(_activedWordElem?.dataset.word)
         } else if (event.key === "s") {
         }
     }

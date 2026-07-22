@@ -2,7 +2,7 @@
 // Word Cache Management
 // ===============================
 
-const VERSION = "0.1.0"
+const __VERSION__ = "0.1.0"
 
 function initDictionary() {
     function createStorageProxy(key) {
@@ -44,8 +44,8 @@ function initDictionary() {
     const dict = _wordsProxy.get();
 
     // Export JSON
-    function exportDictionary() {
-        const json = JSON.stringify({ VERSION, meta, record, dict }, null, 4);
+    function exportDatabase() {
+        const json = JSON.stringify({ __VERSION__, meta, record, dict }, null, 4);
         const blob = new Blob(
             [json],
             { type: "application/json" }
@@ -61,17 +61,25 @@ function initDictionary() {
 
         a.remove();
         URL.revokeObjectURL(url);
+        _dispDictEvt("exported");
     };
 
 
     // Import JSON
     function importDictionaryByContent(data) {
-        Object.assign(meta, data.meta);
-        Object.assign(record, data.record);
-        Object.assign(dict, data.dict);
-        _metaProxy.save();
-        _recordsProxy.save();
-        _wordsProxy.save();
+        if (data.__VERSION__) {
+            Object.assign(meta, data.meta);
+            Object.assign(record, data.record);
+            Object.assign(dict, data.dict);
+            _metaProxy.save();
+            _recordsProxy.save();
+            _wordsProxy.save();
+        } else {
+            Object.assign(dict, data);
+            _wordsProxy.save();
+        }
+
+        _dispDictEvt("imported");
     };
 
     function importDictionaryByFile(file) {
@@ -103,26 +111,8 @@ function initDictionary() {
         _metaProxy.remove();
         _recordsProxy.remove();
         _wordsProxy.remove();
+        _dispDictEvt("cleared");
     };
-
-    // 异步调用 API 获取数据
-    async function fetchExternalDict(word) {
-        const resultContainer = document.getElementById("dict-external-result");
-        resultContainer.innerHTML = `<div class="api-loading">⏳ 正在联网获取 "${word}" 释义...</div>`;
-
-        // 过滤掉短语中的空格，提取主词组以便 API 正常识别
-        const queryWord = word.split(' ')[0].replace(/[^a-zA-Z]/g, "");
-
-        try {
-            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${queryWord}`);
-            if (!response.ok) throw new Error();
-
-            const data = await response.json();
-            renderExternalResult(data[0]);
-        } catch (error) {
-            resultContainer.innerHTML = `<div class="api-error">⚠️ 未能获取到该词的网络释义。(不支持短语或网络连接受限)</div>`;
-        }
-    }
 
     function _fillDetailInfosIfMissing(detail) {
         if (!detail) return;
@@ -226,6 +216,10 @@ function initDictionary() {
 
     function _dispEvt(word, action) {
         __this__.dispatchEvent(new CustomEvent(EVT_WORD, { detail: { word, action } }));
+    }
+
+    function _dispDictEvt(action) {
+        __this__.dispatchEvent(new CustomEvent(EVT_DICT, { detail: { action } }));
     }
 
     function getWords(searchQuery, level, tag) {
@@ -332,11 +326,13 @@ function initDictionary() {
     }
 
     const EVT_WORD = "evt_word";
+    const EVT_DICT = "evt_dict";
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         EVT_WORD,
+        EVT_DICT,
 
-        exportDictionary,
+        exportDatabase,
         importDictionaryByContent,
         importDictionaryByFile,
         clearDictionary,

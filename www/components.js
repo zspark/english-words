@@ -150,8 +150,9 @@ function initComponents() {
     }
 
     function textareaSource(id, title, additionalClasses = '', placeholder = '') {
+        const _t = title ? `<label class="bs-title">${title}</label>` : "";
         return `<div id="${id}">
-    <label class="bs-title">${title}</label>
+    ${_t}
     <textarea class="bs-input ${additionalClasses}" placeholder="${placeholder}"></textarea>
 </div>`
     }
