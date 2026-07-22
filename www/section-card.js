@@ -7,7 +7,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     const source = `
 <div id="card-display" class="card">
-    <button id="card-edit-btn" class="icon-btn icon-btn-edit" title="编辑单词">
+    <button id="card-edit-btn" class="icon-btn icon-btn-edit">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"></path>
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -51,7 +51,9 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         ${cmp.inputSource("id-new-meaning", "Meaning", "", false)}
         ${cmp.textareaSource("id-new-note", "Note", "h150px", "", false)}
         ${cmp.inputSource("id-new-links", "Linked Words (Comma Separated)", "", false)}
-        ${cmp.buttonGroupSource('id-actions', ['auto fill', 'cancel', 'save', 'delete'], ['clr-blue', '', '', 'clr-red'])}
+        <div class="bs-right-align">
+            ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
+        </div>
     </div>
 </div>`
 
@@ -82,7 +84,10 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_new_linkedWords = ele_card_edit.querySelector("#id-new-links input");
 
     const ele_action = ele_card_edit.querySelector("#id-actions");
+    const ele_btnCancel = ele_action.querySelector("button[data-index='0']");
+    const ele_btnFill = ele_action.querySelector("button[data-index='1']");
     const ele_btnSave = ele_action.querySelector("button[data-index='2']");
+    const ele_btnDelete = ele_action.querySelector("button[data-index='3']");
 
     const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
     const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
@@ -109,6 +114,20 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
 
     function _updateCardContentInEditMode(word, detail) {
+        if (word) {
+            ele_btnFill.removeAttribute("disabled");
+        } else {
+            ele_btnFill.setAttribute("disabled", "");
+        }
+        if (!detail) {
+            ele_new_voc.classList.add('color-red');
+            ele_btnSave.setAttribute("disabled", "");
+            ele_btnDelete.setAttribute("disabled", "");
+        } else {
+            ele_new_voc.classList.remove('color-red');
+            ele_btnSave.removeAttribute("disabled");
+            ele_btnDelete.removeAttribute("disabled");
+        }
         ele_new_voc.value = word || "";
         ele_new_ipa.value = detail?.ipa || "";
         ele_new_meaning.value = detail?.meaning || "";
@@ -176,17 +195,14 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         pronunciation.pronounce(word);
     });
 
-    ele_new_voc.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-            const word = ele_new_voc.value.trim();
-            if (word.length <= 0) return;
-            _enterEditMode();
-            renderCard(word);
-        }
+    ele_new_voc.addEventListener("input", (event) => {
+        const _word = ele_new_voc.value.trim().toLowerCase();
+        _renderEditPanel(_word);
+        _enterEditMode();
     });
 
     ele_action.addEventListener("click", async e => {
-        if (e.target.dataset.index === "0") {
+        if (e.target.dataset.index === "1") {
             //fill by ai
             const word = ele_new_voc.value.trim();
             if (word.length <= 0) {
@@ -201,7 +217,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             const _detail = JSON.parse(resultText)[word];
             _updateCardContentInEditMode(word, _detail);
             ele_btnSave.classList.add('bs-bg-twinkle');
-        } else if (e.target.dataset.index === "1") {
+        } else if (e.target.dataset.index === "0") {
             //canel
             renderCard(currentWord);
             _enterReadMode();
