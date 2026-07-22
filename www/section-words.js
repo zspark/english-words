@@ -276,8 +276,12 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     }
 
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
-        console.debug(e.detail.word, e.detail.action);
-        _activeWord(null);
+        //console.debug(e.detail.word, e.detail.action);
+        _renderWords();
+    });
+
+    card.addEventListener(card.EVT_WORD, e => {
+        //console.debug("card changed current shown word");
         _renderWords();
     });
 

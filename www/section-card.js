@@ -2,6 +2,7 @@
 
 function initCardSection(ai, dictionary, cmp, pronunciation) {
 
+    const EVT_WORD = "evt_word";
     const EVT_MODE_EDIT = "evt_mode_edit";
     const EVT_MODE_READ = "evt_mode_read";
 
@@ -117,19 +118,24 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
 
     function _updateCardContentInEditMode(word, detail) {
+        if (dictionary.hasWord(word)) {
+            ele_new_voc.classList.remove('color-red');
+        } else {
+            ele_new_voc.classList.add('color-red');
+        }
+
         if (word) {
             ele_btnFill.removeAttribute("disabled");
         } else {
             ele_btnFill.setAttribute("disabled", "");
         }
-        if (!detail) {
-            ele_new_voc.classList.add('color-red');
-            ele_btnSave.setAttribute("disabled", "");
-            ele_btnDelete.setAttribute("disabled", "");
-        } else {
-            ele_new_voc.classList.remove('color-red');
+
+        if (detail) {
             ele_btnSave.removeAttribute("disabled");
             ele_btnDelete.removeAttribute("disabled");
+        } else {
+            ele_btnSave.setAttribute("disabled", "");
+            ele_btnDelete.setAttribute("disabled", "");
         }
         ele_new_voc.value = word || "";
         ele_new_ipa.value = detail?.ipa || "";
@@ -171,7 +177,12 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     }
 
     function renderCard(word) {
-        currentWord = word;
+        if (word != currentWord) {
+            let previousWord = currentWord;
+            currentWord = word;
+            __this__.dispatchEvent(new CustomEvent(EVT_WORD, { detail: { currentWord, previousWord } }));
+        }
+
         const _detail = dictionary.getWord(word);
 
         if (word) {
@@ -195,7 +206,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             links.forEach(w => { _s += `<a>${w}</a>`; });
             return _s;
         })(_detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0) || []);
-
     };
 
     ele_btn_pronounce.addEventListener("click", () => {
@@ -309,6 +319,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         getShownWord,
         EVT_MODE_EDIT,
         EVT_MODE_READ,
+        EVT_WORD,
     })
     return __this__;
 }
