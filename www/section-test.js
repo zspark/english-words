@@ -14,6 +14,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
         answerForm: "multichoice"
     }
 
+    //${cmp.buttonGroupSource("id-actions", ["Reset", 'Start', 'Delete'])}
     const _source = `
 <div id="id-form" class='bs-panel'>
 
@@ -25,7 +26,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     ${cmp.sliderSource("id-repeat", "Each Question Repeat n Times?", 1, 4, _rts.requirement.repeat)}
     ${cmp.switcherSource("id-case", "Capitalize Word?", _rts.requirement.upperCase)}
 
-    ${cmp.buttonGroupSource("id-actions", ["Reset", 'Start', 'Delete'])}
+    ${cmp.buttonGroupSource("id-actions", ['Start'])}
 </div>
 <div id="id-test" class='bs-panel'>
     <div class="cc-test">
@@ -154,10 +155,18 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     }
 
     ele_action.addEventListener("click", (e) => {
-        if (e.target.dataset.index === "1") {
+        if (e.target.dataset.index === "0") {
             _genInfosFromQuestionaire();
             if (_rts.requirement.questionForm.length <= 0) {
-                console.error(`need to assign question form!!`);
+                const _s = `need to assign question form!!`;
+                console.error(_s);
+                alert(_s);
+                return;
+            }
+            if (secWords.getSelectedWords().length <= 0) {
+                const _s = 'Try pick some words first, then give it a go!';
+                console.error(_s);
+                alert(_s);
                 return;
             }
             _setupBeforeText();

@@ -26,7 +26,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             const pickedArray = section_words.getSelectedWords();
 
             if (pickedArray.length === 0) {
-                alert('请先勾选一些单词，再尝试生成短文！');
+                alert('Pick some words first, then give it a go!');
                 return;
             }
 
@@ -45,8 +45,10 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
  4. 必要的时候用\n开启新的段落。
 `;
             const resultText = await ai.askChatGPT(_question);
-            _rts.generatedArticle = resultText;
-            dictionary.saveRuntimeStatus();
+            if (resultText) {
+                _rts.generatedArticle = resultText;
+                dictionary.saveRuntimeStatus();
+            }
             _renderArticle();
 
             ele_action_gen.disabled = false;

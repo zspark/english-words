@@ -4,7 +4,9 @@ function initAI(dictionary) {
     async function askChatGPT(question) {
         const apiKey = dictionary.getAPI();
         if (apiKey == "") {
-            console.info(`You do not config ChatGPT API KEY.`);
+            const _s = `You do not config ChatGPT API KEY.`;
+            alert(_s);
+            console.info(_s);
             return
         }
 
