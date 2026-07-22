@@ -4,6 +4,7 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
     const _source = `
 <div id="panel-left" class="panel-left">
+    ${cmp.buttonGroupSource('id-action', ['Delete All'])}
     <div class="bs-word-result-list bs-group"></div>
 </div>
 
@@ -17,6 +18,14 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
     const listElem = ele_root.querySelector(".bs-word-result-list");
     const ele_panel = ele_root.querySelector("#panel-right");
+
+    const ele_action = ele_root.querySelector("#id-action");
+    ele_action.addEventListener("click", async e => {
+        if (e.target.dataset.index === "0") {
+            dictionary.clearRecords();
+            listElem.innerHTML = '';
+        }
+    })
 
     listElem.addEventListener('click', (e) => {
         let _elem = e.target;

@@ -105,13 +105,15 @@ function initDictionary() {
         reader.readAsText(file);
     }
 
-
-    // Clear cache
     function clearDictionary() {
         _metaProxy.remove();
         _recordsProxy.remove();
         _wordsProxy.remove();
         _dispDictEvt("cleared");
+    };
+
+    function clearRecords() {
+        _recordsProxy.remove();
     };
 
     function _fillDetailInfosIfMissing(detail) {
@@ -345,7 +347,9 @@ function initDictionary() {
         setTags,
         getNRandomWords,
         setTestingResult,
+
         getRecords,
+        clearRecords,
 
         getRuntimeStatus,
         saveRuntimeStatus,
