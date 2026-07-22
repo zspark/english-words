@@ -45,16 +45,16 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
     let _activedWordElem = null;
     function _activeWord(wordElem) {
-        if (!wordElem) return;
         if (_activedWordElem === wordElem) return;
 
         if (_activedWordElem) {
             _activedWordElem.removeAttribute("active");
         }
-        _activedWordElem = wordElem
-        _activedWordElem.setAttribute('active', "");
-
-        card.renderCard(wordElem.dataset.word)
+        _activedWordElem = wordElem;
+        if (_activedWordElem) {
+            _activedWordElem.setAttribute('active', "");
+            card.renderCard(_activedWordElem.dataset.word)
+        }
     }
 
     function update() {
@@ -85,12 +85,15 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
     function _renderResult() {
         const _record = dictionary.getRecords();
+        const shownWord = card.getShownWord();
         let _s = '';
         for (const [word, detail] of Object.entries(_record)) {
             const wordAccuracy = detail.attempts === 0 ? 0 : Math.round(detail.correct * 100 / detail.attempts);
 
+            const _active = shownWord === word ? 'active' : '';
+
             _s += `
-            <div class="bs-word-result" data-word="${word}">
+            <div class="bs-word-result" ${_active} data-word="${word}">
                 <div class="bs-word-name"> ${word} </div>
                 ${cmp.progressBarSource("", wordAccuracy)}
             </div>
@@ -99,6 +102,18 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
         listElem.innerHTML = _s;
     }
+
+    card.addEventListener(card.EVT_WORD, e => {
+        const eleArray = ele_root.querySelectorAll("div.bs-word-result");
+        let _target = null;
+        eleArray.forEach(ele => {
+            if (ele.dataset.word === e.detail.currentWord) {
+                _target = ele;
+                return;
+            }
+        });
+        _activeWord(_target);
+    });
 
     return {
         ele_root,

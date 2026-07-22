@@ -87,13 +87,12 @@ function initSectionImport(ai, dictionary, cmp) {
             }
 
             const resultText = await ai.askChatGPTForWordsInfo(_rawData);
-            _ele_importByAI.value = resultText;
-            // const importedData = JSON.parse(resultText);
-            // debugger
-            // dictionary.importDictionaryByContent(importedData);
-
-
-
+            if (!resultText) {
+                return;
+            }
+            //console.info(resultText);
+            const importedData = JSON.parse(resultText);
+            dictionary.importDictionaryByContent(importedData);
         }
     });
 

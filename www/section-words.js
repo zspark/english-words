@@ -282,7 +282,13 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
 
     card.addEventListener(card.EVT_WORD, e => {
         //console.debug("card changed current shown word");
-        _renderWords();
+        const eleArray = ele_root.querySelectorAll("li.word-card");
+        eleArray.forEach(ele => {
+            if (ele.dataset.word === e.detail.currentWord) {
+                _activeWord(ele);
+                return;
+            }
+        });
     });
 
     return {
