@@ -168,6 +168,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         _activedWordElem = wordElem
         if (_activedWordElem) {
             _activedWordElem.setAttribute('active', "");
+            pronunciation.pronounce(_activedWordElem.dataset.word)
             card.renderCard(wordElem.dataset.word)
         }
     }
@@ -275,9 +276,10 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         return readOnly(selectedWords)
     }
 
-    dictionary.addEventListener(dictionary.EVT_WORD, e => {
-        //console.debug(e.detail.word, e.detail.action);
-        _renderWords();
+    dictionary.addEventListener(dictionary.EVT_DICT, e => {
+        if (e.detail.action === "imported") {
+            _renderWords();
+        }
     });
 
     card.addEventListener(card.EVT_WORD, e => {

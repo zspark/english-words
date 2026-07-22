@@ -30,7 +30,7 @@ function initSectionImport(ai, dictionary, cmp) {
     </div>
 
     <div class="bs-right-align">
-        ${cmp.buttonGroupSource('btn-modal-submit', ['Load Demo Database', 'Operate'])}
+        ${cmp.buttonGroupSource('btn-modal-submit', ['Operate'])}
     </div>
 </div>
 `
@@ -59,16 +59,9 @@ function initSectionImport(ai, dictionary, cmp) {
 
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
     btnSubmit.addEventListener("click", async (e) => {
-        if (e.target.dataset.index == "0") {
-            (async () => {
-                if (dictionary.isDatabaseEmpty()) {
-                    const data = await _fetchJson("./assets/database-demo.json");
-                    //console.debug(data);
-                    dictionary.importDictionaryByContent(data);
-                }
-            })();
+        if (e.target.dataset.index == "3") {
 
-        } else if (e.target.dataset.index == "1") {
+        } else if (e.target.dataset.index == "0") {
             const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
             if (_mode === "replace") {
                 dictionary.clearDictionary()
@@ -106,22 +99,6 @@ function initSectionImport(ai, dictionary, cmp) {
             }
         }
     });
-
-    async function _fetchJson(url) {
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Failed to fetch JSON:", error);
-            return null;
-        }
-    }
 
     function update() { }
     function keyEvent() { }

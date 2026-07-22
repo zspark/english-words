@@ -165,6 +165,49 @@ function initComponents() {
 </div>`
     }
 
+    function showMask(message = "This is a message.",
+        okText = "OK", onOK = null,
+        cancelText = "Cancel", onCancel = null
+    ) {
+
+        document.getElementById("bs-mask")?.remove();
+
+        const mask = document.createElement("div");
+        mask.id = "bs-mask";
+
+        const _okBtnStr = onOK ? `<button class="bs-btn bs-btn-ok"> ${okText} </button>` : '';
+        const _cancelBtnStr = onCancel ? `<button class="bs-btn bs-btn-cancel"> ${cancelText} </button>` : '';
+
+        mask.innerHTML = `
+        <div class="bs-mask-dialog">
+
+            <div class="bs-mask-message"> ${message} </div>
+            <div class="bs-mask-buttons">
+                ${_okBtnStr}
+                ${_cancelBtnStr}
+            </div>
+        </div>
+    `;
+
+        document.body.appendChild(mask);
+
+        const _a = mask.querySelector(".bs-btn-ok")
+        if (_a) {
+            _a.onclick = () => {
+                onOK();
+                mask.remove();
+            };
+        }
+
+        const _b = mask.querySelector(".bs-btn-cancel")
+        if (_b) {
+            _b.onclick = () => {
+                onCancel();
+                mask.remove();
+            };
+        }
+    }
+
     return {
         clickableBlockSource,
         progressBarSource,
@@ -176,6 +219,7 @@ function initComponents() {
         sliderSource,
         inputSource,
         textareaSource,
-        switcherSource
+        switcherSource,
+        showMask,
     }
 }
