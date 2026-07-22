@@ -277,7 +277,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     ele_linkedWords.addEventListener("click", (e) => {
         // console.log(e.target);
         if (e.target.tagName === "A") {
-            const _w = e.target.outerText;
+            const _w = e.target.outerText.toLowerCase();
             if (dictionary.hasWord(_w)) {
                 renderCard(_w);
                 _enterReadMode();

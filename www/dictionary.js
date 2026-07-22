@@ -74,12 +74,15 @@ function initDictionary() {
             _metaProxy.save();
             _recordsProxy.save();
             _wordsProxy.save();
+            alert(`Imported ${Object.keys(data.dict).length} words`);
         } else {
             Object.assign(dict, data);
             _wordsProxy.save();
+            alert(`Imported ${Object.keys(data).length} words`);
         }
 
         _dispDictEvt("imported");
+        //alert(`Content has been imported`);
     };
 
     function importDictionaryByFile(file) {
@@ -93,13 +96,8 @@ function initDictionary() {
                     throw new Error("Invalid JSON format");
                 }
                 importDictionaryByContent(imported);
-                alert(
-                    `Imported ${Object.keys(imported.dict).length} words`
-                );
             } catch (err) {
-                alert(
-                    "Import failed: " + err.message
-                );
+                alert("Import failed: " + err.message);
             }
         };
         reader.readAsText(file);

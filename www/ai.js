@@ -51,7 +51,8 @@ json格式如下：
 要求：
 1）只有meaning使用中文，其他一律英文；
 2）按照常用含义排序，然后依次用不同的意思各造一个句子，最多不要超过5个；
-3）提供的单词在json中全部用小写，例句除外。；`
+3）提供的单词在json中全部用小写，例句除外。；
+4）提供的关联词忽略大小写，比如ok与Ok是一样的，不要重复记录；`
 
         const resultText = await askChatGPT(_question);
         return resultText;
