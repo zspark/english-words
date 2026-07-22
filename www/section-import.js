@@ -59,7 +59,7 @@ function initSectionImport(ai, dictionary, cmp) {
 
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
     btnSubmit.addEventListener("click", async () => {
-        const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase(); // 'append' or 'replace'
+        const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
         if (_mode === "replace") {
             dictionary.clearDictionary()
         }
