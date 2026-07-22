@@ -6,16 +6,16 @@ function initConfigPanel(dictionary, cmp) {
 <div class="bs-panel">
     ${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
     ${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", false)}
-    ${cmp.buttonGroupSource("id-actions", ["Save"])}
+    <div class='bs-right-align'>
+        ${cmp.buttonGroupSource("id-actions", ["Save"])}
+    </div>
 </div>`
 
     const ele_root = document.createElement("div");
     ele_root.className = "plane-config";
     ele_root.innerHTML = source;
     const elem_tags = ele_root.querySelector("#id-tags input");
-    elem_tags.value = dictionary.getTags().join(',');
     const elem_key = ele_root.querySelector("#id-APIKEY-chatGPT input");
-    elem_key.value = dictionary.getAPI();
     const elem_actions = ele_root.querySelector("#id-actions");
 
 
@@ -27,7 +27,10 @@ function initConfigPanel(dictionary, cmp) {
         }
     });
 
-    function update() { }
+    function update() {
+        elem_tags.value = dictionary.getTags().join(',');
+        elem_key.value = dictionary.getAPI();
+    }
     function keyEvent(e) { }
 
     return {
