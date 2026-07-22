@@ -30,7 +30,7 @@ function initSectionImport(ai, dictionary, cmp) {
     </div>
 
     <div class="bs-right-align">
-        <button id="btn-modal-submit" class="btn-primary">Operate</button>
+        ${cmp.buttonGroupSource('btn-modal-submit', ['Load Demo Database', 'Operate'])}
     </div>
 </div>
 `
@@ -58,43 +58,70 @@ function initSectionImport(ai, dictionary, cmp) {
     });
 
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
-    btnSubmit.addEventListener("click", async () => {
-        const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
-        if (_mode === "replace") {
-            dictionary.clearDictionary()
-        }
+    btnSubmit.addEventListener("click", async (e) => {
+        if (e.target.dataset.index == "0") {
+            (async () => {
+                if (dictionary.isDatabaseEmpty()) {
+                    const data = await _fetchJson("./assets/database-demo.json");
+                    //console.debug(data);
+                    dictionary.importDictionaryByContent(data);
+                }
+            })();
 
-        if (activeTab === "file-tab") {
-            if (!_ele_importByFile.files || (!_ele_importByFile.files.length === 0)) {
-                alert("请先选择一个 JSON 文件！");
-                return;
-            }
-            dictionary.importDictionaryByFile(_ele_importByFile.files[0]);
-        } else if (activeTab === "text-tab") {
-            const _rawData = _ele_importByJSON.value.trim();
-            if (!_rawData) {
-                console.info(`no JSON detected`);
-                return;
+        } else if (e.target.dataset.index == "1") {
+            const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
+            if (_mode === "replace") {
+                dictionary.clearDictionary()
             }
 
-            const importedData = JSON.parse(_rawData);
-            dictionary.importDictionaryByContent(importedData);
-        } else {
-            const _rawData = _ele_importByAI.value.trim();
-            if (!_rawData) {
-                console.info(`no words detected`);
-                return;
-            }
+            if (activeTab === "file-tab") {
+                if (!_ele_importByFile.files || (!_ele_importByFile.files.length === 0)) {
+                    alert("请先选择一个 JSON 文件！");
+                    return;
+                }
+                dictionary.importDictionaryByFile(_ele_importByFile.files[0]);
+            } else if (activeTab === "text-tab") {
+                const _rawData = _ele_importByJSON.value.trim();
+                if (!_rawData) {
+                    console.info(`no JSON detected`);
+                    return;
+                }
 
-            const resultText = await ai.askChatGPTForWordsInfo(_rawData);
-            if (!resultText) {
-                return;
+                const importedData = JSON.parse(_rawData);
+                dictionary.importDictionaryByContent(importedData);
+            } else {
+                const _rawData = _ele_importByAI.value.trim();
+                if (!_rawData) {
+                    console.info(`no words detected`);
+                    return;
+                }
+
+                const resultText = await ai.askChatGPTForWordsInfo(_rawData);
+                if (!resultText) {
+                    return;
+                }
+                //console.info(resultText);
+                const importedData = JSON.parse(resultText);
+                dictionary.importDictionaryByContent(importedData);
             }
-            //console.info(resultText);
-            const importedData = JSON.parse(resultText);
-            dictionary.importDictionaryByContent(importedData);
         }
     });
+
+    async function _fetchJson(url) {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to fetch JSON:", error);
+            return null;
+        }
+    }
 
     function update() { }
     function keyEvent() { }

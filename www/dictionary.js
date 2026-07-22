@@ -6,18 +6,23 @@ const __VERSION__ = "0.1.0"
 
 function initDictionary() {
     function createStorageProxy(key) {
-        const obj = JSON.parse(localStorage.getItem(key)) || {};
+        const _tmp = JSON.parse(localStorage.getItem(key));
+        const _obj = _tmp || {};
+
+        function empty() {
+            return !_tmp;
+        }
         function save() {
-            localStorage.setItem(key, JSON.stringify(obj));
+            localStorage.setItem(key, JSON.stringify(_obj));
         }
         function get() {
-            return obj;
+            return _obj;
         }
         function remove() {
             localStorage.removeItem(key);
-            Object.keys(obj).forEach(key => delete obj[key]);
+            Object.keys(_obj).forEach(key => delete _obj[key]);
         }
-        return { save, get, remove }
+        return { save, get, remove, empty }
     }
 
     const _AIProxy = createStorageProxy('__AICache__');
@@ -42,6 +47,10 @@ function initDictionary() {
     const meta = _metaProxy.get();
     const record = _recordsProxy.get();
     const dict = _wordsProxy.get();
+
+    function isDatabaseEmpty() {
+        return _metaProxy.empty() && _recordsProxy.empty() && _wordsProxy.empty();
+    }
 
     // Export JSON
     function exportDatabase() {
@@ -332,6 +341,7 @@ function initDictionary() {
         EVT_WORD,
         EVT_DICT,
 
+        isDatabaseEmpty,
         exportDatabase,
         importDictionaryByContent,
         importDictionaryByFile,

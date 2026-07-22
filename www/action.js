@@ -46,8 +46,8 @@ document.getElementById("export-btn").addEventListener("click", () => {
     dictionary.exportDatabase();
 });
 
+let dictionary = initDictionary();
 let pronunciation = null;
-let dictionary = null;
 let panel_config = null;
 let section_test = null
 let section_result = null
@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 
     components = initComponents();
-    dictionary = initDictionary();
     const _rts = dictionary.getRuntimeStatus('homepage');
     _rts.sectionID = _rts.sectionID || "sec-dictionary";
     _ai = initAI(dictionary);
@@ -105,23 +104,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_test = initTestSection(_ai, dictionary, components, section_words, pronunciation);
     section_result = initResultSection(dictionary, components, section_card, pronunciation);
     section_import = initSectionImport(_ai, dictionary, components);
-
-    function _globalKeyEventHandler(event) {
-        // console.debug(event.key);
-        if (isEditing()) return;
-        _currentSection?.keyEvent(event);
-        event.stopImmediatePropagation()
-    }
-
-    /*
-    section_card.addEventListener(section_card.EVT_MODE_EDIT, e => {
-        document.removeEventListener("keydown", _globalKeyEventHandler);
-    });
-    section_card.addEventListener(section_card.EVT_MODE_READ, e => {
-        document.addEventListener("keydown", _globalKeyEventHandler);
-    });
-    */
-
 
     ele_sections.addEventListener('click', (e) => {
         _switchToSection(e.target.id);
@@ -147,8 +129,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
         ele_container.replaceChildren(_currentSection.ele_root)
     });
 
+    document.addEventListener("keydown", (event) => {
+        // console.debug(event.key);
+        if (isEditing()) return;
+        _currentSection?.keyEvent(event);
+        event.stopImmediatePropagation()
+    })
+
     _switchToSection(_rts.sectionID);
-    document.addEventListener("keydown", _globalKeyEventHandler);
 
 });
 
