@@ -14,31 +14,33 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         </svg>
     </button>
 
-    <div class="vocab-header">
-        <div id="vocab"></div>
-        <button id="btn-pronounce" class="icon-btn s28px" title="发音">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round">
+    <div id="id-body">
+        <div class="vocab-header">
+            <div id="vocab"></div>
+            <button id="btn-pronounce" class="icon-btn s28px">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
 
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            </svg>
-        </button>
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="vocab-header">
+            <div id="level" class="tag word-level"></div>
+            <div id="tags" class="tag word-tag"></div>
+        </div>
+        <div id="ipa"></div>
+        <div id="meaning"></div>
+        <div id="note"></div>
+        <div id="linked-words"></div>
     </div>
-    <div class="vocab-header">
-        <div id="level" class="tag word-level"></div>
-        <div id="tags" class="tag word-tag"></div>
-    </div>
-    <div id="ipa"></div>
-    <div id="meaning"></div>
-    <div id="note"></div>
-    <div id="linked-words"></div>
 </div>
 
 <div id="card-edit" class="card">
@@ -66,6 +68,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_card_edit = ele_root.querySelector("#card-edit");
     ele_card_edit.remove();
     const editBtnCard = ele_root.querySelector("#card-edit-btn");
+    const ele_body = ele_root.querySelector("#id-body");
 
     const ele_voc = ele_card_display.querySelector("#vocab");
     const ele_btn_pronounce = ele_root.querySelector("#btn-pronounce")
@@ -170,6 +173,12 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     function renderCard(word) {
         currentWord = word;
         const _detail = dictionary.getWord(word);
+
+        if (word) {
+            ele_body.removeAttribute("hidden");
+        } else {
+            ele_body.setAttribute("hidden", "");
+        }
 
         ele_voc.textContent = word;
         ele_ipa.textContent = _detail?.ipa || "<need implement>";
@@ -289,6 +298,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     function getShownWord() { return currentWord; }
 
     _updateTagList([]);
+    renderCard('');
     //_recordOriginalValues();
 
     const __this__ = new EventTarget()

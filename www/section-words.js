@@ -28,7 +28,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     </div>
 
     <div id="current-status" class="status-bar">
-        <span id="selectedCount">0</span> word(s) selected, <span id="_filteredCount">0</span> word(s) filtered,
+        <span id="selectedCount">0</span> word(s) selected, <span id="_filteredCount">0</span> word(s) filtered
     </div>
 
     <ul id="wordList" class="word-list" style="list-style: none;"></ul>
