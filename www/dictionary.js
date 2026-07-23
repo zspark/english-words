@@ -231,6 +231,10 @@ function initDictionary() {
         __this__.dispatchEvent(new CustomEvent(EVT_DICT, { detail: { action } }));
     }
 
+    function getWordsCount() {
+        return Object.keys(dict).length;
+    }
+
     function getWords(searchQuery, level, tag) {
         searchQuery = searchQuery.toLowerCase();
         level = level.toUpperCase();
@@ -346,6 +350,7 @@ function initDictionary() {
         importDictionaryByContent,
         importDictionaryByFile,
         clearDictionary,
+        getWordsCount,
         getWords,
         getWord,
         hasWord,

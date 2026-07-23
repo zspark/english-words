@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         components.showMask(`
 <p>It seems that you are a newbie or have cleared your database recently. No worries, I am going to introduce some features of the website.</p>
 <p>use 'd','e' to navigate to a new word, while utilize 's' and 'f' to select and pronounce respectively.</p>
-<p>One more thing you should remember is that you can click 'Config' button along with 'Alt', 'Ctrl' and 'Shift' key kept pressing, then the whole database would vanish, providing you an empty, clear desk to start over.</p>
+<p><strong>One more thing you should remember is that you can click 'Config' button along with 'Alt', 'Ctrl' and 'Shift' key kept pressing, then the whole database would vanish, providing you an empty, clear desk to start over.</strong></p>
 <p>You may click the below button to load a demo database so that you may easily getting familiar with the application.</p>
 <p>This website is still under developing, more patience and tolerance would be much appriciated.</p>
 `,
