@@ -199,45 +199,33 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             }
             return null;
         }
-        let _isTimeUp = false;
+        /*
         let _currentElem = null;
         function _moveFn(e) {
             //console.debug(e.target);
-            _currentElem = _selectRightElement(e.target);
-            if (_isTimeUp) {
-                _highlight();
-            }
         };
-        function _highlight() {
-            if (_activedWordElem && _currentElem) {
-                _clearSelection();
-                const _betweenElem = _getSiblingsBetween(_activedWordElem, _currentElem);
-                _betweenElem.forEach(elem => _add(elem, false))
-                _updateStatus();
-            }
+        */
+        function _highlight(elem) {
+            _clearSelection();
+            const _betweenElem = _getSiblingsBetween(_activedWordElem, elem);
+            _betweenElem.forEach(elem => _add(elem, false))
+            _updateStatus();
         }
         const TIME_SHRESHOLD = 200; //ms
         let _timeStart = 0;
         let _downElem = null;
-        let _timer = null;
         ele_wordList.addEventListener('pointerdown', (e) => {
             console.debug("mouse down.");
             document.body.classList.add("no-select");
             // console.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
-            _currentElem = _downElem = _selectRightElement(e.target);
-            ele_wordList.addEventListener('pointermove', _moveFn);
-            _isTimeUp = false;
-            _timer = setTimeout(() => {
-                _isTimeUp = true;
-                _highlight();
-            }, TIME_SHRESHOLD);
+            _downElem = _selectRightElement(e.target);
+            //ele_wordList.addEventListener('pointermove', _moveFn);
         });
         ele_wordList.addEventListener('pointerup', (e) => {
             console.debug("mouse up.");
             document.body.classList.remove("no-select");
-            clearTimeout(_timer);
-            ele_wordList.removeEventListener('pointermove', _moveFn);
+            //ele_wordList.removeEventListener('pointermove', _moveFn);
             const _upElem = _selectRightElement(e.target);
             if (!_upElem) return;
             const _timeElapsed = performance.now() - _timeStart;
@@ -249,9 +237,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                     }
                 } else {
                     console.log("long click (same)");
+                    _highlight(_upElem);
                 }
             } else {
                 console.debug("long click (different)");
+                _highlight(_upElem);
             }
             dictionary.saveRuntimeStatus();
         });
