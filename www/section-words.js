@@ -246,7 +246,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                     if (_consecutiveTimes === 1) {
                         _consecutiveTimes++;
                         console.debug("dblclick");
-                        ele_card.classList.add("display");
+                        ele_root.classList.add("card-only");
                     }
 
                 } else {

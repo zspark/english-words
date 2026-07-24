@@ -104,7 +104,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     ele_actionAA.addEventListener("click", async e => {
         if (e.target.dataset.index === "0") {
-            ele_root.parentElement.classList.remove("display");
+            ele_root.parentElement.parentElement.classList.remove("card-only");
         }
     })
 
