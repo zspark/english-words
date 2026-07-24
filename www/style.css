@@ -1187,6 +1187,9 @@ details[open] summary::after {
     .cls-card{
         padding: 10px;
     }
+    #top-bar{
+        display: block;
+    }
 }
 
 
