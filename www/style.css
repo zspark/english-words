@@ -1175,13 +1175,23 @@ details[open] summary::after {
 
 @media (max-width: 768px) {
     .container {
-        grid-template-columns: 1fr;
+        display: block;
+        /*grid-template-columns: 1fr;*/
     }
     #top-bar {
         display: block;
     }
     .cls-card{
         padding: 10px;
+    }
+    #id-cardContainer{
+        display: none;
+        position: fixed;
+        top:0px;
+        width: 100%
+    }
+    #id-cardContainer.display{
+        display: block;
     }
 }
 

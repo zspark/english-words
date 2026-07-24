@@ -42,6 +42,9 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         <div id="note"></div>
         <div id="linked-words"></div>
     </div>
+    <div class="bs-right-align">
+        ${cmp.buttonGroupSource('id-actionsAA', ['Close'], [])}
+    </div>
 </div>
 
 <div id="card-edit" class="card">
@@ -74,6 +77,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_body = ele_root.querySelector("#id-body");
 
     const ele_voc = ele_card_display.querySelector("#vocab");
+    const ele_actionAA = ele_card_display.querySelector("#id-actionsAA");
     const ele_btn_pronounce = ele_root.querySelector("#btn-pronounce")
     const ele_ipa = ele_card_display.querySelector("#ipa");
     const ele_meaning = ele_card_display.querySelector("#meaning");
@@ -97,6 +101,12 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
     const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
+
+    ele_actionAA.addEventListener("click", async e => {
+        if (e.target.dataset.index === "0") {
+            ele_root.parentElement.classList.remove("display");
+        }
+    })
 
     function moveTag(event) {
         if (!event.target.classList.contains("tag")) return;

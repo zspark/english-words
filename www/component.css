@@ -149,12 +149,10 @@
 
 .bs-btn-group > .bs-btn:hover{
     position:relative;
-    z-index:2;
 }
 
 .bs-btn-group > .bs-btn.active{
     position:relative;
-    z-index:3;
 }
 
 /* Vertical */

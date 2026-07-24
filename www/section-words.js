@@ -213,12 +213,19 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         }
         const TIME_SHRESHOLD = 200; //ms
         let _timeStart = 0;
+        let _timeEnd = 0;
         let _downElem = null;
+        let _consecutiveTimes = 0;
         ele_wordList.addEventListener('pointerdown', (e) => {
             console.debug("mouse down.");
             document.body.classList.add("no-select");
             // console.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
+            if (_timeStart - _timeEnd < TIME_SHRESHOLD) {
+                _consecutiveTimes++;
+            } else {
+                _consecutiveTimes = 0;
+            }
             _downElem = _selectRightElement(e.target);
             //ele_wordList.addEventListener('pointermove', _moveFn);
         });
@@ -228,13 +235,20 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             //ele_wordList.removeEventListener('pointermove', _moveFn);
             const _upElem = _selectRightElement(e.target);
             if (!_upElem) return;
-            const _timeElapsed = performance.now() - _timeStart;
             if (_upElem === _downElem) {
+                _timeEnd = performance.now();
+                const _timeElapsed = _timeEnd - _timeStart;
                 if (_timeElapsed < TIME_SHRESHOLD) {
                     console.debug("click");
                     if (_downElem) {
                         _activeWord(_downElem);
                     }
+                    if (_consecutiveTimes === 1) {
+                        _consecutiveTimes++;
+                        console.debug("dblclick");
+                        ele_card.classList.add("display");
+                    }
+
                 } else {
                     console.log("long click (same)");
                     _highlight(_upElem);
@@ -249,7 +263,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
 
     let _activedWordElem = null;
     function _activeWord(wordElem) {
-        if (_activedWordElem === wordElem) return;
+        if (_activedWordElem === wordElem) {
+            const _w = wordElem.dataset.word;
+            pronunciation.pronounce(_w);
+            return;
+        }
 
         if (_activedWordElem) {
             _activedWordElem.removeAttribute("active");
