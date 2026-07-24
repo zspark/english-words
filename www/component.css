@@ -5,10 +5,8 @@
 }
 
 .bs-panel {
-    width: 600px;
-    margin: auto;
     background: white;
-    padding: 30px;
+    padding: 20px;
     border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
 }
@@ -19,7 +17,7 @@
 
 .bs-panel-plain > *,
 .bs-panel > * {
-    margin-bottom: 12px;
+    margin-bottom: 0.5rem;
 }
 
 .bs-title {
@@ -350,4 +348,13 @@
 
 .bs-btn-cancel{
     background:#e2e8f0;
+}
+
+@media (max-width: 768px) {
+    .bs-panel {
+        padding: 10px;
+    }
+    .bs-btn{
+        padding:6px 10px;
+    }
 }

@@ -4,12 +4,12 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
 
     const articleSource = `
-<div id="panel-left" class="panel-left lh2p4">
+<div class="bs-panel lh2p4">
     ${cmp.buttonGroupSource('id-action', ['Generate'])}
     <div id="article-content"></div>
 </div>
 
-<div id="panel-right" class="panel-right">
+<div id="id-cardContainer"> </div>
 </div>`
 
 
@@ -19,7 +19,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
     ele_root.innerHTML = articleSource;
     const ele_action_gen = ele_root.querySelector("#id-action");
     const ele_article = ele_root.querySelector("#article-content");
-    const ele_panel = ele_root.querySelector("#panel-right");
+    const ele_card = ele_root.querySelector("#id-cardContainer");
 
     ele_action_gen.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {
@@ -81,7 +81,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             ele_root.remove()
         }
         _renderArticle();
-        ele_panel.replaceChildren(card.ele_root)
+        ele_card.replaceChildren(card.ele_root)
 
         if (c) {
             ele_container.replaceChildren(ele_root)

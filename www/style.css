@@ -27,6 +27,11 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+#middle{
+    max-width: 1924px;
+    margin: auto;
+}
+
 .w100pct {
     width: 100%;
 }
@@ -40,10 +45,12 @@ body {
 }
 
 .container {
-    display: flex;
+    animation: modalFadeIn 0.1s ease-out;
+    display: grid;
     width: 100%;
     /* height: 100vh; */
-    animation: modalFadeIn 0.1s ease-out;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
 }
 
 .panel-left {
@@ -88,21 +95,20 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 0.5rem 0.5rem;
 }
 
 #section-switcher {
     display: flex;
+    justify-content: space-evenly;
     background-color: #f1f5f9;
     padding: 0.25rem;
     border-radius: 8px;
-    gap: 0.25rem;
 }
 
 .sec-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+    font-size: 1.0rem;
+    font-weight: 700;
     color: #64748b;
     border-radius: 6px;
     cursor: pointer;
@@ -157,20 +163,6 @@ body {
     width: 35%;
 }
 
-.card {
-    background: var(--card-bg);
-    /* border-radius: 20px; */
-    padding: 12px;
-    /*
-    box-shadow:
-        0 10px 25px -5px rgba(15, 23, 42, 0.04),
-        0 8px 16px -6px rgba(15, 23, 42, 0.04),
-        0 0 0 1px var(--border-color);
-    position: relative;
-        */
-    font-family: var(--font-sans);
-    /* padding-right: 40px !important; */
-}
 
 .s16px {
     width: 16px;
@@ -607,8 +599,7 @@ details[open] summary::after {
 /* 搜索和筛选区域 */
 .controls {
     display: flex;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
+    gap: 0.2rem;
 }
 
 #id-searchInput {
@@ -642,13 +633,15 @@ details[open] summary::after {
 .word-card {
     align-items: center;
     gap: 1rem;
-    padding: 0.25rem 1rem;
+    padding: 0.25rem 0.5rem;
+    border: 2px solid transparent;
+    border-radius: 6px;
     width: 100%;
     cursor: pointer;
 }
 
 .word-card:hover {
-    transform: scale(1.005);
+    background-color: rgba(238, 238, 238, 0.5);
 }
 
 .word-name {
@@ -1168,4 +1161,28 @@ details[open] summary::after {
     80%  { background: #f59e0b; } /* Orange */
     100% { background: #4f46e5; }
 }
+
+.cls-card{
+    position:sticky;
+    top:0px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    font-family: var(--font-sans);
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    #top-bar {
+        display: block;
+    }
+    .cls-card{
+        padding: 10px;
+    }
+}
+
 

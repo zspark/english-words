@@ -3,13 +3,12 @@
 function initResultSection(dictionary, cmp, card, pronunciation) {
 
     const _source = `
-<div id="panel-left" class="panel-left">
+<div class="bs-panel">
     ${cmp.buttonGroupSource('id-action', ['Delete All'])}
     <div class="bs-word-result-list bs-group"></div>
 </div>
 
-<div id="panel-right" class="panel-right">
-</div>
+<div id="id-cardContainer"> </div>
 `;
 
     const ele_root = document.createElement('div');
@@ -17,7 +16,7 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
     ele_root.innerHTML = _source;
 
     const listElem = ele_root.querySelector(".bs-word-result-list");
-    const ele_panel = ele_root.querySelector("#panel-right");
+    const ele_card = ele_root.querySelector("#id-cardContainer");
 
     const ele_action = ele_root.querySelector("#id-action");
     ele_action.addEventListener("click", async e => {
@@ -63,7 +62,7 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
             ele_root.remove()
         }
         _renderResult()
-        ele_panel.replaceChildren(card.ele_root)
+        ele_card.replaceChildren(card.ele_root)
 
         if (c) {
             ele_container.replaceChildren(ele_root)
