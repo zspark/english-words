@@ -266,7 +266,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
 
     let _activedWordElem = null;
     function _activeWord(wordElem) {
-        if (_activedWordElem === wordElem) {
+        if (_activedWordElem === wordElem && wordElem) {
             const _w = wordElem.dataset.word;
             pronunciation.pronounce(_w);
             return;
@@ -335,7 +335,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         }
     }
 
-    let _scrollPos = 0;
     function keyEvent(event) {
         if (!_activedWordElem) return;
 
