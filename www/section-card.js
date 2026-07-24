@@ -6,6 +6,9 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const EVT_MODE_EDIT = "evt_mode_edit";
     const EVT_MODE_READ = "evt_mode_read";
 
+    const _ss = isMobile() ? `<div class="bs-right-align mt20px">
+        ${cmp.buttonGroupSource('id-actionsAA', [' Back '], [])}
+    </div>` : "";
     const source = `
 <div id="card-display" class="card">
 
@@ -42,9 +45,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         <div id="note"></div>
         <div id="linked-words"></div>
     </div>
-    <div class="bs-right-align">
-        ${cmp.buttonGroupSource('id-actionsAA', ['Close'], [])}
-    </div>
+    ${_ss}
 </div>
 
 <div id="card-edit" class="card">
@@ -57,9 +58,10 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         ${cmp.inputSource("id-new-meaning", "Meaning", "", false)}
         ${cmp.textareaSource("id-new-note", "Note", "h150px", "", false)}
         ${cmp.inputSource("id-new-links", "Linked Words (Comma Separated)", "", false)}
-        <div class="bs-right-align">
-            ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
-        </div>
+    </div>
+
+    <div class="bs-right-align">
+        ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
     </div>
 </div>`
 
@@ -102,11 +104,14 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
     const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
 
-    ele_actionAA.addEventListener("click", async e => {
-        if (e.target.dataset.index === "0") {
-            ele_root.parentElement.parentElement.classList.remove("card-only");
-        }
-    })
+    if (isMobile()) {
+        ele_actionAA.addEventListener("click", e => {
+            if (e.target.dataset.index === "0") {
+                ele_root.parentElement.parentElement.classList.remove("card-only");
+                window.scrollTo(0, window._scrollPos);
+            }
+        })
+    }
 
     function moveTag(event) {
         if (!event.target.classList.contains("tag")) return;

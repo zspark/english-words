@@ -14,6 +14,33 @@ async function _fetchJson(url) {
     }
 }
 
+const _PLF_WINDOWS_ = "Windows";
+const _PLF_IOS_ = "iOS";
+const _PLF_MACOS_ = "macOS";
+const _PLF_LINUX_ = "Linux";
+const _PLF_ANDROID_ = "Android";
+
+const _PLATFORM_ = (function() {
+    const ua = navigator.userAgent;
+
+    if (/Android/i.test(ua)) return _PLF_ANDROID_;
+    if (/iPhone|iPad|iPod/i.test(ua)) return _PLF_IOS_;
+    if (/Windows/i.test(ua)) return _PLF_WINDOWS_;
+    if (/Macintosh|Mac OS X/i.test(ua)) return _PLF_MACOS_;
+    if (/Linux/i.test(ua)) return _PLF_LINUX_;
+
+    return "Unknown";
+})()
+console.log(_PLATFORM_);
+
+function isDesktop() {
+    return _PLATFORM_ === _PLF_LINUX_ || _PLATFORM_ === _PLF_WINDOWS_ || _PLATFORM_ === _PLF_MACOS_;
+}
+
+function isMobile() {
+    return _PLATFORM_ === _PLF_IOS_ || _PLATFORM_ === _PLF_ANDROID_;
+}
+
 function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));

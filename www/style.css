@@ -44,6 +44,10 @@ body {
     height: 150px;
 }
 
+.mt20px{
+    margin-top: 20px;
+}
+
 .container {
     animation: modalFadeIn 0.1s ease-out;
     display: grid;
@@ -1173,7 +1177,6 @@ details[open] summary::after {
     font-family: var(--font-sans);
 }
 
-
 @media (max-width: 768px) {
     .container {
         gap: 0px;
@@ -1185,10 +1188,15 @@ details[open] summary::after {
         grid-template-rows: 0px auto;
     }
     .cls-card{
+        position: block;
         padding: 10px;
     }
     #top-bar{
         display: block;
+    }
+    .cc-card {
+        padding: 10px;
+        padding-bottom: 50px;
     }
 }
 

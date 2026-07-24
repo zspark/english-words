@@ -48,10 +48,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     ele_root.className = "container";
     ele_root.innerHTML = wordListSource;
 
-    const ele_content = ele_root.querySelector("#id-content");
     const ele_wordList = ele_root.querySelector('#id-wordList');
     const ele_card = ele_root.querySelector("#id-cardContainer");
-    //ele_card.remove();
     const totalCountSpan = ele_root.querySelector('#_total');
     const filteredCountSpan = ele_root.querySelector('#_filteredCount');
     const selectedCountSpan = ele_root.querySelector('#selectedCount');
@@ -245,8 +243,13 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                     }
                     if (_consecutiveTimes === 1) {
                         _consecutiveTimes++;
-                        console.debug("dblclick");
-                        ele_root.classList.add("card-only");
+                        if (isMobile()) {
+                            console.debug("dblclick");
+                            window._scrollPos = window.scrollY;
+                            console.debug(`window scrollY is: ${window.scrollY}`);
+                            ele_root.classList.add("card-only");
+                            window.scrollTo(0, 0);
+                        }
                     }
 
                 } else {
