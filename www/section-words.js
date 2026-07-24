@@ -199,7 +199,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             }
             return null;
         }
-        let _lastCurrentElem = null;
+        //let _lastCurrentElem = null;
+        /*
         function _moveFn(e) {
             //console.debug(e.target);
             let _currentElem = _selectRightElement(e.target);
@@ -212,27 +213,29 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             }
             _updateStatus();
         };
+        */
         const TIME_SHRESHOLD = 200; //ms
         let _timeStart = 0;
         let _downElem = null;
-        let _currentElem = null;
+        //let _currentElem = null;
         ele_wordList.addEventListener('pointerdown', (e) => {
             console.debug("mouse down.");
             document.body.classList.add("no-select");
             // console.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
             _downElem = _selectRightElement(e.target);
-            _clearSelection();
-            _add(_downElem);
-            _lastCurrentElem = _currentElem = _downElem;
-            _updateStatus();
-            ele_wordList.addEventListener('pointermove', _moveFn);
+            //_clearSelection();
+            //_add(_downElem);
+            //_lastCurrentElem = _currentElem = _downElem;
+            //_updateStatus();
+            //ele_wordList.addEventListener('pointermove', _moveFn);
         });
         ele_wordList.addEventListener('pointerup', (e) => {
             console.debug("mouse up.");
             document.body.classList.remove("no-select");
-            const _timeElapsed = performance.now() - _timeStart;
             const _upElem = _selectRightElement(e.target);
+            if (!_upElem) return;
+            const _timeElapsed = performance.now() - _timeStart;
             if (_upElem === _downElem) {
                 if (_timeElapsed < TIME_SHRESHOLD) {
                     console.debug("click");
@@ -240,12 +243,16 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                         _activeWord(_downElem);
                     }
                 } else {
-                    console.log("long click");
+                    console.log("long click (same)");
+                    _clearSelection();
+                    const _betweenElem = _getSiblingsBetween(_activedWordElem, _upElem);
+                    _betweenElem.forEach(elem => _add(elem, false))
+                    _updateStatus();
                 }
             } else {
-                console.debug("long click");
+                console.debug("long click (different)");
             }
-            ele_wordList.removeEventListener('pointermove', _moveFn);
+            //ele_wordList.removeEventListener('pointermove', _moveFn);
             dictionary.saveRuntimeStatus();
         });
     }())
