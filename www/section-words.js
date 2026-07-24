@@ -216,7 +216,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         let _timeStart = 0;
         let _downElem = null;
         let _currentElem = null;
-        ele_wordList.addEventListener('mousedown', (e) => {
+        ele_wordList.addEventListener('pointerdown', (e) => {
             console.debug("mouse down.");
             document.body.classList.add("no-select");
             // console.debug(`${_elem.tagName}`);
@@ -226,9 +226,9 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             _add(_downElem);
             _lastCurrentElem = _currentElem = _downElem;
             _updateStatus();
-            ele_wordList.addEventListener('mousemove', _moveFn);
+            ele_wordList.addEventListener('pointermove', _moveFn);
         });
-        ele_wordList.addEventListener('mouseup', (e) => {
+        ele_wordList.addEventListener('pointerup', (e) => {
             console.debug("mouse up.");
             document.body.classList.remove("no-select");
             const _timeElapsed = performance.now() - _timeStart;
@@ -245,7 +245,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             } else {
                 console.debug("long click");
             }
-            ele_wordList.removeEventListener('mousemove', _moveFn);
+            ele_wordList.removeEventListener('pointermove', _moveFn);
             dictionary.saveRuntimeStatus();
         });
     }())
