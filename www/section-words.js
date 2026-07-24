@@ -86,16 +86,19 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         _filteredCount = words.length;
         let htmlBuffer = '';
 
-        for (const [word, details] of words) {
+        for (const [word, detail] of words) {
             const _isSelected = selectedWords.includes(word) ? 'select' : '';
             const _isActived = _rts.activedWord === word ? 'active' : '';
 
             htmlBuffer += `
 <li class="word-card" data-word="${word}" ${_isSelected} ${_isActived}>
-    <span class="word-name">${word}</span>
-    <span class="word-ipa">${details.ipa}</span>
-    <span class="tag word-level">${details.level}</span>
-    <span class="word-meaning">${details.meaning}</span>
+    <div>
+        <span class="word-name">${word}</span>
+        <span class="word-ipa">${detail.ipa}</span>
+        <span class="tag word-level">${detail.level}</span>
+        <span class="tag word-tag">${detail.tags || ""}</span>
+    </div>
+    <span class="word-meaning">${detail.meaning}</span>
 </li>
 `;
         }

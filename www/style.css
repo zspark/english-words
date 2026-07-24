@@ -638,7 +638,6 @@ details[open] summary::after {
 }
 
 .word-card {
-    display: flex;
     align-items: center;
     gap: 1rem;
     padding: 0.25rem 1rem;
@@ -669,10 +668,8 @@ details[open] summary::after {
     font-size: 1rem;
     color: #334155;
     flex-grow: 1;
-    white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
-    /* 超出单行部分自动显示省略号 */
+    white-space: normal;
 }
 
 .word-card[select] {
