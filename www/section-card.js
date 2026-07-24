@@ -148,10 +148,8 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         }
 
         if (detail) {
-            ele_btnSave.removeAttribute("disabled");
             ele_btnDelete.removeAttribute("disabled");
         } else {
-            ele_btnSave.setAttribute("disabled", "");
             ele_btnDelete.setAttribute("disabled", "");
         }
         ele_new_voc.value = word || "";
