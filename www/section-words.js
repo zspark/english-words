@@ -21,7 +21,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     //${cmp.buttonGroupSource('id-btns', ['Clear Pick', 'Pick 5', 'Pick 10', 'Pick 20', 'Pick All'])}
     //${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], 0)}
     const wordListSource = `
-<div id="panel-left" class="panel-left">
+<div id="panel-left" class="bs-panel">
     <div class="controls">
         ${cmp.inputSource("id-searchInput", null, "Search word while inputting")}
         ${cmp.dropdownSource("id-tagFilter", null, [], -1)}
@@ -36,10 +36,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         <span id="selectedCount">0</span> selected / <span id="_filteredCount">0</span> filtered / <span id="_total">0</span> total.
     </div>
 
-    <ul id="wordList" class="word-list" style="list-style: none;"></ul>
-</div>
+    <div id="id-content">
+        <ul id="id-wordList" class="word-list" style="list-style: none;"></ul>
+        <div id="id-card" class="panel-right-a"> </div>
+    </div>
 
-<div id="panel-right" class="panel-right">
 </div>`
 
 
@@ -48,12 +49,14 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     ele_root.className = "container";
     ele_root.innerHTML = wordListSource;
 
-    const ele_panel = ele_root.querySelector("#panel-right");
+    const ele_content = ele_root.querySelector("#id-content");
+    const ele_wordList = ele_root.querySelector('#id-wordList');
+    const ele_card = ele_root.querySelector("#id-card");
+    ele_card.remove();
     const totalCountSpan = ele_root.querySelector('#_total');
     const filteredCountSpan = ele_root.querySelector('#_filteredCount');
     const selectedCountSpan = ele_root.querySelector('#selectedCount');
     const btnRestFilter = ele_root.querySelector('#id-resetFilter');
-    const ele_wordList = ele_root.querySelector('#wordList');
     const searchInput = ele_root.querySelector('#id-searchInput input');
     //const levelFilter = ele_root.querySelector('#id-levelFilter select');
     const tagFilter = ele_root.querySelector('#id-tagFilter select');
@@ -308,13 +311,14 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
 
         _renderWords();
         _activedWordElem = [...ele_wordList.querySelectorAll("li")].filter(ele => ele.hasAttribute('active'))[0];
-        ele_panel.replaceChildren(card.ele_root)
+        ele_card.replaceChildren(card.ele_root)
 
         if (c) {
             ele_container.replaceChildren(ele_root)
         }
     }
 
+    let _scrollPos = 0;
     function keyEvent(event) {
         if (!_activedWordElem) return;
 
@@ -322,11 +326,14 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             _activeWord(_activedWordElem.nextElementSibling);
         } else if (event.key === "e") {
             _activeWord(_activedWordElem.previousElementSibling);
-        } else if (event.key === "f") {
+        } else if (event.key === "a") {
             pronunciation.pronounce(_activedWordElem?.dataset?.word)
         } else if (event.key === "s") {
-            //_toggleWordSelection(_activedWordElem, true);
-            //_updateStatus();
+            ele_content.replaceChildren(ele_wordList);
+            window.scrollTo(0, _scrollPos);
+        } else if (event.key === "f") {
+            _scrollPos = window.scrollY;
+            ele_content.replaceChildren(ele_card);
         } else if (event.key === "Delete") {
             if (selectedWords.length != 0) {
                 selectedWords.forEach(w => {

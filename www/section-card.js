@@ -65,6 +65,8 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_root = document.createElement('div');
     ele_root.innerHTML = source;
     ele_root.className = "fixed";
+    ele_root.className = "bs-panel";
+    ele_root.className = "";
     const ele_card_display = ele_root.querySelector("#card-display");
     const ele_card_edit = ele_root.querySelector("#card-edit");
     ele_card_edit.remove();
