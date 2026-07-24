@@ -4,7 +4,7 @@ function initSectionPronunciation(dictionary) {
     function _stopCurrentAudio(audio) { }
 
     function printMissings() {
-        console.debug(`These words have no audio files:
+        console.info(`These words have no audio files:
 
 ${[..._missingAudios].join(",")}
 
@@ -21,18 +21,18 @@ done!`)
             _audio.word = word;
             _audio.src = `${MP3_PATH}/${word}.mp3`;
             _audio.oncanplaythrough = () => {
-                console.debug(`Audio can play through. ${_audio.word}`);
+                //console.debug(`Audio can play through. ${_audio.word}`);
                 resolve(_audio);
             };
             _audio.onerror = () => {
-                console.error(`Invalid audio or file not found: ${_audio.word}`);
+                //console.error(`Invalid audio or file not found: ${_audio.word}`);
                 reject(_audio);
             };
 
             _currentLoadingAudio = _audio;
             _audio.load();
         }).finally(() => {
-            console.debug(`Finally called by ${_currentLoadingAudio.word}`);
+            //console.debug(`Finally called by ${_currentLoadingAudio.word}`);
             _currentLoadingAudio.oncanplaythrough = null;
             _currentLoadingAudio.onerror = null;
             _currentLoadingAudio = null;
@@ -91,14 +91,14 @@ done!`)
         if (_currentAudio) {
             if (_currentAudio.word == word) {
                 if (_currentAudio.ended) {
-                    console.debug(`${word} ended, just play from beginning.`);
+                    //console.debug(`${word} ended, just play from beginning.`);
                     _currentAudio.currentTime = 0;
                     _currentAudio.play();
                 }
                 return;
             } else {
                 if (!_currentAudio.ended) {
-                    console.debug(`pausing current playing audio. ${_currentAudio.word}`);
+                    //console.debug(`pausing current playing audio. ${_currentAudio.word}`);
                     _currentAudio.pause();
                 }
                 _currentAudio = null;
@@ -107,22 +107,22 @@ done!`)
 
         if (_currentLoadingAudio) {
             if (_currentLoadingAudio.word == word) {
-                console.debug(`continue loading ${word}...`);
+                //console.debug(`continue loading ${word}...`);
                 return;
             }
-            console.debug(`cancling current loading audio. ${_currentAudio.word}`);
+            //console.debug(`cancling current loading audio. ${_currentAudio.word}`);
             _currentLoadingAudio.removeAttribute("src");
             _currentLoadingAudio.load();
             _currentLoadingAudio = null;
         }
 
         _playExistMp3(word).then((audio) => {
-            console.debug(`Then.resolve called by ${audio.word}`);
+            //console.debug(`Then.resolve called by ${audio.word}`);
             audio.play();
             _currentAudio = audio;
             _missingAudios.delete(audio.word);
         }, (audio) => {
-            console.debug(`Then.reject called by ${audio.word}`);
+            //console.debug(`Then.reject called by ${audio.word}`);
             _currentAudio = null;
             const utterance = new SpeechSynthesisUtterance(audio.word);
             utterance.lang = "en-US";
