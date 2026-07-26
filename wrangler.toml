@@ -1,0 +1,16 @@
+name = "my-vocabulary-app"
+
+main = "api/data/server.js"
+
+compatibility_date = "2026-07-26"
+
+[assets]
+directory = "."
+binding = "ASSETS"
+exclude = [
+    "api/data/server.js"
+]
+
+[[r2_buckets]]
+binding = "DATA"
+bucket_name = "your-r2-bucket-name"
