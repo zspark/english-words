@@ -33,7 +33,7 @@ function initDictionary() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: { userID, requestType: "get" },
+            body: JSON.stringify({ userID, requestType: "get" }, null, 4),
         });
         const data = await response.json();
         if (data.success) {
@@ -46,13 +46,17 @@ function initDictionary() {
     async function saveData() {
         const userID = ai_api.userID
         if (!userID) return;
-        const json = JSON.stringify({ __VERSION__, meta, record, dict }, null, 4);
+        const json = JSON.stringify({
+            content: { __VERSION__, meta, record, dict },
+            userID,
+            requestType: "save"
+        }, null, 4);
         await fetch("/api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: { content: json, userID, requestType: "save" },
+            body: json,
         });
     }
 
