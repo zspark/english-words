@@ -16,4 +16,4 @@ exclude = [
 [[d1_databases]]
 binding = "DB"
 database_name = "english-words-db"
-database_id = "YOUR-DATABASE-ID"
+database_id = "8abe2927-1533-4438-88ab-309dcea86335"
