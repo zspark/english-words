@@ -5,7 +5,7 @@ async function checkUserExists(env, userID) {
         const result = await env.DB
             .prepare(`
                 SELECT COUNT(1) AS count 
-                FROM user_data 
+                FROM user_id 
                 WHERE userID = ?
             `)
             .bind(userID)
