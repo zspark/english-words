@@ -1,27 +1,38 @@
 
+
 export default {
     async fetch(request, env) {
 
+        // =========================
+        // Only POST
+        // =========================
+
         if (request.method !== "POST") {
-            return Response.json({
-                success: false,
-                info: "Only POST is allowed",
-                userID: userID,
-                status: 405,
-            });
+            return Response.json(
+                {
+                    success: false,
+                    info: "Only POST is allowed"
+                },
+                { status: 405 }
+            );
         }
+
+        // =========================
+        // Parse JSON
+        // =========================
 
         let data;
 
         try {
             data = await request.json();
         } catch {
-            return Response.json({
-                success: false,
-                info: "Invalid JSON",
-                userID: userID,
-                status: 400,
-            });
+            return Response.json(
+                {
+                    success: false,
+                    info: "Invalid JSON"
+                },
+                { status: 400 }
+            );
         }
 
         const requestType = data.requestType;
@@ -32,12 +43,14 @@ export default {
         // =========================
 
         if (!userID || typeof userID !== "string") {
-            return Response.json({
-                success: false,
-                info: "Valid userID is required",
-                userID: userID,
-                status: 400,
-            });
+            return Response.json(
+                {
+                    success: false,
+                    info: "Valid userID is required",
+                    userID: userID ?? null
+                },
+                { status: 400 }
+            );
         }
 
         // =========================
@@ -46,20 +59,40 @@ export default {
 
         if (requestType === "get") {
 
-            const key = `users/${userID}/data.json`;
+            const result = await env.DB
+                .prepare(`
+                    SELECT content
+                    FROM user_data
+                    WHERE userID = ?
+                `)
+                .bind(userID)
+                .first();
 
-            const object = await env.DATA.get(key);
-
-            if (!object) {
-                return Response.json({
-                    success: false,
-                    info: "data.json not found",
-                    userID: userID,
-                    status: 404,
-                });
+            if (!result) {
+                return Response.json(
+                    {
+                        success: false,
+                        info: "User data not found",
+                        userID: userID
+                    },
+                    { status: 404 }
+                );
             }
 
-            const content = await object.json();
+            let content;
+
+            try {
+                content = JSON.parse(result.content);
+            } catch {
+                return Response.json(
+                    {
+                        success: false,
+                        info: "Stored content is invalid JSON",
+                        userID: userID
+                    },
+                    { status: 500 }
+                );
+            }
 
             return Response.json({
                 success: true,
@@ -77,25 +110,36 @@ export default {
             const content = data.content;
 
             if (content === undefined) {
-                return Response.json({
-                    success: false,
-                    info: "content is required",
-                    userID: userID,
-                    status: 400,
-                });
+                return Response.json(
+                    {
+                        success: false,
+                        info: "content is required",
+                        userID: userID
+                    },
+                    { status: 400 }
+                );
             }
 
-            const key = `users/${userID}/data.json`;
+            const contentJSON = JSON.stringify(content);
+            const updatedAt = Date.now();
 
-            await env.DATA.put(
-                key,
-                JSON.stringify(content, null, 2),
-                {
-                    httpMetadata: {
-                        contentType: "application/json"
-                    }
-                }
-            );
+            await env.DB
+                .prepare(`
+                    INSERT INTO user_data
+                        (userID, content, updated_at)
+                    VALUES
+                        (?, ?, ?)
+                    ON CONFLICT(userID)
+                    DO UPDATE SET
+                        content = excluded.content,
+                        updated_at = excluded.updated_at
+                `)
+                .bind(
+                    userID,
+                    contentJSON,
+                    updatedAt
+                )
+                .run();
 
             return Response.json({
                 success: true,
@@ -107,11 +151,13 @@ export default {
         // Unknown request type
         // =========================
 
-        return Response.json({
-            success: false,
-            info: "Unknown requestType",
-            userID: userID,
-            status: 400,
-        });
+        return Response.json(
+            {
+                success: false,
+                info: "Unknown requestType",
+                userID: userID
+            },
+            { status: 400 }
+        );
     }
 };
