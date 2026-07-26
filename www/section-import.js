@@ -30,7 +30,7 @@ function initSectionImport(ai, dictionary, cmp) {
     </div>
 
     <div class="bs-right-align">
-        ${cmp.buttonGroupSource('btn-modal-submit', ['Operate'])}
+        ${cmp.buttonGroupSource('btn-modal-submit', ['Download', 'Upload', 'Operate'])}
     </div>
 </div>
 `
@@ -60,8 +60,11 @@ function initSectionImport(ai, dictionary, cmp) {
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
     btnSubmit.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "3") {
-
         } else if (e.target.dataset.index == "0") {
+            dictionary.loadData();
+        } else if (e.target.dataset.index == "1") {
+            dictionary.saveData();
+        } else if (e.target.dataset.index == "2") {
             const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
             if (_mode === "replace") {
                 dictionary.clearDictionary()

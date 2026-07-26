@@ -25,6 +25,37 @@ function initDictionary() {
         return { save, get, remove, empty }
     }
 
+    async function loadData() {
+        const userID = ai_api.userID
+        if (!userID) return;
+        const response = await fetch("/api/data", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: { userID, requestType: "get" },
+        });
+        const data = await response.json();
+        if (data.success) {
+            importDictionaryByContent(data.content);
+        } else {
+            console.error(data.info);
+        }
+    }
+
+    async function saveData() {
+        const userID = ai_api.userID
+        if (!userID) return;
+        const json = JSON.stringify({ __VERSION__, meta, record, dict }, null, 4);
+        await fetch("/api/data", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: { content: json, userID, requestType: "save" },
+        });
+    }
+
     const _AIProxy = createStorageProxy('__AICache__');
     const _metaProxy = createStorageProxy('__metaCache__');
     const _recordsProxy = createStorageProxy('__recordCache__');
@@ -52,7 +83,6 @@ function initDictionary() {
         return _metaProxy.empty() && _recordsProxy.empty() && _wordsProxy.empty();
     }
 
-    // Export JSON
     function exportDatabase() {
         const json = JSON.stringify({ __VERSION__, meta, record, dict }, null, 4);
         const blob = new Blob(
@@ -338,12 +368,25 @@ function initDictionary() {
         _AIProxy.save();
     }
 
+    function getUserID() {
+        if (!ai_api.userID) return ''
+        return ai_api.userID;
+    }
+
+    function setUserID(userID) {
+        ai_api.userID = userID;
+        _AIProxy.save();
+    }
+
     const EVT_WORD = "evt_word";
     const EVT_DICT = "evt_dict";
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         EVT_WORD,
         EVT_DICT,
+
+        loadData,
+        saveData,
 
         isDatabaseEmpty,
         exportDatabase,
@@ -369,6 +412,8 @@ function initDictionary() {
 
         getAPI,
         setAPI,
+        getUserID,
+        setUserID,
     })
     return __this__;
 }
