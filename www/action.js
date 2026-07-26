@@ -143,6 +143,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_result = initResultSection(dictionary, components, section_card, pronunciation);
     section_setting = initSectionImport(_ai, dictionary, components);
 
+    ele_sec_setting.addEventListener("click", (e) => {
+        if (e.altKey && e.ctrlKey && e.shiftKey) {
+            dictionary.clearDictionary()
+            _currentSection.update();
+        }
+    });
+
     ele_sections.addEventListener('click', (e) => {
         _switchToSection(e.target.id);
     })

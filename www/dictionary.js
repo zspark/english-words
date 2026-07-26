@@ -374,9 +374,16 @@ function initDictionary() {
         return meta.syncTime;
     }
 
+    let _syncTimer = null;
     function setSyncTime(second) {
-        meta.syncTime = second;
+        meta.syncTime = second > 0 ? second : 1000;
         _metaProxy.save();
+        /*
+        clearInterval(_syncTimer);
+        _syncTimer = setInterval(e => {
+            saveData();
+        }, second);
+        */
     }
 
     const EVT_WORD = "evt_word";

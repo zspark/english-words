@@ -622,6 +622,11 @@ details[open] summary::after {
     display: none;
 }
 
+.tab-content-22 > * ,
+.tab-content > * {
+    margin-bottom: 0.5rem;
+}
+
 .tab-content.active {
     display: block;
 }
@@ -629,6 +634,7 @@ details[open] summary::after {
 .tab-content-22.active{
     display: block;
     margin-left: 0.8rem;
+    margin-right: 0.8rem;
 }
 
 .file-input {

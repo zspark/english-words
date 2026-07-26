@@ -31,7 +31,7 @@ ${cmp.radioButtonSource("id-radio-label", "Save Strategy", ['Append', 'Replace']
 </div>
 
 <div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-modal-submit', ['Download', 'Upload', 'Export', 'Import'])}
+    ${cmp.buttonGroupSource('btn-modal-submit', [`<svg class='icon' viewBox="0 0 24 24"> <path d="M18.944 11.112C18.507 7.67 15.56 5 12 5 9.244 5 6.85 6.61 5.757 9.149 3.609 9.792 2 11.82 2 14c0 2.657 2.089 4.815 4.708 4.971V19H17.99v-.003L18 19c2.206 0 4-1.794 4-4a4.008 4.008 0 0 0-3.056-3.888zM8 12h3V9h2v3h3l-4 5-4-5z"/></svg>`, `<svg class='icon' viewBox="0 0 640 512"><path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zM393.4 288H328v112c0 8.8-7.2 16-16 16h-48c-8.8 0-16-7.2-16-16V288h-65.4c-14.3 0-21.4-17.2-11.3-27.3l105.4-105.4c6.2-6.2 16.4-6.2 22.6 0l105.4 105.4c10.1 10.1 2.9 27.3-11.3 27.3z"/></svg>`, 'Export', 'Import'], ['', ""])}
 </div>
 `
 
@@ -69,6 +69,18 @@ ${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", fals
     const elem_key = ele_root.querySelector("#id-APIKEY-chatGPT input");
 
     const _ele_importByFile = ele_root.querySelector("#id-tab-body #import-file");
+    _ele_importByFile.addEventListener("change", (event) => {
+        if (!event.target.files || (!event.target.files.length === 0)) {
+            alert("请先选择一个 JSON 文件！");
+            return;
+        }
+        const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
+        if (_mode === "replace") {
+            dictionary.clearDictionary()
+        }
+        dictionary.importDictionaryByFile(event.target.files[0]);
+    });
+
     const _ele_importByJSON = ele_root.querySelector("#id-tab-body #import-text textarea");
     const _ele_importByAI = ele_root.querySelector("#id-tab-body #import-ai textarea");
     const _ele_radios = ele_root.querySelector('#id-radio-label');
@@ -109,18 +121,9 @@ ${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", fals
         } else if (e.target.dataset.index == "1") {
             dictionary.saveData();
         } else if (e.target.dataset.index == "2") {
-            const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
-            if (_mode === "replace") {
-                dictionary.clearDictionary()
-            }
-
-            if (activeTab === "file-tab") {
-                if (!_ele_importByFile.files || (!_ele_importByFile.files.length === 0)) {
-                    alert("请先选择一个 JSON 文件！");
-                    return;
-                }
-                dictionary.importDictionaryByFile(_ele_importByFile.files[0]);
-            } else if (activeTab === "text-tab") {
+            dictionary.exportDatabase();
+        } else if (e.target.dataset.index === "3") {
+            if (activeTab === "text-tab") {
                 const _rawData = _ele_importByJSON.value.trim();
                 if (!_rawData) {
                     console.info(`no JSON detected`);
@@ -144,8 +147,6 @@ ${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", fals
                 const importedData = JSON.parse(resultText);
                 dictionary.importDictionaryByContent(importedData);
             }
-        } else if (e.target.dataset.index === "3") {//save
-            dictionary.exportDatabase();
         }
     });
 
