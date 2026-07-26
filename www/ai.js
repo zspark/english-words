@@ -39,11 +39,11 @@ function initAI(dictionary) {
 json格式如下：
 {
     "generic": {
-        "ipa": "/dʒǝ'nerɪk/ (美英为主)",
-        "level": "B2",
+        "ipa": "/dʒǝ'nerɪk/ (这里写音标，美音为主，汉字不必出现)",
+        "level": "from A1 to C2, 填入合理的难度分类",
         "meaning": "adj. 一般的;属的;类的;非商标的",
         "links": "一些关联的词语，比如它的名词形式，动词形式，容易读混或者拼写弄错的词，特殊的三单，特殊的ing等等，用英文逗号隔开",
-        "note": "例句，多个例句用'\n'隔开"，
+        "note": "例句，多个例句用换行符隔开"，
     },
     ...
 }
@@ -54,7 +54,9 @@ json格式如下：
 3）提供的单词在json中全部用小写，例句除外。；
 4）提供的关联词忽略大小写，比如ok与Ok是一样的，不要重复记录；`
 
-        const resultText = await askChatGPT(_question);
+        console.log(_question);
+        //const resultText = await askChatGPT(_question);
+        return '';
         return resultText;
     }
 

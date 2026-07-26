@@ -33,7 +33,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     </div>
 
     <div id="current-status" class="status-bar">
-        <span id="selectedCount">0</span> selected / <span id="_filteredCount">0</span> filtered / <span id="_total">0</span> total.
+        <span id="selectedCount">0</span> selected / <span id="id_filteredCount">0</span> filtered / <span id="_total">0</span> total.
     </div>
 
     <ul id="id-wordList" class="word-list" style="list-style: none;"></ul>
@@ -51,7 +51,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     const ele_wordList = ele_root.querySelector('#id-wordList');
     const ele_card = ele_root.querySelector("#id-cardContainer");
     const totalCountSpan = ele_root.querySelector('#_total');
-    const filteredCountSpan = ele_root.querySelector('#_filteredCount');
+    const filteredCountSpan = ele_root.querySelector('#id_filteredCount');
     const selectedCountSpan = ele_root.querySelector('#selectedCount');
     const btnRestFilter = ele_root.querySelector('#id-resetFilter');
     const searchInput = ele_root.querySelector('#id-searchInput input');
@@ -86,19 +86,19 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         _filteredCount = words.length;
         let htmlBuffer = '';
 
-        for (const [word, detail] of words) {
+        for (const [word, _detail] of words) {
             const _isSelected = selectedWords.includes(word) ? 'select' : '';
             const _isActived = _rts.activedWord === word ? 'active' : '';
 
             htmlBuffer += `
-<li class="word-card" data-word="${word}" ${_isSelected} ${_isActived}>
+<li class="cls-word-item" data-word="${word}" ${_isSelected} ${_isActived}>
     <div>
         <span class="word-name">${word}</span>
-        <span class="word-ipa">${detail.ipa}</span>
-        <span class="tag word-level">${detail.level}</span>
-        <span class="tag word-tag">${detail.tags || ""}</span>
+        <span class="word-ipa">${_detail.ipa}</span>
+        <span class="tag word-level">${_detail.level}</span>
+        <span class="tag word-tag">${_detail.tags || ""}</span>
     </div>
-    <span class="word-meaning">${detail.meaning}</span>
+    <span class="word-meaning">${_detail.meaning}</span>
 </li>
 `;
         }
@@ -216,7 +216,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         let _consecutiveTimes = 0;
         ele_wordList.addEventListener('pointerdown', (e) => {
             console.debug("mouse down.");
-            document.body.classList.add("no-select");
             // console.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
             if (_timeStart - _timeEnd < TIME_SHRESHOLD) {
@@ -229,7 +228,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         });
         ele_wordList.addEventListener('pointerup', (e) => {
             console.debug("mouse up.");
-            document.body.classList.remove("no-select");
             //ele_wordList.removeEventListener('pointermove', _moveFn);
             const _upElem = _selectRightElement(e.target);
             if (!_upElem) return;
@@ -350,6 +348,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         } else if (event.key === "f") {
             //_scrollPos = window.scrollY;
             //ele_content.replaceChildren(ele_card);
+        } else if (event.key === "Enter") {
+            searchInput.focus();
         } else if (event.key === "Delete") {
             if (selectedWords.length != 0) {
                 selectedWords.forEach(w => {

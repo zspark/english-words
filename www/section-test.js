@@ -26,7 +26,9 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     ${cmp.sliderSource("id-repeat", "Each Question Repeat n Times?", 1, 4, _rts.requirement.repeat)}
     ${cmp.switcherSource("id-case", "Capitalize Word?", _rts.requirement.upperCase)}
 
-    ${cmp.buttonGroupSource("id-actions", ['Start'])}
+    <div class="bs-right-align mt20px">
+        ${cmp.buttonGroupSource("id-actions", ['Start'])}
+    </div>
 </div>
 <div id="id-test" class='bs-panel'>
     <div class="cc-test">

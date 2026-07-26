@@ -36,7 +36,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
                 </svg>
             </button>
         </div>
-        <div class="vocab-header">
+        <div class="vocab-header mt10px">
             <div id="level" class="tag word-level"></div>
             <div id="tags" class="tag word-tag"></div>
         </div>
@@ -51,16 +51,18 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 <div id="card-edit" class="card">
 
     <div id="new-word-form" class='bs-panel-plain'>
-        ${cmp.inputSource("id-new-vocab", "", "word", true)}
-        ${cmp.dropdownSource("id-new-level", "Level", ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 0)}
-        ${cmp.clickableBlockSource("id-new-tags", "Tags")}
+        <div class="vocab-header w100pct">
+            ${cmp.inputSource("id-new-vocab", "", "word", true)}
+            ${cmp.dropdownSource("id-new-level", null, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 0)}
+        </div>
         ${cmp.inputSource("id-new-ipa", "Phonetic (IPA)", "", false)}
+        ${cmp.clickableBlockSource("id-new-tags", "Tags")}
         ${cmp.inputSource("id-new-meaning", "Meaning", "", false)}
         ${cmp.textareaSource("id-new-note", "Note", "h150px", "", false)}
         ${cmp.inputSource("id-new-links", "Linked Words (Comma Separated)", "", false)}
     </div>
 
-    <div class="bs-right-align">
+    <div class="bs-right-align mt20px">
         ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
     </div>
 </div>`

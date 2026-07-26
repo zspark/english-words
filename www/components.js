@@ -143,7 +143,7 @@ function initComponents() {
 
     function inputSource(id, title, placeholder = '', required = false) {
         const _t = title ? `<label class="bs-title">${title}</label>` : "";
-        return `<div id="${id}">
+        return `<div id="${id}" class="w100pct">
     ${_t}
     <input class="bs-input" type="text" placeholder="${placeholder}" ${required ? "required" : ""} autocomplete="off">
 </div>`
