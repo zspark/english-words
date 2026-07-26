@@ -248,11 +248,14 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
                 alert(_s);
                 return;
             }
+            alert("Function is under construction!");
+            /*
             const resultText = await ai.askChatGPTForWordsInfo(word);
             if (!resultText) return;
             const _detail = JSON.parse(resultText)[word];
             _updateCardContentInEditMode(word, _detail);
             ele_btnSave.classList.add('bs-bg-twinkle');
+            */
         } else if (e.target.dataset.index === "0") {
             //canel
             renderCard(currentWord);

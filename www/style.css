@@ -138,6 +138,11 @@ body {
     height: 16px;
 }
 
+.s21px {
+    width: 21px;
+    height: 21px;
+}
+
 .s28px {
     width: 28px;
     height: 28px;
@@ -609,6 +614,9 @@ details[open] summary::after {
     cursor: pointer;
     border-bottom: 2px solid transparent;
 }
+.tab-btn-22{
+    font-size: 1.1rem;
+}
 
 .tab-btn-22.active,
 .tab-btn.active {
@@ -1016,8 +1024,6 @@ details[open] summary::after {
 }
 
 .icon {
-    width: 21px;
-    height: 21px;
     fill: currentColor;
     display: inline-block;
     vertical-align: middle;

@@ -55,9 +55,9 @@ json格式如下：
 4）提供的关联词忽略大小写，比如ok与Ok是一样的，不要重复记录；`
 
         console.log(_question);
-        //const resultText = await askChatGPT(_question);
         return '';
-        return resultText;
+        //const resultText = await askChatGPT(_question);
+        //return resultText;
     }
 
     // 使用

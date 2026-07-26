@@ -23,6 +23,8 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
     ele_action_gen.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {
+            alert("Function is under construction!");
+            /*
             const pickedArray = section_words.getSelectedWords();
 
             if (pickedArray.length === 0) {
@@ -52,6 +54,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             _renderArticle();
 
             ele_action_gen.disabled = false;
+            */
         }
     });
 

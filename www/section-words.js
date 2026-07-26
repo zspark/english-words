@@ -92,13 +92,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
 
             htmlBuffer += `
 <li class="cls-word-item" data-word="${word}" ${_isSelected} ${_isActived}>
-    <div>
-        <span class="word-name">${word}</span>
-        <span class="word-ipa">${_detail.ipa}</span>
-        <span class="tag word-level">${_detail.level}</span>
-        <span class="tag word-tag">${_detail.tags || ""}</span>
-    </div>
-    <span class="word-meaning">${_detail.meaning}</span>
+    ${_genWordContentSource(word, _detail)}
 </li>
 `;
         }
@@ -110,6 +104,31 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         }
 
         _updateStatus();
+    }
+
+    function _genWordContentSource(word, detail) {
+        return `<div>
+    <span class="word-name">${word}</span>
+    <span class="word-ipa">${detail.ipa}</span>
+    <span class="tag word-level">${detail.level}</span>
+    <span class="tag word-tag">${detail.tags || ""}</span>
+</div>
+<span class="word-meaning">${detail.meaning}</span>`;
+    }
+
+    function _deleteWord(word) {
+        if (!word) return;
+        const _elem = ele_root.querySelector(`li[data-word="${word}"]`);
+        _elem?.remove();
+    }
+    function _updateWord(word) {
+        if (!word) return '';
+        const _elem = ele_root.querySelector(`li[data-word="${word}"]`);
+        if (_elem) {
+            const _detail = dictionary.getWord(word);
+            const _source = _genWordContentSource(word, _detail);
+            _elem.innerHTML = _source;
+        } else { return '' }
     }
 
     function _updateFilterAndRender() {
@@ -215,7 +234,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         let _downElem = null;
         let _consecutiveTimes = 0;
         ele_wordList.addEventListener('pointerdown', (e) => {
-            console.debug("mouse down.");
+            //console.debug("mouse down.");
             // console.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
             if (_timeStart - _timeEnd < TIME_SHRESHOLD) {
@@ -227,7 +246,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             //ele_wordList.addEventListener('pointermove', _moveFn);
         });
         ele_wordList.addEventListener('pointerup', (e) => {
-            console.debug("mouse up.");
+            //console.debug("mouse up.");
             //ele_wordList.removeEventListener('pointermove', _moveFn);
             const _upElem = _selectRightElement(e.target);
             if (!_upElem) return;
@@ -235,27 +254,27 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                 _timeEnd = performance.now();
                 const _timeElapsed = _timeEnd - _timeStart;
                 if (_timeElapsed < TIME_SHRESHOLD) {
-                    console.debug("click");
+                    //console.debug("click");
                     if (_downElem) {
                         _activeWord(_downElem);
                     }
                     if (_consecutiveTimes === 1) {
                         _consecutiveTimes++;
                         if (isMobile()) {
-                            console.debug("dblclick");
+                            //console.debug("dblclick");
                             window._scrollPos = window.scrollY;
-                            console.debug(`window scrollY is: ${window.scrollY}`);
+                            //console.debug(`window scrollY is: ${window.scrollY}`);
                             ele_root.classList.add("card-only");
                             window.scrollTo(0, 0);
                         }
                     }
 
                 } else {
-                    console.log("long click (same)");
+                    //console.log("long click (same)");
                     _highlight(_upElem);
                 }
             } else {
-                console.debug("long click (different)");
+                //console.debug("long click (different)");
                 _highlight(_upElem);
             }
             dictionary.saveRuntimeStatus();
@@ -367,13 +386,24 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     }
 
     dictionary.addEventListener(dictionary.EVT_DICT, e => {
+        console.log(e);
         if (e.detail.action === "imported") {
             _renderWords();
         }
     });
+    dictionary.addEventListener(dictionary.EVT_WORD, e => {
+        console.log(e);
+        if (e.detail.action === "modify") {
+            _updateWord(e.detail.word);
+        } else if (e.detail.action === "delete") {
+            _deleteWord(e.detail.word);
+        }
+    });
 
     card.addEventListener(card.EVT_WORD, e => {
+        //console.log(e);
         return;
+        /*
         //console.debug("card changed current shown word");
         const eleArray = ele_root.querySelectorAll("li.word-card");
         eleArray.forEach(ele => {
@@ -382,6 +412,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                 return;
             }
         });
+        */
     });
 
     return {
