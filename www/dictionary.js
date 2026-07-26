@@ -64,20 +64,7 @@ function initDictionary() {
     const _metaProxy = createStorageProxy('__metaCache__');
     const _recordsProxy = createStorageProxy('__recordCache__');
     const _wordsProxy = createStorageProxy('__wordCache__');
-    /*
-    meta: {
-        tags: ["", ""],
-        runtime: {
-            activedWord: "last",
-            selectedWords: ["a", 'ab'],
-            filter: {
-                search: "",
-                level: "A1",
-                tag: "ALL"
-            }
-        }
-    },
-    */
+
     const ai_api = _AIProxy.get();
     const meta = _metaProxy.get();
     const record = _recordsProxy.get();
@@ -382,6 +369,16 @@ function initDictionary() {
         _AIProxy.save();
     }
 
+    function getSyncTime() {
+        if (!meta.syncTime) return 60;
+        return meta.syncTime;
+    }
+
+    function setSyncTime(second) {
+        meta.syncTime = second;
+        _metaProxy.save();
+    }
+
     const EVT_WORD = "evt_word";
     const EVT_DICT = "evt_dict";
     const __this__ = new EventTarget()
@@ -418,6 +415,8 @@ function initDictionary() {
         setAPI,
         getUserID,
         setUserID,
+        getSyncTime,
+        setSyncTime,
     })
     return __this__;
 }

@@ -587,13 +587,6 @@ details[open] summary::after {
     color: #ff4d4f;
 }
 
-.plane-config,
-.container-import {
-    max-width: 800px;
-    margin: 0 auto;
-    animation: modalFadeIn 0.1s ease-out;
-}
-
 .section-label {
     display: block;
     font-weight: 500;
@@ -607,6 +600,7 @@ details[open] summary::after {
     margin-bottom: 12px;
 }
 
+.tab-btn-22,
 .tab-btn {
     background: none;
     border: none;
@@ -616,18 +610,25 @@ details[open] summary::after {
     border-bottom: 2px solid transparent;
 }
 
+.tab-btn-22.active,
 .tab-btn.active {
     color: #1890ff;
     border-bottom-color: #1890ff;
     font-weight: 500;
 }
 
+.tab-content-22,
 .tab-content {
     display: none;
 }
 
 .tab-content.active {
     display: block;
+}
+
+.tab-content-22.active{
+    display: block;
+    margin-left: 0.8rem;
 }
 
 .file-input {
@@ -1006,6 +1007,15 @@ details[open] summary::after {
 
 #id-new-vocab{
     margin-right: 0.2rem;
+}
+
+.icon {
+    width: 21px;
+    height: 21px;
+    fill: currentColor;
+    display: inline-block;
+    vertical-align: middle;
+    pointer-events: none;
 }
 
 @media (max-width: 768px) {

@@ -80,23 +80,15 @@ const ele_sec_words = ele_sections.querySelector("#sec-dictionary");
 const ele_sec_article = ele_sections.querySelector("#sec-read");
 const ele_sec_test = ele_sections.querySelector("#sec-test");
 const ele_sec_result = ele_sections.querySelector("#sec-result");
-
-const ele_btn_import = document.getElementById("import-btn")
-const ele_btn_config = document.getElementById("config-btn")
-
-// Export JSON
-document.getElementById("export-btn").addEventListener("click", () => {
-    dictionary.exportDatabase();
-});
+const ele_sec_setting = ele_sections.querySelector("#sec-setting")
 
 let dictionary = initDictionary();
 let pronunciation = null;
-let panel_config = null;
 let section_test = null
 let section_result = null
 let section_words = null
 let section_article = null
-let section_import = null;
+let section_setting = null;
 let section_card = null;
 let _currentSection = null;
 let _currentSectionElemBtn = null;
@@ -122,6 +114,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
             if (_currentSection == section_result) return;
             _currentSection = section_result;
             _currentSectionElemBtn = ele_sec_result;
+        } else if (id === "sec-setting") {
+            if (_currentSection == section_setting) return;
+            _currentSection = section_setting;
+            _currentSectionElemBtn = ele_sec_setting;
         } else {
             return;
         }
@@ -138,7 +134,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const _rts = dictionary.getRuntimeStatus('homepage');
     _rts.sectionID = _rts.sectionID || "sec-dictionary";
     _ai = initAI(dictionary);
-    panel_config = initConfigPanel(dictionary, components);
     pronunciation = initSectionPronunciation(dictionary);
 
     section_card = initCardSection(_ai, dictionary, components, pronunciation);
@@ -146,31 +141,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_article = initArticleSection(_ai, dictionary, components, section_card, pronunciation);
     section_test = initTestSection(_ai, dictionary, components, section_words, pronunciation);
     section_result = initResultSection(dictionary, components, section_card, pronunciation);
-    section_import = initSectionImport(_ai, dictionary, components);
+    section_setting = initSectionImport(_ai, dictionary, components);
 
     ele_sections.addEventListener('click', (e) => {
         _switchToSection(e.target.id);
     })
-
-    ele_btn_import.addEventListener("click", (e) => {
-        if (_currentSection == section_import) return;
-        _currentSection = section_import;
-        _currentSection.update();
-        ele_container.replaceChildren(_currentSection.ele_root)
-        ele_sec_article.removeAttribute("active")
-        ele_sec_words.removeAttribute("active", "")
-    });
-
-    ele_btn_config.addEventListener("click", (e) => {
-        if (e.altKey && e.ctrlKey && e.shiftKey) {
-            dictionary.clearDictionary()
-            _currentSection.update();
-            return;
-        }
-        _currentSection = panel_config;
-        _currentSection.update();
-        ele_container.replaceChildren(_currentSection.ele_root)
-    });
 
     document.addEventListener("keydown", (event) => {
         // console.debug(event.key);

@@ -1,9 +1,9 @@
 
 function initSectionImport(ai, dictionary, cmp) {
-    const source = `
-<div id="id-form" class='bs-panel'>
-    ${cmp.radioButtonSource("id-radio-label", "Save Strategy", ['Append', 'Replace'], 0)}
+    const _dataSource = `
+${cmp.radioButtonSource("id-radio-label", "Save Strategy", ['Append', 'Replace'], 0)}
 
+<div>
     <label class="bs-title"> Import Methods </label>
     <div class="tab-header">
         <button class="tab-btn active" data-tab="file-tab">Local File</button>
@@ -28,16 +28,45 @@ function initSectionImport(ai, dictionary, cmp) {
             ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna import into your database. Words are separated with english comma (,)\n\nBetter not more than 50 words.")}
         </div>
     </div>
+</div>
 
-    <div class="bs-right-align">
-        ${cmp.buttonGroupSource('btn-modal-submit', ['Download', 'Upload', 'Operate'])}
+<div class="bs-right-align mt20px">
+    ${cmp.buttonGroupSource('btn-modal-submit', ['Download', 'Upload', 'Export', 'Import'])}
+</div>
+`
+
+    const _configSource = `
+${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
+${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
+${cmp.inputSource("id-syncInterval", "Sync Interval", "how many seconds?.", false)}
+${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", false)}
+<div class="bs-right-align mt20px">
+    ${cmp.buttonGroupSource('btn-config-submit', ['Save'])}
+</div>`;
+
+    const source = `
+<div id="id-form" class='bs-panel'>
+
+    <div class="tab-header">
+        <button class="tab-btn-22 active" data-tab="dict-tab">Dictionary</button>
+        <button class="tab-btn-22" data-tab="config-tab">Config</button>
+    </div>
+
+    <div id="id-tab-body">
+        <div id="dict-tab" class="tab-content-22 active"> ${_dataSource} </div>
+        <div id="config-tab" class="tab-content-22"> ${_configSource} </div>
     </div>
 </div>
 `
 
     const ele_root = document.createElement("div");
-    ele_root.className = "container-import";
+    ele_root.className = "container";
     ele_root.innerHTML = source;
+
+    const elem_tags = ele_root.querySelector("#id-tags input");
+    const elem_user = ele_root.querySelector("#id-userID input");
+    const elem_syncInerval = ele_root.querySelector("#id-syncInterval input");
+    const elem_key = ele_root.querySelector("#id-APIKEY-chatGPT input");
 
     const _ele_importByFile = ele_root.querySelector("#id-tab-body #import-file");
     const _ele_importByJSON = ele_root.querySelector("#id-tab-body #import-text textarea");
@@ -46,17 +75,32 @@ function initSectionImport(ai, dictionary, cmp) {
     ////_ele_radios.addEventListener("change", e => { console.log('aaa'); });
 
     let activeTab = "file-tab";
-    ele_root.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            ele_root.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            ele_root.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    function _registTabComponent(parentElem, tabName, contentName) {
+        parentElem.querySelectorAll(`.${tabName}`).forEach(btn => {
+            btn.addEventListener("click", () => {
+                parentElem.querySelectorAll(`.${tabName}`).forEach(b => b.classList.remove("active"));
+                parentElem.querySelectorAll(`.${contentName}`).forEach(c => c.classList.remove("active"));
 
-            btn.classList.add("active");
-            activeTab = btn.getAttribute("data-tab");
-            ele_root.querySelector(`#${activeTab}`).classList.add("active");
+                btn.classList.add("active");
+                activeTab = btn.getAttribute("data-tab");
+                parentElem.querySelector(`#${activeTab}`).classList.add("active");
+            });
         });
+    }
+
+    const btnConfig = ele_root.querySelector("#btn-config-submit");
+    btnConfig.addEventListener("click", async (e) => {
+        if (e.target.dataset.index === "0") {//save
+            const _tags = elem_tags.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            dictionary.setTags(_tags);
+            dictionary.setAPI(elem_key.value);
+            dictionary.setUserID(elem_user.value);
+            dictionary.setSyncTime(elem_syncInerval.value);
+        }
     });
 
+    _registTabComponent(ele_root, "tab-btn-22", "tab-content-22");
+    _registTabComponent(ele_root, "tab-btn", "tab-content");
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
     btnSubmit.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "3") {
@@ -100,10 +144,17 @@ function initSectionImport(ai, dictionary, cmp) {
                 const importedData = JSON.parse(resultText);
                 dictionary.importDictionaryByContent(importedData);
             }
+        } else if (e.target.dataset.index === "3") {//save
+            dictionary.exportDatabase();
         }
     });
 
-    function update() { }
+    function update() {
+        elem_tags.value = dictionary.getTags().join(',');
+        elem_key.value = dictionary.getAPI();
+        elem_user.value = dictionary.getUserID();
+        elem_syncInerval.value = dictionary.getSyncTime();
+    }
     function keyEvent() { }
 
     return {

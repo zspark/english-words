@@ -1,4 +1,23 @@
 
+async function checkUserExists(env, userID) {
+    try {
+        // Query COUNT(1) to check if at least one row matches
+        const result = await env.DB
+            .prepare(`
+                SELECT COUNT(1) AS count 
+                FROM user_data 
+                WHERE userID = ?
+            `)
+            .bind(userID)
+            .first();
+
+        // returns true if count > 0, otherwise false
+        return result.count > 0;
+    } catch (error) {
+        console.error("Database query error:", error);
+        throw error;
+    }
+}
 
 export default {
     async fetch(request, env) {
@@ -37,6 +56,16 @@ export default {
 
         const requestType = data.requestType;
         const userID = data.userID;
+        const _exist = await checkUserExists(env, userID);
+        if (!_exist) {
+            return Response.json(
+                {
+                    success: false,
+                    info: "User not Exist."
+                },
+                { status: 400 }
+            );
+        }
 
         // =========================
         // Check userID
