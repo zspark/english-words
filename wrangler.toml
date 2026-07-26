@@ -1,5 +1,6 @@
 # wrangler.toml
-name = 'english-words'
+
+name = "english-words"
 
 main = "api/data/server.js"
 
@@ -12,6 +13,7 @@ exclude = [
     "api/data/server.js"
 ]
 
-[[r2_buckets]]
-binding = "DATA"
-bucket_name = "your-r2-bucket-name"
+[[d1_databases]]
+binding = "DB"
+database_name = "english-words-db"
+database_id = "YOUR-DATABASE-ID"
