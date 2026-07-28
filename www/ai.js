@@ -6,7 +6,7 @@ function initAI(dictionary) {
         if (apiKey == "") {
             const _s = `You do not config ChatGPT API KEY.`;
             alert(_s);
-            console.info(_s);
+            logger.info(_s);
             return
         }
 
@@ -32,7 +32,7 @@ function initAI(dictionary) {
             ?.text;
     }
 
-    async function askChatGPTForWordsInfo(words) {
+    function askChatGPTForWordsInfo(words) {
         const _question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
 
 这些单词或者短语是（用逗号分开）: ${words}
@@ -54,8 +54,8 @@ json格式如下：
 3）提供的单词在json中全部用小写，例句除外。；
 4）提供的关联词忽略大小写，比如ok与Ok是一样的，不要重复记录；`
 
-        console.log(_question);
-        return '';
+        logger.log(_question);
+        return _question;
         //const resultText = await askChatGPT(_question);
         //return resultText;
     }

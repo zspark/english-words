@@ -58,10 +58,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     <div class="bs-test-summary bs-group"></div>
     <ul id="wordList" class="word-list" style="list-style: none;"></ul>
     ${cmp.buttonGroupSource("id-post-actions", ['ReConfig', "Restart"])}
-</div>
-`;
-
-
+</div>`;
 
     const ele_root = document.createElement('div');
     ele_root.className = "container";
@@ -94,7 +91,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     const ele_post_actions = ele_result.querySelector("#id-post-actions");
 
     ele_testingType.addEventListener("change", (e) => {
-        console.debug("Selected value:", e.target.value);
+        logger.debug("Selected value:", e.target.value);
         const ele_question = ele_form.querySelector("#id-question");
         let _s = _getQuestionStemSource(e.target.value);
         ele_question.outerHTML = _s;
@@ -115,7 +112,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     });
 
     ele_answerForm.addEventListener("change", (e) => {
-        console.debug("Answer Selected Value:", e.target.value);
+        logger.debug("Answer Selected Value:", e.target.value);
 
         switch (e.target.value) {
             case "Multichoice":
@@ -161,13 +158,13 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
             _genInfosFromQuestionaire();
             if (_rts.requirement.questionForm.length <= 0) {
                 const _s = `need to assign question form!!`;
-                console.error(_s);
+                logger.error(_s);
                 alert(_s);
                 return;
             }
             if (secWords.getSelectedWords().length <= 0) {
                 const _s = 'Try pick some words first, then give it a go!';
-                console.error(_s);
+                logger.error(_s);
                 alert(_s);
                 return;
             }
@@ -206,14 +203,14 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
         }
 
         if (_requirement.questionForm.length <= 0) {
-            console.error(`Need to Select at Least One Question Form!`);
+            logger.error(`Need to Select at Least One Question Form!`);
             return false;
         }
 
         Object.assign(_rts.requirement, _requirement);
         dictionary.saveRuntimeStatus();
 
-        console.debug(`The gathered Infos are:
+        logger.debug(`The gathered Infos are:
 ${JSON.stringify(_requirement, null, 4)}`);
         return true;
     }
@@ -292,7 +289,7 @@ ${JSON.stringify(_requirement, null, 4)}`);
     function _newQuestion() {
         clearInterval(timer);
         if (quiz.length <= 0) {
-            console.error("finished!!!!!");
+            logger.error("finished!!!!!");
             saveTestResult(_runtimeContext.results);
             ele_root.replaceChildren(ele_result);
             renderTestResult(_runtimeContext.results);

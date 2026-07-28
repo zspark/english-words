@@ -28,7 +28,7 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
     listElem.addEventListener('click', (e) => {
         let _elem = e.target;
-        //console.debug(`${_elem.tagName}`);
+        //logger.debug(`${_elem.tagName}`);
 
         //if (_elem.classList.contains("bs-word-name")) { }
         while (_elem) {
@@ -91,12 +91,10 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
 
             const _active = shownWord === word ? 'active' : '';
 
-            _s += `
-            <div class="bs-word-result" ${_active} data-word="${word}">
-                <div class="bs-word-name"> ${word} </div>
-                ${cmp.progressBarSource("", wordAccuracy)}
-            </div>
-            `
+            _s += `<div class="bs-word-result" ${_active} data-word="${word}">
+    <div class="bs-word-name"> ${word} </div>
+    ${cmp.progressBarSource("", wordAccuracy)}
+</div>`
         };
 
         listElem.innerHTML = _s;

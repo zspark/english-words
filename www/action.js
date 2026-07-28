@@ -1,16 +1,18 @@
-async function _fetchJson(url) {
+async function fetchJsonData(url) {
     try {
         const response = await fetch(url);
 
+        // Check if the HTTP status code is in the 200–299 range
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
+        // Parse and return the JSON body
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error("Failed to fetch JSON:", error);
-        return null;
+        logger.error('Failed to fetch JSON:', error);
+        throw error; // Re-throw so caller can handle it if needed
     }
 }
 
@@ -20,7 +22,7 @@ const _PLF_MACOS_ = "macOS";
 const _PLF_LINUX_ = "Linux";
 const _PLF_ANDROID_ = "Android";
 
-const _PLATFORM_ = (function() {
+const _PLATFORM_ = (function () {
     const ua = navigator.userAgent;
 
     if (/Android/i.test(ua)) return _PLF_ANDROID_;
@@ -31,7 +33,7 @@ const _PLATFORM_ = (function() {
 
     return "Unknown";
 })()
-console.log(_PLATFORM_);
+logger.log(_PLATFORM_);
 
 function isDesktop() {
     return _PLATFORM_ === _PLF_LINUX_ || _PLATFORM_ === _PLF_WINDOWS_ || _PLATFORM_ === _PLF_MACOS_;
@@ -143,19 +145,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_result = initResultSection(dictionary, components, section_card, pronunciation);
     section_setting = initSectionImport(_ai, dictionary, components);
 
-    ele_sec_setting.addEventListener("click", (e) => {
-        if (e.altKey && e.ctrlKey && e.shiftKey) {
-            dictionary.clearDictionary()
-            _currentSection.update();
-        }
-    });
-
     ele_sections.addEventListener('click', (e) => {
         _switchToSection(e.target.id);
     })
 
     document.addEventListener("keydown", (event) => {
-        // console.debug(event.key);
+        // logger.debug(event.key);
         if (isEditing()) return;
         _currentSection?.keyEvent(event);
         event.stopImmediatePropagation()
@@ -165,11 +160,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     if (dictionary.isDatabaseEmpty()) {
         components.showMask(`
-<p>It seems that you are a newbie or have cleared your database recently. No worries, I am going to introduce some features of the website.</p>
-<p>use 'd','e' to navigate to a new word, while utilize 's' and 'f' to select and pronounce respectively.</p>
-<p><strong>One more thing you should remember is that you can click 'Config' button along with 'Alt', 'Ctrl' and 'Shift' key kept pressing, then the whole database would vanish, providing you an empty, clear desk to start over.</strong></p>
-<p>You may click the below button to load a demo database so that you may easily getting familiar with the application.</p>
-<p>This website is still under developing, more patience and tolerance would be much appriciated.</p> `,
+<p>This website is still under developing, more patience and tolerance would be much appriciated.</p>
+<p>use 'd','e' to navigate to a new word.</p>`,
             "Got It, Close", () => { },
         );
     }

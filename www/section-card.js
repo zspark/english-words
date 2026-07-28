@@ -65,9 +65,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     <div class="bs-right-align mt20px">
         ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
     </div>
-</div>`
-
-
+</div>`;
 
     const ele_root = document.createElement('div');
     ele_root.innerHTML = source;
@@ -244,7 +242,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             if (word.length <= 0) {
                 ele_new_voc.focus();
                 const _s = `Word input is essential, this is the key to database`;
-                console.warn(_s);
+                logger.error(_s);
                 alert(_s);
                 return;
             }
@@ -295,7 +293,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     })
 
     ele_linkedWords.addEventListener("click", (e) => {
-        // console.log(e.target);
+        // logger.log(e.target);
         if (e.target.tagName === "A") {
             const _w = e.target.outerText.toLowerCase();
             if (dictionary.hasWord(_w)) {

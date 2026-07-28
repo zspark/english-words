@@ -1,0 +1,17 @@
+.env/
+node_modules/
+backup/
+/dist/
+.build/
+.dist/
+
+.vscode/
+.idea/
+
+*.swp
+*.un~
+*.*~
+
+package-lock.json
+
+/deployment/

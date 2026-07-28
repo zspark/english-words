@@ -113,7 +113,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
         _rts.generatedArticle = _rts.generatedArticle || "";
     }
     dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
-        console.debug("[article]");
+        logger.debug("[article]");
         if (e.detail.action === "exported") return;
         _getRTS();
         if (ele_root.isConnected) {

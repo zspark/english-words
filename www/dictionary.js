@@ -39,7 +39,7 @@ function initDictionary() {
         if (data.success) {
             importDictionaryByContent(data.content);
         } else {
-            console.error(data.info);
+            logger.error(data.info);
         }
     }
 

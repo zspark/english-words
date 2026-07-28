@@ -90,15 +90,13 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             const _isSelected = selectedWords.includes(word) ? 'select' : '';
             const _isActived = _rts.activedWord === word ? 'active' : '';
 
-            htmlBuffer += `
-<li class="cls-word-item" data-word="${word}" ${_isSelected} ${_isActived}>
+            htmlBuffer += `<li class="cls-word-item" data-word="${word}" ${_isSelected} ${_isActived}>
     ${_genWordContentSource(word, _detail)}
-</li>
-`;
+</li>`;
         }
 
         if (_filteredCount === 0) {
-            ele_wordList.innerHTML = '<li class="no-results">没有找到相关的单词。</li>';
+            ele_wordList.innerHTML = '<li class="no-results">word not found.</li>';
         } else {
             ele_wordList.innerHTML = htmlBuffer;
         }
@@ -121,6 +119,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         const _elem = ele_root.querySelector(`li[data-word="${word}"]`);
         _elem?.remove();
     }
+
     function _updateWord(word) {
         if (!word) return '';
         const _elem = ele_root.querySelector(`li[data-word="${word}"]`);
@@ -165,25 +164,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         }
         if (save) dictionary.saveRuntimeStatus();
     }
-    /*
-    function _remove(elemLi, save = false) {
-        const _w = elemLi.dataset.word;
-        const index = selectedWords.indexOf(_w);
-        if (index !== -1) {
-            selectedWords.splice(index, 1);
-            elemLi.removeAttribute('select', "");
-        }
-        if (save) dictionary.saveRuntimeStatus();
-    }
-    function _hasSelected(elemLi) {
-        return selectedWords.indexOf(elemLi.dataset.word) > 0;
-    }
-    function _toggleSelection(elemLi, save = false) {
-        if (elemLi.hasAttribute("select")) {
-            _remove(elemLi, save);
-        } else _add(elemLi, save);
-    }
-    */
 
     function _clearSelection() {
         ele_wordList.querySelectorAll("li[select]").forEach(elemLi => {
@@ -192,7 +172,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         selectedWords.length = 0;
     }
 
-    (function() {
+    (function () {
         function _getSiblingsBetween(el1, el2) {
             if (el1.parentElement !== el2.parentElement) {
                 return [];
@@ -219,7 +199,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         /*
         let _currentElem = null;
         function _moveFn(e) {
-            //console.debug(e.target);
+            //logger.debug(e.target);
         };
         */
         function _highlight(elem) {
@@ -234,8 +214,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         let _downElem = null;
         let _consecutiveTimes = 0;
         ele_wordList.addEventListener('pointerdown', (e) => {
-            //console.debug("mouse down.");
-            // console.debug(`${_elem.tagName}`);
+            //logger.debug("mouse down.");
+            // logger.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
             if (_timeStart - _timeEnd < TIME_SHRESHOLD) {
                 _consecutiveTimes++;
@@ -246,7 +226,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
             //ele_wordList.addEventListener('pointermove', _moveFn);
         });
         ele_wordList.addEventListener('pointerup', (e) => {
-            //console.debug("mouse up.");
+            //logger.debug("mouse up.");
             //ele_wordList.removeEventListener('pointermove', _moveFn);
             const _upElem = _selectRightElement(e.target);
             if (!_upElem) return;
@@ -254,27 +234,27 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                 _timeEnd = performance.now();
                 const _timeElapsed = _timeEnd - _timeStart;
                 if (_timeElapsed < TIME_SHRESHOLD) {
-                    //console.debug("click");
+                    //logger.debug("click");
                     if (_downElem) {
                         _activeWord(_downElem);
                     }
                     if (_consecutiveTimes === 1) {
                         _consecutiveTimes++;
                         if (isMobile()) {
-                            //console.debug("dblclick");
+                            //logger.debug("dblclick");
                             window._scrollPos = window.scrollY;
-                            //console.debug(`window scrollY is: ${window.scrollY}`);
+                            //logger.debug(`window scrollY is: ${window.scrollY}`);
                             ele_root.classList.add("card-only");
                             window.scrollTo(0, 0);
                         }
                     }
 
                 } else {
-                    //console.log("long click (same)");
+                    //logger.log("long click (same)");
                     _highlight(_upElem);
                 }
             } else {
-                //console.debug("long click (different)");
+                //logger.debug("long click (different)");
                 _highlight(_upElem);
             }
             dictionary.saveRuntimeStatus();
@@ -386,13 +366,13 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     }
 
     dictionary.addEventListener(dictionary.EVT_DICT, e => {
-        console.log(e);
+        // logger.log(e);
         if (e.detail.action === "imported") {
             _renderWords();
         }
     });
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
-        console.log(e);
+        // logger.log(e);
         if (e.detail.action === "modify") {
             _updateWord(e.detail.word);
         } else if (e.detail.action === "delete") {
@@ -401,10 +381,10 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     });
 
     card.addEventListener(card.EVT_WORD, e => {
-        //console.log(e);
+        //logger.log(e);
         return;
         /*
-        //console.debug("card changed current shown word");
+        //logger.debug("card changed current shown word");
         const eleArray = ele_root.querySelectorAll("li.word-card");
         eleArray.forEach(ele => {
             if (ele.dataset.word === e.detail.currentWord) {
