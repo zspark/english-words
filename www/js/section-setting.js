@@ -198,9 +198,9 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     const btnSync = ele_root.querySelector("#btn-modal-sync");
     btnSync.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "0") {
-            dictionary.loadData();
-        } else if (e.target.dataset.index == "1") {
             dictionary.saveData();
+        } else if (e.target.dataset.index == "1") {
+            dictionary.loadData();
         }
     });
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
