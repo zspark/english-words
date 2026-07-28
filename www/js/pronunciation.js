@@ -101,7 +101,7 @@ done!`)
     }
 
     (async function () {
-        fetchJsonData('/assets/__audios__.json').then(data => {
+        fetchJsonData('./audio/__audios__.json').then(data => {
             logger.log('Received Audio Database.');
             _existingAudios = data;
         }).catch(error => {

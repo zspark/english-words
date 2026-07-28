@@ -2,15 +2,15 @@
 
 name = "english-words"
 
-main = "api/data/server.js"
+main = "./api/data/server.js"
 
 compatibility_date = "2026-07-26"
 
 [assets]
-directory = "."
+directory = "./public"
 binding = "ASSETS"
 exclude = [
-    "api/data/server.js"
+    "./api/data/server.js"
 ]
 
 [[d1_databases]]

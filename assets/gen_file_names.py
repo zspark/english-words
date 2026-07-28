@@ -36,7 +36,7 @@ def save_filenames_to_json(
 
 # ================= 使用示例 =================
 if __name__ == "__main__":
-    target_dir = "../audio"
+    target_dir = "../www/audio"
 
     # 执行函数
-    save_filenames_to_json(target_dir, "__audios__.json")
+    save_filenames_to_json(target_dir, "../www/audio/__audios__.json")

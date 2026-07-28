@@ -28,7 +28,7 @@ function initDictionary() {
     async function loadData() {
         const userID = ai_api.userID
         if (!userID) return;
-        const response = await fetch("/api/data", {
+        const response = await fetch("../api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -51,7 +51,7 @@ function initDictionary() {
             userID,
             requestType: "save"
         }, null, 4);
-        await fetch("/api/data", {
+        await fetch("../api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
