@@ -7,11 +7,8 @@ main = "./api/data/server.js"
 compatibility_date = "2026-07-26"
 
 [assets]
-directory = "./public"
+directory = "./www"
 binding = "ASSETS"
-exclude = [
-    "./api/data/server.js"
-]
 
 [[d1_databases]]
 binding = "DB"
