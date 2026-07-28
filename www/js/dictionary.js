@@ -51,13 +51,21 @@ function initDictionary() {
             userID,
             requestType: "save"
         }, null, 4);
-        await fetch("../api/data", {
+        const response = await fetch("../api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: json,
         });
+
+        const data = await response.json();
+        if (data.success) {
+            logger.log(`data uploaded.`);
+            alert(`data has been uploaded.`);
+        } else {
+            logger.error(data.info);
+        }
     }
 
     const _AIProxy = createStorageProxy('__AICache__');
