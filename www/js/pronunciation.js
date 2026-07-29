@@ -2,7 +2,7 @@ function initSectionPronunciation(dictionary) {
     const MP3_PATH = "./audio/";
 
     function printMissings() {
-        logger.info(`These words have no audio files:
+        logger.log(`These words have no audio files:
 
 ${[..._missingAudios].join(",")}
 

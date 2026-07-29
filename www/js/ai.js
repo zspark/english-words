@@ -6,7 +6,7 @@ function initAI(dictionary) {
         if (apiKey == "") {
             const _s = `You do not config ChatGPT API KEY.`;
             alert(_s);
-            logger.info(_s);
+            logger.log(_s);
             return
         }
 

@@ -116,7 +116,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 
     function _importss(content, isFile) {
         if (!content) {
-            logger.info(`no JSON detected`);
+            logger.log(`no JSON detected`);
             alert(`no JSON detected`);
             return;
         }
@@ -129,7 +129,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         if (isFile) {
             dictionary.importDictionaryByFile(content)
         } else {
-            logger.info(content);
+            logger.log(content);
             const importedData = JSON.parse(content);
             dictionary.importDictionaryByContent(importedData);
         }
@@ -181,7 +181,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         if (e.target.dataset.index === "0") {//generate
             const _rawData = _ele_importByAI.value.trim();
             if (!_rawData) {
-                logger.info(`no words detected`);
+                logger.log(`no words detected`);
                 return;
             }
 
