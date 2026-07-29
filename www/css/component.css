@@ -7,7 +7,6 @@
 .bs-panel {
     background: white;
     padding: 20px;
-    border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
 }
 
@@ -46,6 +45,38 @@
     background-color: white;
     border-color: #4285f4;
     box-shadow: 0 0 0 3px rgba(66, 133, 244, .15);
+}
+
+.bs-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.bs-input-clear {
+    display: none;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 24px;
+    height: 24px;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    font-size: 18px;
+    line-height: 24px;
+    cursor: pointer;
+}
+
+.bs-input:not(:placeholder-shown) + .bs-input-clear {
+    display: block;
+}
+
+.bs-input-clear:hover {
+    background: #2d7ef7;
 }
 
 .bs-option {

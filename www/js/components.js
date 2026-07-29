@@ -149,6 +149,13 @@ function initComponents() {
 </div>`
     }
 
+    function searchSource(id, placeholder = '') {
+        return `<div id="${id}" class="w100pct bs-input-wrapper">
+    <input class="bs-input" type="text" placeholder="${placeholder}" autocomplete="off">
+    <button class="bs-input-clear" type="button" aria-label="Clear">×</button>
+</div>`
+    }
+
     function textareaSource(id, title, additionalClasses = '', placeholder = '') {
         const _t = title ? `<label class="bs-title">${title}</label>` : "";
         return `<div id="${id}">
@@ -218,6 +225,7 @@ function initComponents() {
         dropdownOptionSource,
         sliderSource,
         inputSource,
+        searchSource,
         textareaSource,
         switcherSource,
         showMask,

@@ -22,7 +22,7 @@ const _PLF_MACOS_ = "macOS";
 const _PLF_LINUX_ = "Linux";
 const _PLF_ANDROID_ = "Android";
 
-const _PLATFORM_ = (function () {
+const _PLATFORM_ = (function() {
     const ua = navigator.userAgent;
 
     if (/Android/i.test(ua)) return _PLF_ANDROID_;
@@ -77,15 +77,7 @@ function isEditing() {
 
 const ele_container = document.getElementById("middle");
 
-const ele_sections = document.getElementById("section-switcher");
-const ele_sec_words = ele_sections.querySelector("#sec-dictionary");
-const ele_sec_article = ele_sections.querySelector("#sec-read");
-const ele_sec_test = ele_sections.querySelector("#sec-test");
-const ele_sec_result = ele_sections.querySelector("#sec-result");
-const ele_sec_setting = ele_sections.querySelector("#sec-setting")
-
-let dictionary = initDictionary();
-let pronunciation = null;
+let _navigator = null;
 let section_test = null
 let section_result = null
 let section_words = null
@@ -94,60 +86,55 @@ let section_setting = null;
 let section_card = null;
 let _currentSection = null;
 let _currentSectionElemBtn = null;
-let _ai = null;
 
 document.addEventListener("DOMContentLoaded", (e) => {
+    const dictionary = initDictionary();
+    const components = initComponents();
+    const _ai = initAI(dictionary);
+    const pronunciation = initSectionPronunciation(dictionary);
 
     function _switchToSection(id) {
-        let _preElemBtn = _currentSectionElemBtn;
         if (id === "sec-dictionary") {
             if (_currentSection == section_words) return;
             _currentSection = section_words;
-            _currentSectionElemBtn = ele_sec_words;
+            _navigator.activeWord();
         } else if (id === "sec-read") {
             if (_currentSection == section_article) return;
             _currentSection = section_article;
-            _currentSectionElemBtn = ele_sec_article;
+            _navigator.activeArticle();
         } else if (id === "sec-test") {
             if (_currentSection == section_test) return;
             _currentSection = section_test;
-            _currentSectionElemBtn = ele_sec_test;
+            _navigator.activeTest();
         } else if (id === "sec-result") {
             if (_currentSection == section_result) return;
             _currentSection = section_result;
-            _currentSectionElemBtn = ele_sec_result;
+            _navigator.activeResult();
         } else if (id === "sec-setting") {
             if (_currentSection == section_setting) return;
             _currentSection = section_setting;
-            _currentSectionElemBtn = ele_sec_setting;
+            _navigator.activeSetting();
         } else {
+            logger.error(`Should not be here. secion id is: ${id}`);
             return;
         }
         _rts.sectionID = id;
         dictionary.saveRuntimeStatus();
         _currentSection.update();
         ele_container.replaceChildren(_currentSection.ele_root)
-        _preElemBtn?.removeAttribute("active");
-        _currentSectionElemBtn.setAttribute("active", "");
     }
 
 
-    const components = initComponents();
     const _rts = dictionary.getRuntimeStatus('homepage');
     _rts.sectionID = _rts.sectionID || "sec-dictionary";
-    _ai = initAI(dictionary);
-    pronunciation = initSectionPronunciation(dictionary);
 
+    _navigator = initNavigator(document.body, components, dictionary, _switchToSection, () => { });
     section_card = initCardSection(_ai, dictionary, components, pronunciation);
-    section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation);
+    section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation, _navigator);
     section_article = initArticleSection(_ai, dictionary, components, section_card, pronunciation);
     section_test = initTestSection(_ai, dictionary, components, section_words, pronunciation);
     section_result = initResultSection(dictionary, components, section_card, pronunciation);
     section_setting = initSectionImport(_ai, dictionary, components);
-
-    ele_sections.addEventListener('click', (e) => {
-        _switchToSection(e.target.id);
-    })
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key);
