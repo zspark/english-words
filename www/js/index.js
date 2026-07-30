@@ -43,6 +43,15 @@ function isMobile() {
     return _PLATFORM_ === _PLF_IOS_ || _PLATFORM_ === _PLF_ANDROID_;
 }
 
+function isControlKey(key) {
+    return key === 'Control' ||
+        key === 'Shift' ||
+        key === 'Alt' ||
+        key === 'Enter' ||
+        key === 'Escape' ||
+        key === 'Meta'; // Windows key / Command key
+}
+
 function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -138,7 +147,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key);
-        if (isEditing()) return;
+        if (!isControlKey(event.key)) {
+            if (isEditing()) return;
+        }
         _currentSection?.keyEvent(event);
         event.stopImmediatePropagation()
     })

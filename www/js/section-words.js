@@ -71,6 +71,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     let _sortFn = undefined;
     let _filteredCount = 0;
     function _renderWords() {
+        console.time('search');
         ({ word, tag } = navigator.getFilter());
         const words = Object.entries(dictionary.getWords(word, 'ALL', tag));
         _sortFn && _sortFn(words);
@@ -95,6 +96,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         ele_panel.append(ele_wordList);
 
         _updateStatus();
+        console.timeEnd('search');
     }
 
     function _genWordContentSource(word, detail) {
@@ -276,6 +278,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             return ele;
         })
         .filter(ele => ele.classList.contains('active'))[0];
+
     ele_btnsSort.addEventListener('click', (e) => {
         _currentSortBtn?.classList.remove('active');
         _currentSortBtn = e.target;
@@ -317,10 +320,18 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     function keyEvent(event) {
         if (event.key === "Enter") {
-            navigator.setFocus();
+            if (navigator.isFocused()) {
+                navigator.setBlur();
+            } else {
+                navigator.setFocus();
+            }
         } else if (event.key === "Escape") {
-            navigator.setBlur();
-            navigator.resetFilter();
+            if (navigator.isFocused()) {
+                navigator.setBlur();
+                navigator.resetFilter();
+                dictionary.saveRuntimeStatus();
+                _renderWords();
+            }
         } else if (event.key === "Delete") {
             if (selectedWords.length != 0) {
                 selectedWords.forEach(w => {

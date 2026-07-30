@@ -280,7 +280,7 @@ function initDictionary() {
                 out[word] = details
             }
         }
-        return out;
+        return readOnly(out);
     }
 
     function hasWord(word) {

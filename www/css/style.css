@@ -85,7 +85,6 @@ body {
     justify-content: space-evenly;
     padding: 0.25rem;
     border-radius: 8px;
-    gap: 0.4rem;
 }
 
 .sec-btn {
@@ -507,6 +506,7 @@ details[open] summary::after {
 }
 
 #id-searchInput {
+    margin-right: 0.25rem;
     flex: 1;
 }
 

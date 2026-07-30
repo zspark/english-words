@@ -63,6 +63,9 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     function getFilter() {
         return { word: searchInput.value, tag: tagFilter.value };
     }
+    function isFocused() {
+        return document.activeElement === searchInput;
+    }
     function setFocus() {
         searchInput.focus();
     }
@@ -124,8 +127,10 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         resetFilter,
         setFilter,
         getFilter,
+
         setFocus,
         setBlur,
+        isFocused,
 
         EVT_FILTER,
     });
