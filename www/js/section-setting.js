@@ -98,6 +98,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 
     const elem_tags = ele_root.querySelector("#id-tags input");
     const elem_user = ele_root.querySelector("#id-userID input");
+    elem_user.type = 'password';
     const elem_syncInerval = ele_root.querySelector("#id-syncInterval input");
     const elem_key = ele_root.querySelector("#id-APIKEY-chatGPT input");
 

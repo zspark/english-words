@@ -4,7 +4,7 @@
 
 const __VERSION__ = "0.1.0"
 
-function initDictionary() {
+function initDictionary(ff) {
     function createStorageProxy(key) {
         const _tmp = JSON.parse(localStorage.getItem(key));
         const _obj = _tmp || {};
@@ -266,22 +266,27 @@ function initDictionary() {
     }
 
     function getWords(searchQuery, level, tag) {
-        searchQuery = searchQuery.toLowerCase();
         level = level.toUpperCase();
         tag = tag.toUpperCase();
 
         const out = {};
-        for (const [word, details] of Object.entries(dict)) {
-            const matchesSearch = word.toLowerCase().includes(searchQuery) ||
-                details.meaning.toLowerCase().includes(searchQuery);
-            const matchesLevel = (level === 'ALL' || details.level?.toUpperCase() === level);
-            const matchesTag = (tag === 'ALL' || details.tags?.toUpperCase().includes(tag));
+        for (const [word, detail] of Object.entries(dict)) {
+            const matchesLevel = (level === 'ALL' || detail.level?.toUpperCase() === level);
+            const matchesTag = (tag === 'ALL' || detail.tags?.toUpperCase().includes(tag));
 
-            if (matchesSearch && matchesLevel && matchesTag) {
-                out[word] = details
+            if (matchesLevel && matchesTag) {
+                out[word] = detail
             }
         }
-        return readOnly(out);
+
+        const out2 = {};
+        const _keys = Object.keys(out)
+        const _selected = ff.find(_keys, searchQuery)
+        _selected.forEach(w => {
+            out2[w] = out[w];
+        });
+
+        return readOnly(out2);
     }
 
     function hasWord(word) {

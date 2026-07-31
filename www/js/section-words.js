@@ -75,35 +75,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     let _sortFn = undefined;
     let _filteredCount = 0;
-    function _renderWords() {
-        //console.time('search');
-        ({ word, level, tag } = navigator.getFilter());
-        const _words = Object.entries(dictionary.getWords(word, level, tag));
-        _sortFn && _sortFn(_words);
-        _filteredCount = _words.length;
-        let htmlBuffer = '';
-
-        for (const [_word, _detail] of _words) {
-            const _isSelected = selectedWords.includes(_word) ? 'select' : '';
-            const _isActived = _rts.activedWord === _word ? 'active' : '';
-
-            htmlBuffer += `<li class="cls-word-item" data-word="${_word}" ${_isSelected} ${_isActived}>
-                               ${_genWordContentSource(_word, _detail)}
-                           </li>`;
-        }
-
-        ele_wordList.remove();
-        if (_filteredCount === 0) {
-            ele_wordList.innerHTML = '<li class="no-results">word not found.</li>';
-        } else {
-            ele_wordList.innerHTML = htmlBuffer;
-        }
-        ele_panel.append(ele_wordList);
-
-        _activedWordElem = [...ele_wordList.querySelectorAll("li")].filter(ele => ele.hasAttribute('active'))[0];
-        _updateStatus();
-        //console.timeEnd('search');
-    }
 
     function _getVisibleRange() {
         const _topY = Math.max(0, _rts.scrollY - _ITEMS_EACH_SIDE * _ITEM_HEIGHT);
@@ -129,7 +100,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     }
 
 
-    const _renderWords_v2 = (function() {
+    const _renderWords = (function() {
 
         let _previousStartItem = -1;
         let _previousEndItem = -1;
@@ -355,12 +326,12 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
         if (_ds.caption == 'Random') _currentSortBtn.innerHTML = _ds.caption;
         _sortFn && _sortFn(_words);
-        _renderWords_v2(true);
+        _renderWords(true);
     });
 
     function setSync(scrollY) {
         _rts.scrollY = scrollY;
-        requestAnimationFrame(_renderWords_v2);
+        _renderWords();
     }
     function deactive() {
         _rts.scrollY = window.scrollY;
@@ -385,7 +356,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 navigator.resetFilter();
                 dictionary.saveRuntimeStatus();
                 _updateWordList();
-                _renderWords_v2();
+                _renderWords();
             }
         } else if (event.key === "Delete") {
             if (selectedWords.length != 0) {
@@ -395,7 +366,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 selectedWords.length = 0;
                 dictionary.saveRuntimeStatus();
                 _updateWordList();
-                _renderWords_v2();
+                _renderWords();
             }
         }
 
@@ -423,7 +394,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         // logger.log(e);
         if (e.detail.action === "imported") {
             _updateWordList();
-            _renderWords_v2();
+            _renderWords();
         }
     });
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
@@ -460,11 +431,12 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _clearSelection();
         dictionary.saveRuntimeStatus();
         _updateWordList();
-        _renderWords_v2();
+        _updateStatus();
+        _renderWords(true);
     });
 
     _updateWordList();
-    _renderWords_v2();
+    _renderWords();
 
     return {
         ele_root,
