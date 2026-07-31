@@ -6,12 +6,16 @@ ${cmp.radioButtonSource("id-radio-label", "Merge Strategy", ['Append', 'Replace'
 <div>
     <label class="bs-title"> Import Methods </label>
     <div class="tab-header">
-        <button class="tab-btn active" data-tab="file-tab">Local File</button>
-        <button class="tab-btn" data-tab="text-tab">Pure JSON Text</button>
+        <button class="tab-btn active" data-tab="text-tab">Pure JSON Text</button>
+        <button class="tab-btn" data-tab="file-tab">Local File</button>
     </div>
 
     <div id="id-tab-body">
-        <div id="file-tab" class="tab-content active">
+        <div id="text-tab" class="tab-content active">
+            ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
+        </div>
+
+        <div id="file-tab" class="tab-content">
             <input type="file" id="import-file" accept=".json" class="bs-file-input" style="display:none;">
 
             <label for="import-file" class="bs-file-box h300px">
@@ -19,10 +23,6 @@ ${cmp.radioButtonSource("id-radio-label", "Merge Strategy", ['Append', 'Replace'
                 <div class="bs-file-title">Click to Select File</div>
                 <div class="bs-file-desc"> Only Supports .json</div>
             </label>
-        </div>
-
-        <div id="text-tab" class="tab-content">
-            ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
         </div>
 
     </div>
@@ -76,7 +76,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 </div>`;
 
     const source = `
-<div id="id-form" class='bs-panel'>
+<div id="id-form" class='bs-panel bs-panel-middle'>
 
     <div class="tab-header">
         <button class="tab-btn-22 active" data-tab="dict-tab">Dictionary</button>
@@ -93,7 +93,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 
 
     const ele_root = document.createElement("div");
-    ele_root.className = "container";
+    ele_root.className = "container-col-1";
     ele_root.innerHTML = source;
 
     const elem_tags = ele_root.querySelector("#id-tags input");
@@ -218,7 +218,10 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         }
     });
 
-    function update() {
+    function deactive() {
+    }
+
+    function active() {
         elem_tags.value = dictionary.getTags().join(',');
         elem_key.value = dictionary.getAPI();
         elem_user.value = dictionary.getUserID();
@@ -226,9 +229,12 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     }
     function keyEvent() { }
 
+    function setSync(scrollY) { }
     return {
         ele_root,
-        update,
+        active,
+        setSync,
+        deactive,
         keyEvent,
     }
 }

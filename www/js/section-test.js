@@ -16,7 +16,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
 
     //${cmp.buttonGroupSource("id-actions", ["Reset", 'Start', 'Delete'])}
     const _source = `
-<div id="id-form" class='bs-panel'>
+<div id="id-form" class='bs-panel bs-panel-middle'>
 
     ${cmp.dropdownSource("id-toTest", "What Do You Want To Test?", ['Meaning', 'Word', 'IPA'], _rts.requirement.toTest)}
     ${_getQuestionStemSource(_rts.requirement.toTest)}
@@ -61,7 +61,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
 </div>`;
 
     const ele_root = document.createElement('div');
-    ele_root.className = "container";
+    ele_root.className = "container-col-1";
     ele_root.innerHTML = _source;
 
     const ele_form = ele_root.querySelector("#id-form");
@@ -342,7 +342,13 @@ ${JSON.stringify(_requirement, null, 4)}`);
         return cmp.checkboxSource("id-question", "What Will Display As Question Stem?", _options, selectedIndics)
     }
 
-    function update() {
+    function deactive() {
+        _scrollY = window.scrollY;
+    }
+
+    let _scrollY = 0;
+    function active() {
+        window.scrollTo(0, _scrollY);
         ele_testingType.querySelector("select").dispatchEvent(new Event("change", { bubbles: true }));
     }
 
@@ -435,9 +441,12 @@ ${JSON.stringify(_requirement, null, 4)}`);
         ele_wordList.innerHTML = _s;
     }
 
+    function setSync(scrollY) { }
     return {
         ele_root,
-        update,
+        setSync,
+        active,
+        deactive,
         keyEvent,
     }
 }

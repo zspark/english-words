@@ -19,6 +19,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
 
 <div id="top-bar-right">
     ${cmp.searchSource("id-searchInput", "Search word while inputting")}
+    ${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], -1)}
     ${cmp.dropdownSource("id-tagFilter", null, [], -1)}
 </div>`;
 
@@ -36,16 +37,19 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     const ele_right = ele_root.querySelector("#top-bar-right");
     const searchInput = ele_right.querySelector('#id-searchInput input');
     const searchBtn = ele_right.querySelector('#id-searchInput button');
+    const levelFilter = ele_right.querySelector('#id-levelFilter select');
     const tagFilter = ele_right.querySelector('#id-tagFilter select');
     tagFilter.innerHTML = cmp.dropdownOptionSource(["ALL", ...dictionary.getTags()], 0);
 
 
     function _disp() {
         const word = searchInput.value;
+        const level = levelFilter.value;
         const tag = tagFilter.value;
-        __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word, tag } }));
+        __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word, level, tag } }));
     }
     searchInput.addEventListener('input', (e) => { _disp(); });
+    levelFilter.addEventListener('change', (e) => { _disp(); });
     tagFilter.addEventListener('change', (e) => { _disp(); });
     searchBtn.addEventListener('click', () => {
         resetFilter();
@@ -54,14 +58,16 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
 
     function resetFilter() {
         searchInput.value = "";
+        levelFilter.selectedIndex = 0;
         tagFilter.selectedIndex = 0;
     }
-    function setFilter(word, tag) {
+    function setFilter(word, level, tag) {
         searchInput.value = word;
+        levelFilter.value = level;
         tagFilter.value = tag;
     }
     function getFilter() {
-        return { word: searchInput.value, tag: tagFilter.value };
+        return { word: searchInput.value, level: levelFilter.value, tag: tagFilter.value };
     }
     function isFocused() {
         return document.activeElement === searchInput;

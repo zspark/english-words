@@ -2,6 +2,9 @@
 
 function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
+    const _rts = dictionary.getRuntimeStatus('sec_article');
+    _rts.generatedArticle = _rts.generatedArticle || "";
+    _rts.scrollY = _rts.scrollY || 0;
 
     const articleSource = `
 <div class="bs-panel lh2p4">
@@ -78,36 +81,21 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
         ele_article.innerHTML = finalHtml ?? "";
     }
 
-    function update() {
-        const c = ele_root.isConnected;
-        if (c) {
-            ele_root.remove()
-        }
+    function setSync(scrollY) {
+        _rts.scrollY = scrollY;
+    }
+    function deactive() {
+        _rts.scrollY = window.scrollY;
+    }
+    function active() {
+        window.scrollTo(0, _rts.scrollY);
         _renderArticle();
         ele_card.replaceChildren(card.ele_root)
-
-        if (c) {
-            ele_container.replaceChildren(ele_root)
-        }
     }
 
     function keyEvent(event) {
-        // if (!_activedWordElem) return;
-
-        if (event.key === "d") {
-            // _activeWord(_activedWordElem.nextElementSibling);
-        } else if (event.key === "e") {
-            // _activeWord(_activedWordElem.previousElementSibling);
-        } else if (event.key === "f") {
-            pronunciation.pronounce(ele_actived_word?.outerText)
-        } else if (event.key === "s") {
-            // _toggleWordSelection(_activedWordElem, true);
-            // _updateStatus();
-        }
-
     }
 
-    let _rts;
     function _getRTS() {
         _rts = dictionary.getRuntimeStatus('sec_article');
         _rts.generatedArticle = _rts.generatedArticle || "";
@@ -121,10 +109,11 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
         }
     });
 
-    _getRTS();
     return {
         ele_root,
-        update,
+        setSync,
+        active,
+        deactive,
         keyEvent,
     }
 }

@@ -85,6 +85,7 @@ function isEditing() {
 }
 
 const ele_container = document.getElementById("middle");
+const ele_button = document.getElementById('back-to-top');
 
 let _navigator = null;
 let section_test = null
@@ -103,25 +104,26 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const pronunciation = initSectionPronunciation(dictionary);
 
     function _switchToSection(id) {
+        let _nextSection;
         if (id === "sec-dictionary") {
             if (_currentSection == section_words) return;
-            _currentSection = section_words;
+            _nextSection = section_words;
             _navigator.activeWord();
         } else if (id === "sec-read") {
             if (_currentSection == section_article) return;
-            _currentSection = section_article;
+            _nextSection = section_article;
             _navigator.activeArticle();
         } else if (id === "sec-test") {
             if (_currentSection == section_test) return;
-            _currentSection = section_test;
+            _nextSection = section_test;
             _navigator.activeTest();
         } else if (id === "sec-result") {
             if (_currentSection == section_result) return;
-            _currentSection = section_result;
+            _nextSection = section_result;
             _navigator.activeResult();
         } else if (id === "sec-setting") {
             if (_currentSection == section_setting) return;
-            _currentSection = section_setting;
+            _nextSection = section_setting;
             _navigator.activeSetting();
         } else {
             logger.error(`Should not be here. secion id is: ${id}`);
@@ -129,8 +131,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
         }
         _rts.sectionID = id;
         dictionary.saveRuntimeStatus();
-        _currentSection.update();
+        _currentSection?.deactive();
+        _currentSection = _nextSection;
         ele_container.replaceChildren(_currentSection.ele_root)
+        _currentSection.active();
     }
 
 
@@ -155,6 +159,17 @@ document.addEventListener("DOMContentLoaded", (e) => {
     })
 
     _switchToSection(_rts.sectionID);
+
+    window.addEventListener('scroll', () => {
+        //logger.log(window.scrollY);
+        ele_button.style.display = window.scrollY > 200 ? 'block' : 'none';
+        _currentSection.setSync(window.scrollY);
+        dictionary.saveRuntimeStatus();
+    });
+
+    ele_button.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
     if (dictionary.isDatabaseEmpty()) {
         components.showMask(`

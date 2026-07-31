@@ -2,6 +2,9 @@
 
 function initResultSection(dictionary, cmp, card, pronunciation) {
 
+    const _rts = dictionary.getRuntimeStatus('sec_record');
+    _rts.scrollY = _rts.scrollY || 0;
+
     const _source = `
 <div class="bs-panel">
     ${cmp.buttonGroupSource('id-action', ['Delete All'])}
@@ -56,17 +59,16 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
         }
     }
 
-    function update() {
-        const c = ele_root.isConnected;
-        if (c) {
-            ele_root.remove()
-        }
-        _renderResult()
-        ele_card.replaceChildren(card.ele_root)
+    function setSync(scrollY) {
+        _rts.scrollY = scrollY;
+    }
+    function deactive() {
+        _rts.scrollY = window.scrollY;
+    }
 
-        if (c) {
-            ele_container.replaceChildren(ele_root)
-        }
+    function active() {
+        window.scrollTo(0, _rts.scrollY);
+        ele_card.replaceChildren(card.ele_root)
     }
 
     function keyEvent(event) {
@@ -112,9 +114,12 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
         _activeWord(_target);
     });
 
+    _renderResult()
     return {
         ele_root,
-        update,
+        setSync,
+        active,
+        deactive,
         keyEvent,
     }
 }

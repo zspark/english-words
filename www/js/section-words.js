@@ -1,6 +1,10 @@
 
 
 function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigator) {
+
+    const _ITEM_HEIGHT = 80 // px;
+    const _ITEMS_EACH_SIDE = 4;
+
     const _rts = dictionary.getRuntimeStatus('sec_dict');
     _rts.selectedWords = _rts.selectedWords || [];
     _rts.activedWord = _rts.activedWord || '';
@@ -9,6 +13,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         level: "ALL",
         tag: "ALL"
     }
+    _rts.scrollY = _rts.scrollY || 0;
     _rts.sort = _rts.sort || {
         "0": "N",
         "1": "N",
@@ -30,7 +35,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         <span id="selectedCount">0</span> selected / <span id="id_filteredCount">0</span> filtered / <span id="_total">0</span> total.
     </div>
 
-    <ul id="id-wordList" class="word-list" style="list-style: none;"></ul>
+    <ul id="id-wordList" class="word-list"></ul>
 </div>
 
 <div id="id-cardContainer"> </div>
@@ -51,8 +56,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     const _sortFnMap = {
         "0": {
-            "N": (r) => { },
-            "R": (r) => { r.reverse() },
+            "N": (r) => { r.sort((a, b) => { return a[1].time > b[1].time }); },
+            "R": (r) => { r.sort((a, b) => { return a[1].time < b[1].time }); },
         },
         "1": {
             "N": (r) => { r.sort((a, b) => { return a[0] > b[0] }); },
@@ -71,20 +76,20 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     let _sortFn = undefined;
     let _filteredCount = 0;
     function _renderWords() {
-        console.time('search');
-        ({ word, tag } = navigator.getFilter());
-        const words = Object.entries(dictionary.getWords(word, 'ALL', tag));
-        _sortFn && _sortFn(words);
-        _filteredCount = words.length;
+        //console.time('search');
+        ({ word, level, tag } = navigator.getFilter());
+        const _words = Object.entries(dictionary.getWords(word, level, tag));
+        _sortFn && _sortFn(_words);
+        _filteredCount = _words.length;
         let htmlBuffer = '';
 
-        for (const [_word, _detail] of words) {
+        for (const [_word, _detail] of _words) {
             const _isSelected = selectedWords.includes(_word) ? 'select' : '';
             const _isActived = _rts.activedWord === _word ? 'active' : '';
 
             htmlBuffer += `<li class="cls-word-item" data-word="${_word}" ${_isSelected} ${_isActived}>
-    ${_genWordContentSource(_word, _detail)}
-</li>`;
+                               ${_genWordContentSource(_word, _detail)}
+                           </li>`;
         }
 
         ele_wordList.remove();
@@ -95,18 +100,83 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         }
         ele_panel.append(ele_wordList);
 
+        _activedWordElem = [...ele_wordList.querySelectorAll("li")].filter(ele => ele.hasAttribute('active'))[0];
         _updateStatus();
-        console.timeEnd('search');
+        //console.timeEnd('search');
     }
 
+    function _getVisibleRange() {
+        const _topY = Math.max(0, _rts.scrollY - _ITEMS_EACH_SIDE * _ITEM_HEIGHT);
+        const startItem = Math.min(Math.floor(_topY / _ITEM_HEIGHT), _filteredCount);
+        const _bottomY = _rts.scrollY + window.innerHeight + _ITEMS_EACH_SIDE * _ITEM_HEIGHT;
+        const endItem = Math.min(Math.ceil(_bottomY / _ITEM_HEIGHT), _filteredCount);
+        logger.debug(`startItem:${startItem}, endItem:${endItem}`);
+
+        return {
+            startItem,
+            endItem,
+            startY: startItem * _ITEM_HEIGHT,
+        };
+    }
+
+    let _words = [];
+    function _updateWordList() {
+        ({ word, level, tag } = navigator.getFilter());
+        _words = Object.entries(dictionary.getWords(word, level, tag));
+        _sortFn && _sortFn(_words);
+        _filteredCount = _words.length;
+        ele_wordList.style.height = `${_filteredCount * _ITEM_HEIGHT}px`;
+    }
+
+
+    const _renderWords_v2 = (function() {
+
+        let _previousStartItem = -1;
+        let _previousEndItem = -1;
+
+        return function(force = false) {
+            //console.time('search');
+            if (_filteredCount === 0) {
+                ele_wordList.innerHTML = '<li class="no-results">word not found.</li>';
+            } else {
+                const { startItem, endItem, startY } = _getVisibleRange();
+                if (!force) {
+                    if (startItem === _previousStartItem && endItem === _previousEndItem) return;
+                    _previousStartItem = startItem;
+                    _previousEndItem = endItem;
+                }
+
+                let htmlBuffer = '';
+                for (let i = startItem; i < endItem; ++i) {
+                    [_word, _detail] = _words[i]
+
+                    const _isSelected = selectedWords.includes(_word) ? 'select' : '';
+                    const _isActived = _rts.activedWord === _word ? 'active' : '';
+
+                    htmlBuffer += `<li class="cls-word-item" style="top:${startY + (i - startItem) * _ITEM_HEIGHT}px;" data-word="${_word}" ${_isSelected} ${_isActived}>
+                                        ${_genWordContentSource(_word, _detail)}
+                                    </li>`;
+                }
+
+                ele_wordList.innerHTML = htmlBuffer;
+
+                _activedWordElem = [...ele_wordList.querySelectorAll("li")].filter(ele => ele.hasAttribute('active'))[0];
+            }
+            _updateStatus();
+            //console.timeEnd('search');
+        }
+    })();
+
     function _genWordContentSource(word, detail) {
-        return `<div>
-    <span class="word-name">${word}</span>
-    <span class="word-ipa">${detail.ipa}</span>
-    <span class="tag word-level">${detail.level}</span>
-    <span class="tag word-tag">${detail.tags || ""}</span>
-</div>
-<span class="word-meaning">${detail.meaning}</span>`;
+        return ` <div>
+                    <span class="word-name">${word}</span>
+                    <span class="tag word-level">${detail.level}</span>
+                    <span class="tag word-tag">${detail.tags || ""}</span>
+                </div>
+                <div>
+                    <span class="word-ipa">${detail.ipa}</span>
+                </div>
+                <span class="word-meaning">${detail.meaning}</span>`;
     }
 
     function _deleteWord(word) {
@@ -124,16 +194,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _elem.innerHTML = _source;
         } else { return '' }
     }
-
-    navigator.addEventListener(navigator.EVT_FILTER, (e) => {
-        ({ word, tag } = e.detail);
-        _rts.filter.search = word;
-        _rts.filter.tag = tag;
-        _activeWord(null);
-        _clearSelection();
-        dictionary.saveRuntimeStatus();
-        _renderWords()
-    });
 
     function _updateStatus() {
         selectedCountSpan.textContent = selectedWords.length;
@@ -182,12 +242,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             }
             return null;
         }
-        /*
-        let _currentElem = null;
-        function _moveFn(e) {
-            //logger.debug(e.target);
-        };
-        */
         function _highlight(elem) {
             _clearSelection();
             const _betweenElem = _getSiblingsBetween(_activedWordElem, elem);
@@ -228,7 +282,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                         _consecutiveTimes++;
                         if (isMobile()) {
                             //logger.debug("dblclick");
-                            window._scrollPos = window.scrollY;
+                            _rts.scrollY = window.scrollY;
                             //logger.debug(`window scrollY is: ${window.scrollY}`);
                             ele_root.classList.add("card-only");
                             window.scrollTo(0, 0);
@@ -280,42 +334,42 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         .filter(ele => ele.classList.contains('active'))[0];
 
     ele_btnsSort.addEventListener('click', (e) => {
-        _currentSortBtn?.classList.remove('active');
-        _currentSortBtn = e.target;
-        _currentSortBtn.classList.add("active");
-
-        const _ds = _currentSortBtn.dataset;
-        if (_ds.order === "N") {
-            _ds.order = "R";
-            _currentSortBtn.innerHTML = _ds.caption.split('').reverse().join('');
+        const _ds = e.target.dataset;
+        e.target.classList.add("active");
+        if (e.target != _currentSortBtn) {
+            _currentSortBtn?.classList.remove('active');
+            _currentSortBtn = e.target;
         } else {
-            _ds.order = "N";
-            _currentSortBtn.innerHTML = _ds.caption
+
+            if (_ds.order === "N") {
+                _ds.order = "R";
+                _currentSortBtn.innerHTML = _ds.caption.split('').reverse().join('');
+            } else {
+                _ds.order = "N";
+                _currentSortBtn.innerHTML = _ds.caption
+            }
         }
         _sortFn = _sortFnMap[_ds.index][_ds.order]
         _rts.sort[_ds.index] = _ds.order;
         dictionary.saveRuntimeStatus();
 
         if (_ds.caption == 'Random') _currentSortBtn.innerHTML = _ds.caption;
-        _renderWords();
+        _sortFn && _sortFn(_words);
+        _renderWords_v2(true);
     });
 
-    function update() {
-        const c = ele_root.isConnected;
-        if (c) {
-            ele_root.remove()
-        }
+    function setSync(scrollY) {
+        _rts.scrollY = scrollY;
+        requestAnimationFrame(_renderWords_v2);
+    }
+    function deactive() {
+        _rts.scrollY = window.scrollY;
+    }
 
-        //levelFilter.value = _rts.filter.level;
-        navigator.setFilter(_rts.filter.search, _rts.filter.tag);
-
-        _renderWords();
-        _activedWordElem = [...ele_wordList.querySelectorAll("li")].filter(ele => ele.hasAttribute('active'))[0];
+    function active() {
+        window.scrollTo(0, _rts.scrollY);
+        navigator.setFilter(_rts.filter.search, _rts.filter.level, _rts.filter.tag);
         ele_card.replaceChildren(card.ele_root)
-
-        if (c) {
-            ele_container.replaceChildren(ele_root)
-        }
     }
 
     function keyEvent(event) {
@@ -330,7 +384,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 navigator.setBlur();
                 navigator.resetFilter();
                 dictionary.saveRuntimeStatus();
-                _renderWords();
+                _updateWordList();
+                _renderWords_v2();
             }
         } else if (event.key === "Delete") {
             if (selectedWords.length != 0) {
@@ -339,7 +394,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 })
                 selectedWords.length = 0;
                 dictionary.saveRuntimeStatus();
-                _renderWords();
+                _updateWordList();
+                _renderWords_v2();
             }
         }
 
@@ -366,7 +422,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     dictionary.addEventListener(dictionary.EVT_DICT, e => {
         // logger.log(e);
         if (e.detail.action === "imported") {
-            _renderWords();
+            _updateWordList();
+            _renderWords_v2();
         }
     });
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
@@ -393,9 +450,27 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         */
     });
 
+    navigator.setFilter(_rts.filter.search, _rts.filter.level, _rts.filter.tag);
+    navigator.addEventListener(navigator.EVT_FILTER, (e) => {
+        ({ word, level, tag } = e.detail);
+        _rts.filter.search = word;
+        _rts.filter.level = level;
+        _rts.filter.tag = tag;
+        _activeWord(null);
+        _clearSelection();
+        dictionary.saveRuntimeStatus();
+        _updateWordList();
+        _renderWords_v2();
+    });
+
+    _updateWordList();
+    _renderWords_v2();
+
     return {
         ele_root,
-        update,
+        active,
+        setSync,
+        deactive,
         keyEvent,
         getSelectedWords,
     }
