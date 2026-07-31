@@ -99,12 +99,6 @@ body {
     gap: 0.25rem;
 }
 
-.aaaa {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .sec-btn {
     padding: 0.5rem 0.5rem;
     font-weight: 700;
@@ -174,39 +168,6 @@ body {
 
 .card-notes-sentence {
     display: flex;
-}
-
-.icon-btn {
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #8c8c8c;
-    transition: all 0.2s ease;
-}
-
-.icon-btn svg {
-    width: 16px;
-    height: 16px;
-}
-
-.icon-btn:hover {
-    color: #1890ff;
-    background-color: #f0f7ff;
-}
-
-.icon-btn:active {
-    transform: scale(0.92);
-}
-
-.icon-btn-edit {
-    position: absolute;
-    top: 0;
-    right: 0;
 }
 
 .card p {
@@ -1076,9 +1037,47 @@ details[open] summary::after {
 }
 
 .icon {
-    display: inline-block;
-    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon svg {
     pointer-events: none;
+}
+
+.icon-btn {
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #8c8c8c;
+    transition: all 0.1s ease;
+}
+
+.svg-color {
+    fill: var(--btn-primary);
+}
+
+.icon-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-btn:hover {
+    color: #1890ff;
+    background-color: #f0f7ff;
+}
+
+.icon-btn:active {
+    transform: scale(0.92);
+}
+
+.icon-btn-edit {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .bs-flex-between {

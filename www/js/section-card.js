@@ -15,22 +15,28 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     <div id="id-body">
         <div class="vocab-header">
             <div id="vocab"></div>
-            <button id="btn-pronounce" class="icon-btn s28px">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
+            <button id="btn-pronounce" class="icon-btn icon s28px">
+                <svg viewBox="0 0 24 24"
+                    fill="none" 
                     stroke="currentColor"
                     stroke-width="2"
                     stroke-linecap="round"
-                    stroke-linejoin="round">
-
+                    stroke-linejoin="round"
+                >
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                     <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                 </svg>
             </button>
-            <button id="card-edit-btn" class="icon-btn s28px">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button id="card-edit-btn" class="icon-btn icon s28px">
+                <svg 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    stroke-width="2" 
+                    stroke-linecap="round" 
+                    stroke-linejoin="round"
+                >
                     <path d="M12 20h9"></path>
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                 </svg>

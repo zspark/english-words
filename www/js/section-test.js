@@ -178,7 +178,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
         }
     });
 
-    ele_action_input.addEventListener("keydown", function(e) {
+    ele_action_input.addEventListener("keydown", function (e) {
         if (e.key !== "Enter")
             return;
 
@@ -237,8 +237,8 @@ ${JSON.stringify(_requirement, null, 4)}`);
                 _s = _detail.ipa
                 break;
             case "pronunciation":
-                _s = `<button id="btn-pronounce" class="icon-btn s28px" title="发音">
-    <svg xmlns="http://www.w3.org/2000/svg"
+                _s = `<button id="btn-pronounce" class="icon-btn icon s28px">
+    <svg
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -352,21 +352,7 @@ ${JSON.stringify(_requirement, null, 4)}`);
         ele_testingType.querySelector("select").dispatchEvent(new Event("change", { bubbles: true }));
     }
 
-    function keyEvent(event) {
-        // if (!_activedWordElem) return;
-
-        if (event.key === "d") {
-            // _activeWord(_activedWordElem.nextElementSibling);
-        } else if (event.key === "e") {
-            // _activeWord(_activedWordElem.previousElementSibling);
-        } else if (event.key === "f") {
-            // card.pronounceShownWord();
-        } else if (event.key === "s") {
-            // _toggleWordSelection(_activedWordElem, true);
-            // _updateStatus();
-        }
-
-    }
+    function keyEvent(event) { }
 
     function saveTestResult(results) {
         results.forEach(item => {
