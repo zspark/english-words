@@ -19,7 +19,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         "1": "N",
         "2": "R",
         "3": "N",
-        active: 0,
+        "active": "0",
     }
 
     const selectedWords = _rts.selectedWords;
@@ -28,7 +28,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     const wordListSource = `
 <div class="bs-panel">
     <div class="controls">
-        ${cmp.buttonGroupSource('id-btnsSort', ['Time', 'AZ', 'Level', 'Random'], ["active"])}
+        ${cmp.buttonGroupSource('id-btnsSort', ['Time', 'AZ', 'Level', 'Random'], [])}
     </div>
 
     <div id="current-status" class="status-bar">
@@ -40,9 +40,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
 <div id="id-cardContainer"> </div>
 `
-
-
-
     const ele_root = document.createElement("div");
     ele_root.className = "container";
     ele_root.innerHTML = wordListSource;
@@ -100,12 +97,12 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     }
 
 
-    const _renderWords = (function() {
+    const _renderWords = (function () {
 
         let _previousStartItem = -1;
         let _previousEndItem = -1;
 
-        return function(force = false) {
+        return function (force = false) {
             //console.time('search');
             if (_filteredCount === 0) {
                 ele_wordList.innerHTML = '<li class="no-results">word not found.</li>';
@@ -191,7 +188,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         selectedWords.length = 0;
     }
 
-    (function() {
+    (function () {
         function _getSiblingsBetween(el1, el2) {
             if (el1.parentElement !== el2.parentElement) {
                 return [];
@@ -296,15 +293,35 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _rts.activedWord = _w;
         }
     }
+    function _renderSortCaption(sortBtn, targetCaption = null) {
+        const _ds = sortBtn.dataset;
+        if (!targetCaption) {
+            targetCaption = _ds.order == "R" ? "N" : "R";
+        }
+        _ds.order = targetCaption;
+        if (targetCaption === "R") {
+            sortBtn.innerHTML = _ds.caption.split('').reverse().join('');
+        } else {
+            sortBtn.innerHTML = _ds.caption;
+        }
+    }
 
+    let _currentSortBtn = null;
     const ele_btnsSort = ele_root.querySelector('#id-btnsSort');
-    let _currentSortBtn = [...ele_btnsSort.querySelectorAll("button")]
-        .map(ele => {
-            ele.dataset.order = 'N';
-            ele.dataset.caption = ele.innerHTML;
-            return ele;
-        })
-        .filter(ele => ele.classList.contains('active'))[0];
+    {
+        const _arr = [...ele_btnsSort.querySelectorAll("button")];
+        for (let i = 0, N = _arr.length; i < N; ++i) {
+            let _ds = _arr[i].dataset;
+            let _o = _rts.sort[i + ""];
+            _ds.order = _o;
+            _ds.caption = _arr[i].innerHTML;
+            _renderSortCaption(_arr[i], _o);
+        }
+        _currentSortBtn = _arr[Number(_rts.sort.active)]
+        _currentSortBtn.classList.add("active");
+        const _ds = _currentSortBtn.dataset;
+        _sortFn = _sortFnMap[_ds.index][_ds.order];
+    }
 
     ele_btnsSort.addEventListener('click', (e) => {
         const _ds = e.target.dataset;
@@ -313,16 +330,10 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _currentSortBtn?.classList.remove('active');
             _currentSortBtn = e.target;
         } else {
-
-            if (_ds.order === "N") {
-                _ds.order = "R";
-                _currentSortBtn.innerHTML = _ds.caption.split('').reverse().join('');
-            } else {
-                _ds.order = "N";
-                _currentSortBtn.innerHTML = _ds.caption
-            }
+            _renderSortCaption(_currentSortBtn);
         }
         _sortFn = _sortFnMap[_ds.index][_ds.order]
+        _rts.sort['active'] = _ds.index;
         _rts.sort[_ds.index] = _ds.order;
         dictionary.saveRuntimeStatus();
 

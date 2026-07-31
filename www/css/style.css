@@ -84,7 +84,7 @@ body {
     background-color: #f1f5f9;
 
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: auto 1fr;
     align-items: center;
     width: 100%;
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 8px 16px -6px rgba(0, 0, 0, 0.08);
@@ -93,7 +93,6 @@ body {
 #top-bar-right,
 #top-bar-left {
     display: flex;
-    justify-content: space-evenly;
     padding: 0.25rem;
     border-radius: 8px;
     gap: 0.25rem;
@@ -1524,5 +1523,10 @@ details[open] summary::after {
 
     .bs-btn {
         padding: 6px 10px;
+    }
+
+    #top-bar-right,
+    #top-bar-left {
+        justify-content: space-evenly;
     }
 }

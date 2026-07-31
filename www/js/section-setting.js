@@ -33,19 +33,20 @@ ${cmp.radioButtonSource("id-radio-label", "Merge Strategy", ['Append', 'Replace'
         ${cmp.buttonGroupSource(
         'btn-modal-sync',
         [
-            `<svg class="icon s21px" fill="#8e2fe6" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+            `<svg class="s21px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
 <path d="M470.7,277.2c3-11.2,4.7-22.9,4.7-35c0-75.8-61.4-137.1-137.1-137.1c-19.5,0-38,4.1-54.7,11.4
 	c-16.8-39-55.6-66.3-100.7-66.3c-60.6,0-109.7,49.1-109.7,109.7c0,4.1,0.8,7.9,1.2,11.9C30.5,192.1,0,236.3,0,287.9
 	c0,70.7,57.3,128,128,128h310.9c40.4,0,73.1-32.7,73.1-73.1C512,313.8,495.1,289.1,470.7,277.2z M292.6,251.3v91.4h-73.1v-91.4
 	h-54.9l91.4-91.4l91.4,91.4H292.6z"/>
 </svg>`,
-            `<svg class="icon s21px" fill="#3642ff" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+            `<svg class="s21px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
 <path d="M470.7,280.2c3-11.2,4.7-22.9,4.7-35c0-75.8-61.4-137.1-137.1-137.1c-19.5,0-38,4.1-54.7,11.4
 	c-16.8-39-55.6-66.3-100.7-66.3c-60.6,0-109.7,49.1-109.7,109.7c0,4.1,0.8,7.9,1.2,11.9C30.5,195.1,0,239.3,0,290.9
 	c0,70.7,57.3,128,128,128h310.9c40.4,0,73.1-32.7,73.1-73.1C512,316.8,495.1,292.1,470.7,280.2z M256,364l-91.4-91.4h54.9v-91.4
 	h73.1v91.4h54.9L256,364z"/>
 </svg>`
         ],
+        ['icon','icon']
     )}
     </div>
     <div class="bs-right-align">
