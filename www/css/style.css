@@ -19,6 +19,7 @@
 }
 
 html {
+    font-size: 16px;
     background: var(--color-background);
     color: var(--color-font);
     font-family: var(--font-background);
@@ -90,12 +91,18 @@ body {
 }
 
 #top-bar-right,
-#top-bar-left{
+#top-bar-left {
     display: flex;
     justify-content: space-evenly;
     padding: 0.25rem;
     border-radius: 8px;
     gap: 0.25rem;
+}
+
+.aaaa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .sec-btn {
@@ -550,7 +557,7 @@ details[open] summary::after {
     border: 2px solid transparent;
     border-radius: 6px;
     width: 100%;
-    height: 80px;
+    height: 88px;
     cursor: pointer;
     position: absolute;
 }
@@ -579,7 +586,6 @@ details[open] summary::after {
     font-family: var(--font-ipa);
     flex-shrink: 0;
     font-style: italic;
-    align-content: center;
 }
 
 .word-meaning {
@@ -1085,10 +1091,12 @@ details[open] summary::after {
     justify-content: flex-end;
     gap: 8px;
 }
+
 .bs-panel-middle {
     grid-column: 2;
     grid-row: 1;
 }
+
 .bs-panel {
     background: white;
     padding: 20px;
@@ -1156,7 +1164,7 @@ details[open] summary::after {
     cursor: pointer;
 }
 
-.bs-input:not(:placeholder-shown) + .bs-input-clear {
+.bs-input:not(:placeholder-shown)+.bs-input-clear {
     display: block;
 }
 
@@ -1481,10 +1489,6 @@ details[open] summary::after {
 }
 
 @media (max-width: 768px) {
-    html {
-        font-size: 14px;
-    }
-
     .container {
         gap: 0px;
         overflow-y: hidden;
@@ -1523,4 +1527,3 @@ details[open] summary::after {
         padding: 6px 10px;
     }
 }
-

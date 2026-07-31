@@ -5,7 +5,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     <div id="sec-read" class="sec-btn">ARTICLE</div>
     <div id="sec-test" class="sec-btn">TEST</div>
     <div id="sec-result" class="sec-btn">STATISTIC</div>
-    <div id="sec-setting" class="sec-btn">
+    <div id="sec-setting" class="sec-btn aaaa">
 
         <svg class="icon s16px" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"

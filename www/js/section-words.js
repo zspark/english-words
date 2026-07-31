@@ -2,7 +2,7 @@
 
 function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigator) {
 
-    const _ITEM_HEIGHT = 80 // px;
+    const _ITEM_HEIGHT = 88 // px;
     const _ITEMS_EACH_SIDE = 4;
 
     const _rts = dictionary.getRuntimeStatus('sec_dict');
@@ -147,7 +147,9 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 <div>
                     <span class="word-ipa">${detail.ipa}</span>
                 </div>
-                <span class="word-meaning">${detail.meaning}</span>`;
+                <div>
+                    <span class="word-meaning">${detail.meaning}</span>
+                </div>`;
     }
 
     function _deleteWord(word) {

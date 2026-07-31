@@ -1,10 +1,12 @@
 
 
 function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
-
-    const _rts = dictionary.getRuntimeStatus('sec_article');
-    _rts.generatedArticle = _rts.generatedArticle || "";
-    _rts.scrollY = _rts.scrollY || 0;
+    function _getRTS() {
+        _rts = dictionary.getRuntimeStatus('sec_article');
+        _rts.generatedArticle = _rts.generatedArticle || "";
+        _rts.scrollY = _rts.scrollY || 0;
+    }
+    _getRTS()
 
     const articleSource = `
 <div class="bs-panel lh2p4">
@@ -96,10 +98,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
     function keyEvent(event) {
     }
 
-    function _getRTS() {
-        _rts = dictionary.getRuntimeStatus('sec_article');
-        _rts.generatedArticle = _rts.generatedArticle || "";
-    }
+
     dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
         logger.debug("[article]");
         if (e.detail.action === "exported") return;

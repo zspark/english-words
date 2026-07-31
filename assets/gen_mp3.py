@@ -74,9 +74,9 @@ def batch_generate_mp3(
 
 # ================= 使用示例 =================
 if __name__ == "__main__":
-    MY_API_KEY = "api-key-here"
+    MY_API_KEY = ""
 
-    words_input = "bagpack,emphasis,plow,mother"
+    words_input = "debris"
 
     batch_generate_mp3(
         words_str=words_input,
