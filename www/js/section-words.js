@@ -252,7 +252,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                         _consecutiveTimes++;
                         if (isMobile()) {
                             //logger.debug("dblclick");
-                            _rts.scrollY = window.scrollY;
+                            window._scrollY = window.scrollY;
                             //logger.debug(`window scrollY is: ${window.scrollY}`);
                             ele_root.classList.add("card-only");
                             window.scrollTo(0, 0);
