@@ -356,7 +356,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 navigator.resetFilter();
                 dictionary.saveRuntimeStatus();
                 _updateWordList();
-                _renderWords();
+                _renderWords(true);
             }
         } else if (event.key === "Delete") {
             if (selectedWords.length != 0) {
@@ -366,7 +366,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 selectedWords.length = 0;
                 dictionary.saveRuntimeStatus();
                 _updateWordList();
-                _renderWords();
+                _renderWords(true);
             }
         }
 
