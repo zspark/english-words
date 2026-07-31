@@ -193,8 +193,7 @@ function initComponents() {
                 ${_okBtnStr}
                 ${_cancelBtnStr}
             </div>
-        </div>
-    `;
+        </div>`;
 
         document.body.appendChild(mask);
 
@@ -213,6 +212,8 @@ function initComponents() {
                 mask.remove();
             };
         }
+
+        return mask;
     }
 
     return {

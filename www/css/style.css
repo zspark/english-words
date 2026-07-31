@@ -595,7 +595,6 @@ details[open] summary::after {
     margin-bottom: 12px;
 }
 
-.tab-btn-22,
 .tab-btn {
     background: none;
     border: none;
@@ -605,35 +604,22 @@ details[open] summary::after {
     border-bottom: 2px solid transparent;
 }
 
-.tab-btn-22 {
-    font-size: 1.1rem;
-}
-
-.tab-btn-22.active,
 .tab-btn.active {
     color: #1890ff;
     border-bottom-color: #1890ff;
     font-weight: 500;
 }
 
-.tab-content-22,
 .tab-content {
     display: none;
 }
 
-.tab-content-22>*,
 .tab-content>* {
     margin-bottom: 0.5rem;
 }
 
 .tab-content.active {
     display: block;
-}
-
-.tab-content-22.active {
-    display: block;
-    margin-left: 0.8rem;
-    margin-right: 0.8rem;
 }
 
 .file-input {
@@ -1522,7 +1508,7 @@ details[open] summary::after {
     }
 
     .bs-btn {
-        padding: 6px 10px;
+        padding: 10px 20px;
     }
 
     #top-bar-right,

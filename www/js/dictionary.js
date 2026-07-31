@@ -25,47 +25,50 @@ function initDictionary(ff) {
         return { save, get, remove, empty }
     }
 
-    async function loadData() {
+    async function _toServer(data) {
         const userID = ai_api.userID
-        if (!userID) return;
-        const response = await fetch("../api/data", {
+        if (!userID) {
+            logger.warn(`Need to provide user ID`);
+            return;
+        }
+
+        _dispDictEvt(`begin:${data.requestType}`);
+        logger.log(`C -> S request type: ${data.requestType}`);
+        data.userID = userID;
+        const _response = await fetch("../api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ userID, requestType: "get" }, null, 4),
+            body: JSON.stringify(data, null, 4),
         });
-        const data = await response.json();
-        if (data.success) {
-            importDictionaryByContent(data.content);
-        } else {
-            logger.error(data.info);
+
+        try {
+            const _responseData = await _response.json();
+            if (_responseData.success) {
+                if (_responseData.content) importDictionaryByContent(_responseData.content);
+                logger.log(`S -> C ${_responseData.info}`);
+            } else {
+                logger.error(`S -> C ${_responseData.info}`);
+            }
+        } catch (err) {
+            logger.vital(`To server: ${err}`);
         }
+        _dispDictEvt(`end:${data.requestType}`);
+    }
+
+    async function loadData() {
+        _toServer({
+            requestType: "get",
+            lastSyncTime: meta.lastSyncTime || 1,
+        })
     }
 
     async function saveData() {
-        const userID = ai_api.userID
-        if (!userID) return;
-        const json = JSON.stringify({
+        _toServer({
+            requestType: "save",
             content: { __VERSION__, meta, record, dict },
-            userID,
-            requestType: "save"
-        }, null, 4);
-        const response = await fetch("../api/data", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: json,
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            logger.log(`data uploaded.`);
-            alert(`data has been uploaded.`);
-        } else {
-            logger.error(data.info);
-        }
+        })
     }
 
     const _AIProxy = createStorageProxy('__AICache__');
@@ -120,14 +123,13 @@ function initDictionary(ff) {
         }
 
         _dispDictEvt("imported");
-        //alert(`Content has been imported`);
     };
 
     function importDictionaryByFile(file) {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             try {
                 const imported = JSON.parse(e.target.result);
                 if (typeof imported !== "object") {
@@ -135,7 +137,7 @@ function initDictionary(ff) {
                 }
                 importDictionaryByContent(imported);
             } catch (err) {
-                alert("Import failed: " + err.message);
+                logger.vital(`Import failed: ${err.message}`);
             }
         };
         reader.readAsText(file);
@@ -145,7 +147,7 @@ function initDictionary(ff) {
         _metaProxy.remove();
         _recordsProxy.remove();
         _wordsProxy.remove();
-        _dispDictEvt("cleared");
+        _dispDictEvt("delete");
     };
 
     function clearRecords() {
@@ -202,8 +204,11 @@ function initDictionary(ff) {
         }
 
         dict[word] = _detail;
-        _dispEvt(word, _action);
+        _dispWordEvt(word, _action);
         _wordsProxy.save();
+        meta.lastSyncTime = Date.now();
+        _metaProxy.save();
+        _needToUpload = true;
     }
 
     function _addLink(word, linkedWord) {
@@ -219,7 +224,6 @@ function initDictionary(ff) {
             }
         }
         dict[word] = _detail;
-        _wordsProxy.save();
     }
 
     function _removeLink(word, linkedWord) {
@@ -233,27 +237,25 @@ function initDictionary(ff) {
     function deleteWord(word) {
         if (!word || !dict[word]) return;
 
-        // 辅助函数：将字符串安全的转为干净的数组
-        const parseLinks = (str) => {
+        const _parseLinks = (str) => {
             if (!str) return [];
             return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
         };
 
-        // 1. 获取当前单词关联的所有词，转为数组
-        const linksArray = parseLinks(dict[word].links);
-
-        // 2. 移除双向绑定的反向关联（对称清理）
+        const linksArray = _parseLinks(dict[word].links);
         linksArray.forEach(linkedWord => {
             _removeLink(linkedWord, word)
         });
 
-        // 4. 从内存字典中彻底删除该单词
         delete dict[word];
-        _dispEvt(word, "delete");
+        _dispWordEvt(word, "delete");
         _wordsProxy.save();
+        meta.lastSyncTime = Date.now();
+        _metaProxy.save();
+        _needToUpload = true;
     }
 
-    function _dispEvt(word, action) {
+    function _dispWordEvt(word, action) {
         __this__.dispatchEvent(new CustomEvent(EVT_WORD, { detail: { word, action } }));
     }
 
@@ -309,7 +311,9 @@ function initDictionary(ff) {
     function setTags(tags) {
         meta.tags.length = 0;
         meta.tags.push(...tags);
+        meta.lastSyncTime = Date.now();
         _metaProxy.save();
+        _needToUpload = true;
     }
 
     function getNRandomWords(n, out = []) {
@@ -341,6 +345,9 @@ function initDictionary(ff) {
             }
         });
         _recordsProxy.save();
+        meta.lastSyncTime = Date.now();
+        _metaProxy.save();
+        _needToUpload = true;
     }
 
     function getRecords() {
@@ -383,22 +390,38 @@ function initDictionary(ff) {
         _AIProxy.save();
     }
 
-    function getSyncTime() {
-        if (!meta.syncTime) return 60;
-        return meta.syncTime;
+    function getSyncInterval() {
+        if (!meta.syncTime) return 10;
+        return Number(meta.syncTime);
     }
 
-    let _syncTimer = null;
-    function setSyncTime(second) {
-        meta.syncTime = second > 0 ? second : 1000;
+    let _needToUpload = false;
+    function setSyncInterval(second) {
+        second = second > 0 ? second : getSyncInterval();
+        meta.syncTime = second;
+        meta.lastSyncTime = Date.now();
         _metaProxy.save();
-        /*
-        clearInterval(_syncTimer);
-        _syncTimer = setInterval(e => {
-            saveData();
-        }, second);
-        */
+        _needToUpload = true;
+        _timer();
     }
+
+    const _timer = (function () {
+        let _syncTimer;
+
+        const _fn = function () {
+            clearInterval(_syncTimer);
+            _syncTimer = setInterval(() => {
+                if (_needToUpload) {
+                    saveData();
+                    _needToUpload = false;
+                }
+            }, getSyncInterval() * 1000);
+        }
+
+        _fn();
+        return _fn;
+    })()
+
 
     const EVT_WORD = "evt_word";
     const EVT_DICT = "evt_dict";
@@ -436,8 +459,8 @@ function initDictionary(ff) {
         setAPI,
         getUserID,
         setUserID,
-        getSyncTime,
-        setSyncTime,
+        getSyncInterval,
+        setSyncInterval,
     })
     return __this__;
 }

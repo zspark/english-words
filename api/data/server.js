@@ -56,6 +56,7 @@ export default {
 
         const requestType = data.requestType;
         const userID = data.userID;
+        const lastSyncTime = data.lastSyncTime;
         const _exist = await checkUserExists(env, userID);
         if (!_exist) {
             return Response.json(
@@ -85,7 +86,6 @@ export default {
         // =========================
         // GET DATA
         // =========================
-
         if (requestType === "get") {
 
             const result = await env.DB
@@ -98,36 +98,38 @@ export default {
                 .first();
 
             if (!result) {
-                return Response.json(
-                    {
-                        success: false,
-                        info: "User data not found",
-                        userID: userID
-                    },
-                    { status: 404 }
-                );
+                return Response.json({
+                    success: false,
+                    info: "User data not found",
+                    userID: userID
+                }, { status: 404 });
             }
-
-            let content;
 
             try {
-                content = JSON.parse(result.content);
-            } catch {
-                return Response.json(
-                    {
-                        success: false,
-                        info: "Stored content is invalid JSON",
+                const content = JSON.parse(result.content);
+                if (lastSyncTime > content.meta.lastSyncTime) {
+                    return Response.json({
+                        success: true,
+                        info: "Already Synced.",
                         userID: userID
-                    },
-                    { status: 500 }
-                );
+                    });
+                } else {
+                    return Response.json({
+                        success: true,
+                        info: "Going to Sync.",
+                        userID: userID,
+                        content: content
+                    });
+                }
+            } catch {
+                return Response.json({
+                    success: false,
+                    info: "Stored content is invalid JSON",
+                    userID: userID
+                }, { status: 500 });
             }
 
-            return Response.json({
-                success: true,
-                userID: userID,
-                content: content
-            });
+
         }
 
         // =========================
@@ -139,14 +141,11 @@ export default {
             const content = data.content;
 
             if (content === undefined) {
-                return Response.json(
-                    {
-                        success: false,
-                        info: "content is required",
-                        userID: userID
-                    },
-                    { status: 400 }
-                );
+                return Response.json({
+                    success: false,
+                    info: "content is required",
+                    userID: userID
+                }, { status: 400 });
             }
 
             const contentJSON = JSON.stringify(content);
@@ -180,13 +179,10 @@ export default {
         // Unknown request type
         // =========================
 
-        return Response.json(
-            {
-                success: false,
-                info: "Unknown requestType",
-                userID: userID
-            },
-            { status: 400 }
-        );
+        return Response.json({
+            success: false,
+            info: "Unknown requestType",
+            userID: userID
+        }, { status: 400 });
     }
 };

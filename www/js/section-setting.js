@@ -1,64 +1,48 @@
 
+
+
 function initSectionImport(ai, dictionary, cmp) {
-    const _dataSource = `
-${cmp.radioButtonSource("id-radio-label", "Merge Strategy", ['Append', 'Replace'], 0)}
-
-<div>
-    <label class="bs-title"> Import Methods </label>
-    <div class="tab-header">
-        <button class="tab-btn active" data-tab="text-tab">Pure JSON Text</button>
-        <button class="tab-btn" data-tab="file-tab">Local File</button>
-    </div>
-
-    <div id="id-tab-body">
-        <div id="text-tab" class="tab-content active">
-            ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
-        </div>
-
-        <div id="file-tab" class="tab-content">
-            <input type="file" id="import-file" accept=".json" class="bs-file-input" style="display:none;">
-
-            <label for="import-file" class="bs-file-box h300px">
-                <div class="bs-file-icon">📁</div>
-                <div class="bs-file-title">Click to Select File</div>
-                <div class="bs-file-desc"> Only Supports .json</div>
-            </label>
-        </div>
-
-    </div>
-</div>
-
+    const _jsonSource = `
+${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
 <div class="mt20px bs-flex-between">
     <div class="bs-left-align">
         ${cmp.buttonGroupSource(
         'btn-modal-sync',
         [
             `<svg class="s21px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
-<path d="M470.7,277.2c3-11.2,4.7-22.9,4.7-35c0-75.8-61.4-137.1-137.1-137.1c-19.5,0-38,4.1-54.7,11.4
-	c-16.8-39-55.6-66.3-100.7-66.3c-60.6,0-109.7,49.1-109.7,109.7c0,4.1,0.8,7.9,1.2,11.9C30.5,192.1,0,236.3,0,287.9
-	c0,70.7,57.3,128,128,128h310.9c40.4,0,73.1-32.7,73.1-73.1C512,313.8,495.1,289.1,470.7,277.2z M292.6,251.3v91.4h-73.1v-91.4
-	h-54.9l91.4-91.4l91.4,91.4H292.6z"/>
-</svg>`,
+                <path d="M470.7,277.2c3-11.2,4.7-22.9,4.7-35c0-75.8-61.4-137.1-137.1-137.1c-19.5,0-38,4.1-54.7,11.4
+                    c-16.8-39-55.6-66.3-100.7-66.3c-60.6,0-109.7,49.1-109.7,109.7c0,4.1,0.8,7.9,1.2,11.9C30.5,192.1,0,236.3,0,287.9
+                    c0,70.7,57.3,128,128,128h310.9c40.4,0,73.1-32.7,73.1-73.1C512,313.8,495.1,289.1,470.7,277.2z M292.6,251.3v91.4h-73.1v-91.4
+                    h-54.9l91.4-91.4l91.4,91.4H292.6z"/>
+                </svg>`
+            ,
             `<svg class="s21px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
-<path d="M470.7,280.2c3-11.2,4.7-22.9,4.7-35c0-75.8-61.4-137.1-137.1-137.1c-19.5,0-38,4.1-54.7,11.4
-	c-16.8-39-55.6-66.3-100.7-66.3c-60.6,0-109.7,49.1-109.7,109.7c0,4.1,0.8,7.9,1.2,11.9C30.5,195.1,0,239.3,0,290.9
-	c0,70.7,57.3,128,128,128h310.9c40.4,0,73.1-32.7,73.1-73.1C512,316.8,495.1,292.1,470.7,280.2z M256,364l-91.4-91.4h54.9v-91.4
-	h73.1v91.4h54.9L256,364z"/>
-</svg>`
+                <path d="M470.7,280.2c3-11.2,4.7-22.9,4.7-35c0-75.8-61.4-137.1-137.1-137.1c-19.5,0-38,4.1-54.7,11.4
+                    c-16.8-39-55.6-66.3-100.7-66.3c-60.6,0-109.7,49.1-109.7,109.7c0,4.1,0.8,7.9,1.2,11.9C30.5,195.1,0,239.3,0,290.9
+                    c0,70.7,57.3,128,128,128h310.9c40.4,0,73.1-32.7,73.1-73.1C512,316.8,495.1,292.1,470.7,280.2z M256,364l-91.4-91.4h54.9v-91.4
+                    h73.1v91.4h54.9L256,364z"/>
+                </svg>`
         ],
-        ['icon','icon']
+        ['icon', 'icon']
     )}
     </div>
     <div class="bs-right-align">
-        ${cmp.buttonGroupSource(
-        'btn-modal-submit',
-        [
-            'Export',
-            'Import',
-            'Delete'
-        ],
-    )}
+        ${cmp.buttonGroupSource('btn-modal-submit', ['Import', 'Delete'])}
     </div>
+</div>`;
+
+
+    const _fileSource = `
+<input type="file" id="import-file" accept=".json" class="bs-file-input" style="display:none;">
+
+<label for="import-file" class="bs-file-box h300px">
+    <div class="bs-file-icon">📁</div>
+    <div class="bs-file-title">Click to Select File</div>
+    <div class="bs-file-desc"> Only Supports .json</div>
+</label>
+
+<div class="bs-right-align mt20px">
+    ${cmp.buttonGroupSource('btn-file-submit', ['Export',])}
 </div>`;
 
     const _configSource = `
@@ -76,19 +60,22 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     ${cmp.buttonGroupSource('btn-ai-submit', ['Generate'])}
 </div>`;
 
+
     const source = `
 <div id="id-form" class='bs-panel bs-panel-middle'>
 
     <div class="tab-header">
-        <button class="tab-btn-22 active" data-tab="dict-tab">Dictionary</button>
-        <button class="tab-btn-22" data-tab="ai-tab">AI Support</button>
-        <button class="tab-btn-22" data-tab="config-tab">Config</button>
+        <button class="tab-btn active" data-tab="json-tab">Pure JSON Text</button>
+        <button class="tab-btn" data-tab="ai-tab">AI Support</button>
+        <button class="tab-btn" data-tab="file-tab">Local File</button>
+        <button class="tab-btn" data-tab="config-tab">Config</button>
     </div>
 
     <div id="id-tab-body">
-        <div id="dict-tab" class="tab-content-22 active"> ${_dataSource} </div>
-        <div id="ai-tab" class="tab-content-22"> ${_aiAssist} </div>
-        <div id="config-tab" class="tab-content-22"> ${_configSource} </div>
+        <div id="json-tab" class="tab-content active"> ${_jsonSource} </div>
+        <div id="ai-tab" class="tab-content"> ${_aiAssist} </div>
+        <div id="file-tab" class="tab-content"> ${_fileSource} </div>
+        <div id="config-tab" class="tab-content"> ${_configSource} </div>
     </div>
 </div>`;
 
@@ -106,7 +93,8 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     const _ele_importByFile = ele_root.querySelector("#id-tab-body #import-file");
     _ele_importByFile.addEventListener("change", (event) => {
         if (!event.target.files || (!event.target.files.length === 0)) {
-            alert("请先选择一个 JSON 文件！");
+            alert("Choose a Json file!");
+            logger.warn("Choose a Json file!");
             return;
         }
 
@@ -123,11 +111,6 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
             return;
         }
 
-        const _mode = _ele_radios.querySelector('input[type="radio"]:checked').id.toLowerCase().trim(); // 'append' or 'replace'
-        if (_mode === "replace") {
-            dictionary.clearDictionary()
-        }
-
         if (isFile) {
             dictionary.importDictionaryByFile(content)
         } else {
@@ -139,8 +122,6 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 
     const _ele_importByJSON = ele_root.querySelector("#id-tab-body #import-text textarea");
     const _ele_importByAI = ele_root.querySelector("#id-tab-body #import-ai textarea");
-    const _ele_radios = ele_root.querySelector('#id-radio-label');
-    ////_ele_radios.addEventListener("change", e => { logger.log('aaa'); });
 
     async function _copyText(text) {
         try {
@@ -174,7 +155,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
             dictionary.setTags(_tags);
             dictionary.setAPI(elem_key.value);
             dictionary.setUserID(elem_user.value);
-            dictionary.setSyncTime(elem_syncInerval.value);
+            dictionary.setSyncInterval(elem_syncInerval.value);
         }
     });
 
@@ -195,7 +176,6 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         }
     });
 
-    _registTabComponent(ele_root, "tab-btn-22", "tab-content-22");
     _registTabComponent(ele_root, "tab-btn", "tab-content");
     const btnSync = ele_root.querySelector("#btn-modal-sync");
     btnSync.addEventListener("click", async (e) => {
@@ -208,15 +188,16 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
     btnSubmit.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "0") {
-            dictionary.exportDatabase();
-        } else if (e.target.dataset.index === "2") {
-            dictionary.clearDictionary();
+            const _rawData = _ele_importByJSON.value.trim();
+            _importss(_rawData, false);
         } else if (e.target.dataset.index === "1") {
-            if (activeTab === "text-tab") {
-                const _rawData = _ele_importByJSON.value.trim();
-
-                _importss(_rawData, false);
-            }
+            dictionary.clearDictionary();
+        }
+    });
+    const btnExport = ele_root.querySelector("#btn-file-submit");
+    btnExport.addEventListener("click", async (e) => {
+        if (e.target.dataset.index == "0") {
+            dictionary.exportDatabase();
         }
     });
 
@@ -227,7 +208,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         elem_tags.value = dictionary.getTags().join(',');
         elem_key.value = dictionary.getAPI();
         elem_user.value = dictionary.getUserID();
-        elem_syncInerval.value = dictionary.getSyncTime();
+        elem_syncInerval.value = dictionary.getSyncInterval();
     }
     function keyEvent() { }
 

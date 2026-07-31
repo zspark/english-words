@@ -100,7 +100,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
 
     dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
-        logger.debug("[article]");
+        // logger.debug("[article]");
         if (e.detail.action === "exported") return;
         _getRTS();
         if (ele_root.isConnected) {

@@ -22,7 +22,7 @@ const _PLF_MACOS_ = "macOS";
 const _PLF_LINUX_ = "Linux";
 const _PLF_ANDROID_ = "Android";
 
-const _PLATFORM_ = (function() {
+const _PLATFORM_ = (function () {
     const ua = navigator.userAgent;
 
     if (/Android/i.test(ua)) return _PLF_ANDROID_;
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     _switchToSection(_rts.sectionID);
 
     window.addEventListener('scroll', () => {
-        //logger.log(window.scrollY);
+        //logger.debug(window.scrollY);
         ele_button.style.display = window.scrollY > 200 ? 'block' : 'none';
         _currentSection.setSync(window.scrollY);
         dictionary.saveRuntimeStatus();
@@ -171,6 +171,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    // dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
+    //     if (e.detail.action === "begin:sync") {
+    //         const _mask = components.showMask(`<p>Dictionary is Sync ...</p>`);
+    //     } else if (e.detail.action === "end:sync") {
+    //         logger.log("syncd");
+    //     }
+    // });
+
     if (dictionary.isDatabaseEmpty()) {
         components.showMask(`
 <p>This website is still under developing, more patience and tolerance would be much appriciated.</p>
@@ -179,5 +187,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
         );
     }
 
+    dictionary.loadData();
 });
 

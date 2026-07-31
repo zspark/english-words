@@ -78,7 +78,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         const startItem = Math.min(Math.floor(_topY / _ITEM_HEIGHT), _filteredCount);
         const _bottomY = _rts.scrollY + window.innerHeight + _ITEMS_EACH_SIDE * _ITEM_HEIGHT;
         const endItem = Math.min(Math.ceil(_bottomY / _ITEM_HEIGHT), _filteredCount);
-        logger.debug(`startItem:${startItem}, endItem:${endItem}`);
+        // logger.debug(`startItem:${startItem}, endItem:${endItem}`);
 
         return {
             startItem,
@@ -151,8 +151,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     function _deleteWord(word) {
         if (!word) return;
-        const _elem = ele_root.querySelector(`li[data-word="${word}"]`);
-        _elem?.remove();
+        _updateWordList();
+        _renderWords(true);
     }
 
     function _updateWord(word) {
@@ -190,7 +190,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     (function () {
         function _getSiblingsBetween(el1, el2) {
-            if (el1.parentElement !== el2.parentElement) {
+            if (el1?.parentElement !== el2?.parentElement) {
                 return [];
             }
 
@@ -398,9 +398,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     dictionary.addEventListener(dictionary.EVT_DICT, e => {
         // logger.log(e);
+
+        _updateWordList();
+        _renderWords();
         if (e.detail.action === "imported") {
-            _updateWordList();
-            _renderWords();
+        } else if (e.detail.action === "delete") {
         }
     });
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
