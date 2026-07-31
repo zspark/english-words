@@ -138,10 +138,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _currentSection.active();
     }
 
-
-    const _rts = dictionary.getRuntimeStatus('homepage');
-    _rts.sectionID = _rts.sectionID || "sec-dictionary";
-
     _navigator = initNavigator(document.body, components, dictionary, _switchToSection, () => { });
     section_card = initCardSection(_ai, dictionary, components, pronunciation);
     section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation, _navigator);
@@ -159,6 +155,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
         event.stopImmediatePropagation()
     })
 
+    const _rts = dictionary.getRuntimeStatus('homepage');
+    _rts.sectionID = _rts.sectionID || "sec-dictionary";
+    logger.log(`current section id: ${_rts.sectionID}`);
     _switchToSection(_rts.sectionID);
 
     window.addEventListener('scroll', () => {

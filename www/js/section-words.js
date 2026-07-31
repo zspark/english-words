@@ -299,6 +299,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             targetCaption = _ds.order == "R" ? "N" : "R";
         }
         _ds.order = targetCaption;
+        if (_ds.caption == 'Random') return;
         if (targetCaption === "R") {
             sortBtn.innerHTML = _ds.caption.split('').reverse().join('');
         } else {
@@ -336,8 +337,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _rts.sort['active'] = _ds.index;
         _rts.sort[_ds.index] = _ds.order;
         dictionary.saveRuntimeStatus();
-
-        if (_ds.caption == 'Random') _currentSortBtn.innerHTML = _ds.caption;
         _sortFn && _sortFn(_words);
         _renderWords(true);
     });
@@ -390,12 +389,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _activeWord(_activedWordElem.previousElementSibling);
         } else if (event.key === "a") {
             pronunciation.pronounce(_activedWordElem?.dataset?.word)
-        } else if (event.key === "s") {
-            //ele_content.replaceChildren(ele_wordList);
-            //window.scrollTo(0, _scrollPos);
-        } else if (event.key === "f") {
-            //_scrollPos = window.scrollY;
-            //ele_content.replaceChildren(ele_card);
         }
     }
 
