@@ -42,6 +42,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             if (resultText) {
                 _rts.generatedArticle = resultText;
                 dictionary.saveRuntimeStatus();
+                dictionary.saveRecords();
             }
             _renderArticle();
 

@@ -152,6 +152,12 @@ function initDictionary(ff) {
 
     function clearRecords() {
         _recordsProxy.remove();
+        _needToUpload = true;
+    };
+
+    function saveRecords() {
+        _recordsProxy.save();
+        _needToUpload = true;
     };
 
     function _fillDetailInfosIfMissing(detail) {
@@ -462,6 +468,7 @@ function initDictionary(ff) {
 
         getRecords,
         clearRecords,
+        saveRecords,
 
         getRuntimeStatus,
         saveRuntimeStatus,
