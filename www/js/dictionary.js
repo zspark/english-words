@@ -380,7 +380,13 @@ function initDictionary(ff) {
         return ai_api.key;
     }
 
-    function setAPI(key) {
+    function getAIProvider() {
+        if (!ai_api.provider) return ''
+        return ai_api.provider;
+    }
+
+    function setAPI(provider, key) {
+        ai_api.provider = provider;
         ai_api.key = key;
         _AIProxy.save();
     }
@@ -462,6 +468,8 @@ function initDictionary(ff) {
 
         getAPI,
         setAPI,
+        getAIProvider,
+
         getUserID,
         setUserID,
         getSyncInterval,

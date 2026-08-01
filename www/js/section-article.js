@@ -28,8 +28,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
     ele_action_gen.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {
-            alert("Function is under construction!");
-            /*
+            // alert("Function is under construction!");
             const pickedArray = section_words.getSelectedWords();
 
             if (pickedArray.length === 0) {
@@ -39,19 +38,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
             ele_action_gen.disabled = true;
             ele_article.innerHTML = "AI正在构思故事中...";
-
-            const wordsListString = pickedArray.join(', ');
-            const _question = `你是一个优秀的英语创意写作导师。
-
-请使用以下指定的英语单词串联编写一篇简短、流畅且富有创意的英语短文或小故事（字数在 100-150 字左右）。
-必须包含的单词是：[ ${wordsListString} ]。
-要求：
- 1. 文中的这些目标单词请用<span class="word">（HTML元素）标注出来。
- 2. 语言要自然，不要生硬堆砌。
- 3. 指定单词可以重复。
- 4. 必要的时候用\n开启新的段落。
-`;
-            const resultText = await ai.askChatGPT(_question);
+            const resultText = await ai.genArticle(pickedArray.join(', '));
             if (resultText) {
                 _rts.generatedArticle = resultText;
                 dictionary.saveRuntimeStatus();
@@ -59,7 +46,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             _renderArticle();
 
             ele_action_gen.disabled = false;
-            */
+
         }
     });
 

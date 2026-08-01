@@ -49,7 +49,10 @@ ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database co
 ${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
 ${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
 ${cmp.inputSource("id-syncInterval", "Sync Interval", "how many seconds?.", false)}
-${cmp.inputSource("id-APIKEY-chatGPT", "API KEY", "input ChatGPT API KEY.", false)}
+<div class="form-row">
+    ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
+    ${cmp.dropdownSource("id-provider", null, ["ChatGPT", "DeepSeek"], 0)}
+</div>
 <div class="bs-right-align mt20px">
     ${cmp.buttonGroupSource('btn-config-submit', ['Save'])}
 </div>`;
@@ -88,7 +91,8 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     const elem_user = ele_root.querySelector("#id-userID input");
     elem_user.type = 'password';
     const elem_syncInerval = ele_root.querySelector("#id-syncInterval input");
-    const elem_key = ele_root.querySelector("#id-APIKEY-chatGPT input");
+    const elem_key = ele_root.querySelector("#id-APIKEY input");
+    const elem_provider = ele_root.querySelector("#id-provider select");
 
     const _ele_importByFile = ele_root.querySelector("#id-tab-body #import-file");
     _ele_importByFile.addEventListener("change", (event) => {
@@ -153,7 +157,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         if (e.target.dataset.index === "0") {//save
             const _tags = elem_tags.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
             dictionary.setTags(_tags);
-            dictionary.setAPI(elem_key.value);
+            dictionary.setAPI(elem_provider.value, elem_key.value);
             dictionary.setUserID(elem_user.value);
             dictionary.setSyncInterval(elem_syncInerval.value);
         }
@@ -209,6 +213,8 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         elem_key.value = dictionary.getAPI();
         elem_user.value = dictionary.getUserID();
         elem_syncInerval.value = dictionary.getSyncInterval();
+        elem_provider.value = dictionary.getAIProvider();
+
     }
     function keyEvent() { }
 

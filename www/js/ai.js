@@ -1,74 +1,84 @@
 
 function initAI(dictionary) {
+    const _chatGPT = initChatGPT();
+    const _deepseek = initDeepSeek();
 
-    async function askChatGPT(question) {
-        const apiKey = dictionary.getAPI();
-        if (apiKey == "") {
+    function _getAI() {
+        const _apiKey = dictionary.getAPI();
+        if (_apiKey == "") {
             const _s = `You do not config ChatGPT API KEY.`;
             alert(_s);
             logger.log(_s);
-            return
+            return null;
         }
 
-        const response = await fetch("https://api.openai.com/v1/responses", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: "gpt-5.5",
-                input: question
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(await response.text());
+        const _provider = dictionary.getAIProvider().toLowerCase();
+        switch (_provider) {
+            case "chatgpt":
+                return { api: _apiKey, provider: _chatGPT };
+            case "deepseek":
+                return { api: _apiKey, provider: _deepseek };
         }
 
-        const json = await response.json();
-        return json.output.find(item => item.type === "message")
-            ?.content.find(c => c.type === "output_text")
-            ?.text;
+        return null;
     }
 
-    function askChatGPTForWordsInfo(words) {
-        const _question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
+    async function genArticle(wordsString) {
+        const _ai = _getAI();
+        if (_ai) {
+            const question = `你是一个优秀的英语创意写作导师。
 
-这些单词或者短语是（用逗号分开）: ${words}
+请使用以下指定的英语单词串联编写一篇简短、流畅且富有创意的英语短文或小故事。
+必须包含的单词是：[ ${wordsString} ]。
+
+要求：
+1. 文中的这些目标单词请用<span class="word">（HTML元素）标注出来。
+2. 语言要自然，不要生硬堆砌。
+3. 指定单词可以重复。
+4. 必要的时候用\\n开启新的段落。
+5. 没有废话，比如重复我的问题，直接给出短文即可。
+`;
+            logger.log(question);
+            return await _ai.provider.askAI(_ai.api, question);
+        } else {
+            return "";
+        }
+    }
+
+    async function genMeaning(wordsString) {
+        const _ai = _getAI();
+        if (_ai) {
+            const question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
+
+这些单词或者短语是（用逗号分开）:
+${wordsString}
+
 json格式如下：
 {
     "generic": {
-        "ipa": "/dʒǝ'nerɪk/ (这里写音标，美音为主，汉字不必出现)",
-        "level": "from A1 to C2, 填入合理的难度分类",
-        "meaning": "adj. 一般的;属的;类的;非商标的",
-        "links": "一些关联的词语，比如它的名词形式，动词形式，容易读混或者拼写弄错的词，特殊的三单，特殊的ing等等，用英文逗号隔开",
-        "note": "例句，多个例句用换行符隔开"，
-    },
-    ...
+        "ipa": "/dʒəˈnerɪk/",
+        "level": "A1~C2",
+        "meaning": "adj. 一般的；普通的",
+        "links": "generically,genericity",
+        "note": "This is a generic example."
+    }
 }
-    
-要求：
-1）只有meaning使用中文，其他一律英文；
-2）按照常用含义排序，然后依次用不同的意思各造一个句子，最多不要超过5个；
-3）提供的单词在json中全部用小写，例句除外。；
-4）提供的关联词忽略大小写，比如ok与Ok是一样的，不要重复记录；`
 
-        logger.log(_question);
-        return _question;
-        //const resultText = await askChatGPT(_question);
-        //return resultText;
+要求：
+1. 只有meaning使用中文，其他全部使用英文；
+2. 按照常用含义排序，然后依次用不同意思造句，最多5个；
+3. 所有单词作为JSON键时全部小写；
+4. links去重，英文逗号分隔。`;
+
+            logger.log(question);
+            return await _ai.provider.askAI(_ai.api, question);
+        } else {
+            return "";
+        }
     }
 
-    // 使用
-    /*
-    askChatGPT("介绍一下JavaScript")
-        .then(console.log)
-        .catch(console.error);
-        */
-
     return {
-        askChatGPT,
-        askChatGPTForWordsInfo,
+        genArticle,
+        genMeaning,
     }
 }
