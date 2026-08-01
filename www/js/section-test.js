@@ -289,10 +289,9 @@ ${JSON.stringify(_requirement, null, 4)}`);
     function _newQuestion() {
         clearInterval(timer);
         if (quiz.length <= 0) {
-            logger.error("finished!!!!!");
-            saveTestResult(_runtimeContext.results);
-            ele_root.replaceChildren(ele_result);
+            logger.log("finished!!!!!");
             renderTestResult(_runtimeContext.results);
+            ele_root.replaceChildren(ele_result);
             dictionary.setTestingResult(_runtimeContext.results);
             return
         }
@@ -354,38 +353,6 @@ ${JSON.stringify(_requirement, null, 4)}`);
 
     function keyEvent(event) { }
 
-    function saveTestResult(results) {
-        results.forEach(item => {
-            updateWordStatistics(item.word, item.correct);
-        });
-    }
-
-    function updateWordStatistics(word, correct) {
-        const stats =
-            JSON.parse(
-                localStorage.getItem("word_test_statistics")
-                || "{}"
-            );
-
-        if (!stats[word]) {
-            stats[word] = {
-                attempts: 0,
-                correct: 0
-            };
-        }
-
-        stats[word].attempts++;
-
-        if (correct) {
-            stats[word].correct++;
-        }
-
-        localStorage.setItem(
-            "word_test_statistics",
-            JSON.stringify(stats)
-        );
-    }
-
     function renderTestResult(results) {
         const summaryElem = ele_result.querySelector(".bs-test-summary");
         const stats =
@@ -398,12 +365,10 @@ ${JSON.stringify(_requirement, null, 4)}`);
         const correctCount = results.filter(x => x.correct).length;
         const accuracy = Math.round(correctCount * 100 / results.length);
 
-        summaryElem.innerHTML = `
-        <h2>Test Summary</h2>
-        <div> Total: ${results.length} </div>
-        <div> Correct: ${correctCount} </div>
-        ${cmp.progressBarSource("", accuracy)}
-    `;
+        summaryElem.innerHTML = `<h2>Test Summary</h2>
+                                <div> Total: ${results.length} </div>
+                                <div> Correct: ${correctCount} </div>
+                                ${cmp.progressBarSource("", accuracy)}`;
 
         let _s = '';
         results.forEach(result => {
@@ -420,8 +385,7 @@ ${JSON.stringify(_requirement, null, 4)}`);
             <span class="word-meaning">${detail.meaning}</span>
         </label>
     </div>
-</li>
-`;
+</li>`;
         });
 
         ele_wordList.innerHTML = _s;

@@ -78,22 +78,19 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
             _activeWord(_activedWordElem.nextElementSibling);
         } else if (event.key === "e") {
             _activeWord(_activedWordElem.previousElementSibling);
-        } else if (event.key === "f") {
+        } else if (event.key === "a") {
             pronunciation.pronounce(_activedWordElem?.dataset.word)
-        } else if (event.key === "s") {
         }
     }
 
     function _renderResult() {
         const _record = dictionary.getRecords();
-        const shownWord = card.getShownWord();
         let _s = '';
         for (const [word, detail] of Object.entries(_record)) {
             const wordAccuracy = detail.attempts === 0 ? 0 : Math.round(detail.correct * 100 / detail.attempts);
 
-            const _active = shownWord === word ? 'active' : '';
 
-            _s += `<div class="bs-word-result" ${_active} data-word="${word}">
+            _s += `<div class="bs-word-result" data-word="${word}">
     <div class="bs-word-name"> ${word} </div>
     ${cmp.progressBarSource("", wordAccuracy)}
 </div>`
@@ -112,6 +109,13 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
             }
         });
         _activeWord(_target);
+    });
+
+    dictionary.addEventListener(dictionary.EVT_RECORD, e => {
+        // logger.log(e);
+        if (e.detail.action === "new") {
+            _renderResult();
+        }
     });
 
     _renderResult()

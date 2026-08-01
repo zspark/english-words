@@ -256,11 +256,15 @@ function initDictionary(ff) {
     }
 
     function _dispWordEvt(word, action) {
-        __this__.dispatchEvent(new CustomEvent(EVT_WORD, { detail: { word, action } }));
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_WORD, { detail: { word, action } }));
     }
 
     function _dispDictEvt(action) {
-        __this__.dispatchEvent(new CustomEvent(EVT_DICT, { detail: { action } }));
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_DICT, { detail: { action } }));
+    }
+
+    function _dispRecordEvt(action) {
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_RECORD, { detail: { action } }));
     }
 
     function getWordsCount() {
@@ -348,6 +352,7 @@ function initDictionary(ff) {
         meta.lastSyncTime = Date.now();
         _metaProxy.save();
         _needToUpload = true;
+        _dispRecordEvt("new");
     }
 
     function getRecords() {
@@ -423,12 +428,12 @@ function initDictionary(ff) {
     })()
 
 
-    const EVT_WORD = "evt_word";
-    const EVT_DICT = "evt_dict";
+
     const __this__ = new EventTarget()
     Object.assign(__this__, {
-        EVT_WORD,
-        EVT_DICT,
+        EVT_RECORD: "EVT_RECORD",
+        EVT_WORD: "EVT_WORD",
+        EVT_DICT: "EVT_DICT",
 
         loadData,
         saveData,
