@@ -5,7 +5,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     const _ITEM_HEIGHT = 88 // px;
     const _ITEMS_EACH_SIDE = 4;
 
-    const _rts = dictionary.getRuntimeStatus('sec_dict');
+    const _rts = dictionary.getLocalData('sec_dict');
     _rts.selectedWords = _rts.selectedWords || [];
     _rts.activedWord = _rts.activedWord || '';
     _rts.filter = _rts.filter || {
@@ -169,16 +169,15 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         selectedCountSpan.textContent = selectedWords.length;
         filteredCountSpan.textContent = _filteredCount;
         totalCountSpan.textContent = dictionary.getWordsCount();
-        dictionary.saveRuntimeStatus();
+        dictionary.saveLocalData();
     }
 
-    function _add(elemLi, save = false) {
+    function _add(elemLi) {
         const _w = elemLi.dataset.word;
         if (!selectedWords.includes(_w)) {
             selectedWords.push(_w);
             elemLi.setAttribute('select', "");
         }
-        if (save) dictionary.saveRuntimeStatus();
     }
 
     function _clearSelection() {
@@ -217,6 +216,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             const _betweenElem = _getSiblingsBetween(_activedWordElem, elem);
             _betweenElem.forEach(elem => _add(elem, false))
             _updateStatus();
+            dictionary.saveLocalData();
         }
         const TIME_SHRESHOLD = 200; //ms
         let _timeStart = 0;
@@ -267,7 +267,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 //logger.debug("long click (different)");
                 _highlight(_upElem);
             }
-            dictionary.saveRuntimeStatus();
+            dictionary.saveLocalData();
         });
     }())
 
@@ -336,7 +336,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _sortFn = _sortFnMap[_ds.index][_ds.order]
         _rts.sort['active'] = _ds.index;
         _rts.sort[_ds.index] = _ds.order;
-        dictionary.saveRuntimeStatus();
+        dictionary.saveLocalData();
         _sortFn && _sortFn(_words);
         _renderWords(true);
     });
@@ -366,7 +366,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             if (navigator.isFocused()) {
                 navigator.setBlur();
                 navigator.resetFilter();
-                dictionary.saveRuntimeStatus();
+                dictionary.saveLocalData();
                 _updateWordList();
                 _renderWords(true);
             }
@@ -376,7 +376,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                     dictionary.deleteWord(w);
                 })
                 selectedWords.length = 0;
-                dictionary.saveRuntimeStatus();
+                dictionary.saveLocalData();
                 _updateWordList();
                 _renderWords(true);
             }
@@ -400,7 +400,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         // logger.log(e);
 
         _updateWordList();
-        _renderWords();
+        _renderWords(true);
         if (e.detail.action === "imported") {
         } else if (e.detail.action === "delete") {
         }
@@ -437,7 +437,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _rts.filter.tag = tag;
         _activeWord(null);
         _clearSelection();
-        dictionary.saveRuntimeStatus();
+        dictionary.saveLocalData();
         _updateWordList();
         _updateStatus();
         _renderWords(true);

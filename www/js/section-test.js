@@ -1,7 +1,7 @@
 
 
 function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
-    const _rts = dictionary.getRuntimeStatus('sec_test');
+    const _rts = dictionary.getLocalData('sec_test');
     _rts.requirement = _rts.requirement || {
         repeat: 1,
         timeEach: 5,
@@ -208,7 +208,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
         }
 
         Object.assign(_rts.requirement, _requirement);
-        dictionary.saveRuntimeStatus();
+        dictionary.saveLocalData();
 
         logger.debug(`The gathered Infos are:
 ${JSON.stringify(_requirement, null, 4)}`);

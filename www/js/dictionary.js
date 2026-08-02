@@ -2,33 +2,63 @@
 // Word Cache Management
 // ===============================
 
-const __VERSION__ = "0.1.0"
+const __VERSION__ = "0.2.0"
 
 function initDictionary(ff) {
+
+    let _needToUpload = false;
     function createStorageProxy(key) {
         const _tmp = JSON.parse(localStorage.getItem(key));
         const _obj = _tmp || {};
 
-        function empty() {
+        function isEmpty() {
             return !_tmp;
         }
-        function save() {
-            localStorage.setItem(key, JSON.stringify(_obj));
-        }
-        function get() {
+        function data() {
             return _obj;
         }
-        function remove() {
+        function append(data, save = false) {
+            Object.assign(_obj, data);
+            if (save) saveToLocal();
+        }
+        function saveToLocal(upload = true) {
+            localStorage.setItem(key, JSON.stringify(_obj));
+            if (upload) _needToUpload = true;
+        }
+        function set(key, value, save = false) {
+            _obj[key] = value;
+            if (save) saveToLocal();
+        }
+        function get(key, defaultValue = null) {
+            let _v = _obj[key];
+            if (!_v) {
+                _v = defaultValue;
+                _obj[key] = _v;
+            }
+            return _v;
+        }
+        function has(key) {
+            return !!_obj[key];
+        }
+        function remove(key, save = false) {
+            delete _obj[key];
+            if (save) saveToLocal();
+        }
+        function clear() {
             localStorage.removeItem(key);
             Object.keys(_obj).forEach(key => delete _obj[key]);
         }
-        return { save, get, remove, empty }
+        return { saveToLocal, get, set, clear, isEmpty, has, remove, data, append }
     }
+    const _localProxy = createStorageProxy('__localCache__');
+    const _metaProxy = createStorageProxy('__metaCache__');
+    const _recordsProxy = createStorageProxy('__recordCache__');
+    const _wordsProxy = createStorageProxy('__wordCache__');
 
     async function _toServer(data) {
-        const userID = ai_api.userID
+        const userID = _localProxy.get('userID');
         if (!userID) {
-            logger.warn(`Need to provide user ID`);
+            logger.error(`Need to provide user ID`);
             return;
         }
 
@@ -58,35 +88,35 @@ function initDictionary(ff) {
     }
 
     async function loadData() {
-        _toServer({
+        await _toServer({
             requestType: "get",
-            lastSyncTime: meta.lastSyncTime || 1,
+            syncTime: _metaProxy.get("syncTime", 1),
         })
+    }
+
+    function _assemblePermenentData() {
+        return {
+            __VERSION__,
+            "meta": _metaProxy.data(),
+            "record": _recordsProxy.data(),
+            "dict": _wordsProxy.data()
+        };
     }
 
     async function saveData() {
-        _toServer({
+        await _toServer({
             requestType: "save",
-            content: { __VERSION__, meta, record, dict },
+            content: _assemblePermenentData(),
         })
     }
 
-    const _AIProxy = createStorageProxy('__AICache__');
-    const _metaProxy = createStorageProxy('__metaCache__');
-    const _recordsProxy = createStorageProxy('__recordCache__');
-    const _wordsProxy = createStorageProxy('__wordCache__');
-
-    const ai_api = _AIProxy.get();
-    const meta = _metaProxy.get();
-    const record = _recordsProxy.get();
-    const dict = _wordsProxy.get();
 
     function isDatabaseEmpty() {
-        return _metaProxy.empty() && _recordsProxy.empty() && _wordsProxy.empty();
+        return _metaProxy.isEmpty() && _recordsProxy.isEmpty() && _wordsProxy.isEmpty();
     }
 
     function exportDatabase() {
-        const json = JSON.stringify({ __VERSION__, meta, record, dict }, null, 4);
+        const json = JSON.stringify(_assemblePermenentData(), null, 4);
         const blob = new Blob(
             [json],
             { type: "application/json" }
@@ -99,7 +129,6 @@ function initDictionary(ff) {
 
         document.body.appendChild(a);
         a.click();
-
         a.remove();
         URL.revokeObjectURL(url);
         _dispDictEvt("exported");
@@ -109,16 +138,12 @@ function initDictionary(ff) {
     // Import JSON
     function importDictionaryByContent(data) {
         if (data.__VERSION__) {
-            Object.assign(meta, data.meta);
-            Object.assign(record, data.record);
-            Object.assign(dict, data.dict);
-            _metaProxy.save();
-            _recordsProxy.save();
-            _wordsProxy.save();
+            _metaProxy.append(data.meta, true);
+            _recordsProxy.append(data.record, true);
+            _wordsProxy.append(data.dict, true);
             alert(`Imported ${Object.keys(data.dict).length} words`);
         } else {
-            Object.assign(dict, data);
-            _wordsProxy.save();
+            _wordsProxy.append(data, true);
             alert(`Imported ${Object.keys(data).length} words`);
         }
 
@@ -144,19 +169,20 @@ function initDictionary(ff) {
     }
 
     function clearDictionary() {
-        _metaProxy.remove();
-        _recordsProxy.remove();
-        _wordsProxy.remove();
+        _localProxy.clear();
+        _metaProxy.clear();
+        _recordsProxy.clear();
+        _wordsProxy.clear();
         _dispDictEvt("delete");
     };
 
     function clearRecords() {
-        _recordsProxy.remove();
+        _recordsProxy.clear();
         _needToUpload = true;
     };
 
     function saveRecords() {
-        _recordsProxy.save();
+        _recordsProxy.saveToLocal();
         _needToUpload = true;
     };
 
@@ -175,7 +201,7 @@ function initDictionary(ff) {
         if (!word) return;
 
         let _action = "";
-        let _detail = dict[word];
+        let _detail = _wordsProxy.get(word);
         if (_detail) {
             _action = "modify";
         } else {
@@ -209,16 +235,14 @@ function initDictionary(ff) {
             }
         }
 
-        dict[word] = _detail;
+        _wordsProxy.set(word, _detail, true);
         _dispWordEvt(word, _action);
-        _wordsProxy.save();
-        meta.lastSyncTime = Date.now();
-        _metaProxy.save();
+        _metaProxy.set('syncTime', Date.now(), true);
         _needToUpload = true;
     }
 
     function _addLink(word, linkedWord) {
-        const _detail = dict[word];
+        const _detail = _wordsProxy.get(word);
         if (!_detail) return;
 
         const checkRegex = new RegExp(`\\b${linkedWord}\\b`, "i");
@@ -229,35 +253,34 @@ function initDictionary(ff) {
                 _detail.links += linkedWord;
             }
         }
-        dict[word] = _detail;
+        _wordsProxy.saveToLocal();
     }
 
     function _removeLink(word, linkedWord) {
-        const _detail = dict[word];
+        const _detail = _wordsProxy.get(word);
         if (!_detail) return;
 
         const regex = new RegExp(`,*\s*\\b${linkedWord}\\b`, "gi");
         _detail.links.replace(regex, "");
+        _wordsProxy.saveToLocal();
     }
 
     function deleteWord(word) {
-        if (!word || !dict[word]) return;
+        if (!word || !_wordsProxy.has(word)) return;
 
         const _parseLinks = (str) => {
             if (!str) return [];
             return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
         };
 
-        const linksArray = _parseLinks(dict[word].links);
-        linksArray.forEach(linkedWord => {
-            _removeLink(linkedWord, word)
+        const _linksArray = _parseLinks(_wordsProxy.get(word)['links']);
+        _linksArray.forEach(_linkedWord => {
+            _removeLink(_linkedWord, word)
         });
 
-        delete dict[word];
+        _wordsProxy.remove(word, true);
         _dispWordEvt(word, "delete");
-        _wordsProxy.save();
-        meta.lastSyncTime = Date.now();
-        _metaProxy.save();
+        _metaProxy.set('syncTime', Date.now(), true);
         _needToUpload = true;
     }
 
@@ -274,7 +297,7 @@ function initDictionary(ff) {
     }
 
     function getWordsCount() {
-        return Object.keys(dict).length;
+        return Object.keys(_wordsProxy.data()).length;
     }
 
     function getWords(searchQuery, level, tag) {
@@ -282,7 +305,7 @@ function initDictionary(ff) {
         tag = tag.toUpperCase();
 
         const out = {};
-        for (const [word, detail] of Object.entries(dict)) {
+        for (const [word, detail] of Object.entries(_wordsProxy.data())) {
             const matchesLevel = (level === 'ALL' || detail.level?.toUpperCase() === level);
             const matchesTag = (tag === 'ALL' || detail.tags?.toUpperCase().includes(tag));
 
@@ -303,32 +326,31 @@ function initDictionary(ff) {
 
     function hasWord(word) {
         if ((!word) || (word.length <= 0)) return false;
-        return !!dict[word];
+        return _wordsProxy.has(word);
     }
 
     function getWord(word) {
         if ((!word) || (word.length <= 0)) return null;
-        const _out = dict[word];
+        const _out = _wordsProxy.get(word);
         _fillDetailInfosIfMissing(_out);
         return _out;
     }
 
     function getTags() {
-        if (!meta.tags) meta.tags = [];
-        return readOnly(meta.tags);
+        return readOnly(_metaProxy.get('tags', []));
     }
 
     function setTags(tags) {
-        meta.tags.length = 0;
-        meta.tags.push(...tags);
-        meta.lastSyncTime = Date.now();
-        _metaProxy.save();
+        const _tagArr = _metaProxy.get('tags', []);
+        _tagArr.length = 0;
+        _tagArr.push(...tags);
+        _metaProxy.set("syncTime", Date.now(), true);
         _needToUpload = true;
     }
 
     function getNRandomWords(n, out = []) {
         const N = n + out.length;
-        const _tmp = Object.keys(dict);
+        const _tmp = Object.keys(_wordsProxy.data());
         while (out.length < N) {
             let _w = _tmp[Math.floor(Math.random() * _tmp.length)];
             if (!out.includes(_w)) {
@@ -344,80 +366,64 @@ function initDictionary(ff) {
     function setTestingResult(results) {
         results.forEach(item => {
             const _w = item.word;
-            if (!record[_w]) {
-                record[_w] = { attempts: 0, correct: 0 };
-            }
-
-            record[_w].attempts++;
-
+            const _out = _recordsProxy.get(_w, { attempts: 0, correct: 0 });
+            _out.attempts++;
             if (item.correct) {
-                record[_w].correct++;
+                _out.correct++;
             }
+            _recordsProxy.set(_w, _out);
         });
-        _recordsProxy.save();
-        meta.lastSyncTime = Date.now();
-        _metaProxy.save();
+        _recordsProxy.saveToLocal();
+        _metaProxy.set("syncTime", Date.now(), true);
         _needToUpload = true;
         _dispRecordEvt("new");
     }
 
     function getRecords() {
-        return readOnly(record);
+        return readOnly(_recordsProxy.data());
     }
 
-    function getRuntimeStatus(sectionName) {
-        if (!meta.runtime) {
-            meta.runtime = {}
-        }
-
-        if (!meta.runtime[sectionName]) {
-            meta.runtime[sectionName] = {}
-        }
-
-        return meta.runtime[sectionName];
+    function getLocalData(sectionName) {
+        return _localProxy.get(sectionName, {});
     }
 
-    function saveRuntimeStatus() {
-        _metaProxy.save();
+    function saveLocalData() {
+        _localProxy.saveToLocal(false);
     }
 
-    function getAPI() {
-        if (!ai_api.key) return ''
-        return ai_api.key;
+    function getAIKey() {
+        return _localProxy.get('ai_key', '');
+    }
+
+    function setAIKey(key) {
+        return _localProxy.set('ai_key', key);
     }
 
     function getAIProvider() {
-        if (!ai_api.provider) return ''
-        return ai_api.provider;
+        return _localProxy.get('ai_provider', '');
     }
 
-    function setAPI(provider, key) {
-        ai_api.provider = provider;
-        ai_api.key = key;
-        _AIProxy.save();
+    function setAIProvider(key) {
+        _localProxy.set('ai_provider', key, true);
     }
 
     function getUserID() {
-        if (!ai_api.userID) return ''
-        return ai_api.userID;
+        return _localProxy.get('userID', '');
     }
 
     function setUserID(userID) {
-        ai_api.userID = userID;
-        _AIProxy.save();
+        _localProxy.set('userID', userID, true);
     }
 
     function getSyncInterval() {
-        if (!meta.syncTime) return 10;
-        return Number(meta.syncTime);
+        return _metaProxy.get("syncInterval", 10);
     }
 
-    let _needToUpload = false;
     function setSyncInterval(second) {
         second = second > 0 ? second : getSyncInterval();
-        meta.syncTime = second;
-        meta.lastSyncTime = Date.now();
-        _metaProxy.save();
+        _metaProxy.set("syncInterval", second);
+        _metaProxy.set("syncTime", Date.now());
+        _metaProxy.saveToLocal();
         _needToUpload = true;
         _timer();
     }
@@ -439,6 +445,13 @@ function initDictionary(ff) {
         return _fn;
     })()
 
+    function setArticle(content, save = false) {
+        _metaProxy.set("article", content, save);
+
+    }
+    function getArticle() {
+        return _metaProxy.get("article", "");
+    }
 
 
     const __this__ = new EventTarget()
@@ -470,12 +483,16 @@ function initDictionary(ff) {
         clearRecords,
         saveRecords,
 
-        getRuntimeStatus,
-        saveRuntimeStatus,
+        getLocalData,
+        saveLocalData,
 
-        getAPI,
-        setAPI,
+        setAIKey,
+        getAIKey,
         getAIProvider,
+        setAIProvider,
+
+        setArticle,
+        getArticle,
 
         getUserID,
         setUserID,

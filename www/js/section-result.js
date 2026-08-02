@@ -2,7 +2,7 @@
 
 function initResultSection(dictionary, cmp, card, pronunciation) {
 
-    const _rts = dictionary.getRuntimeStatus('sec_record');
+    const _rts = dictionary.getLocalData('sec_record');
     _rts.scrollY = _rts.scrollY || 0;
 
     const _source = `
@@ -115,6 +115,14 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
         // logger.log(e);
         if (e.detail.action === "new") {
             _renderResult();
+        }
+    });
+
+    dictionary.addEventListener(dictionary.EVT_DICT, e => {
+        // logger.log(e);
+        _renderResult();
+        if (e.detail.action === "imported") {
+        } else if (e.detail.action === "delete") {
         }
     });
 

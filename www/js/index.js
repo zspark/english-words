@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             return;
         }
         _rts.sectionID = id;
-        dictionary.saveRuntimeStatus();
+        dictionary.saveLocalData();
         _currentSection?.deactive();
         _currentSection = _nextSection;
         ele_container.replaceChildren(_currentSection.ele_root)
@@ -155,16 +155,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
         event.stopImmediatePropagation()
     })
 
-    const _rts = dictionary.getRuntimeStatus('homepage');
-    _rts.sectionID = _rts.sectionID || "sec-dictionary";
+    const _rts = dictionary.getLocalData('homepage');
     logger.log(`current section id: ${_rts.sectionID}`);
-    _switchToSection(_rts.sectionID);
+    _switchToSection(_rts.sectionID || "sec-dictionary");
 
     window.addEventListener('scroll', () => {
         //logger.debug(window.scrollY);
         ele_button.style.display = window.scrollY > 200 ? 'block' : 'none';
         _currentSection.setSync(window.scrollY);
-        dictionary.saveRuntimeStatus();
+        dictionary.saveLocalData();
     });
 
     ele_button.addEventListener('click', () => {

@@ -2,8 +2,7 @@
 
 function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
     function _getRTS() {
-        _rts = dictionary.getRuntimeStatus('sec_article');
-        _rts.generatedArticle = _rts.generatedArticle || "";
+        _rts = dictionary.getLocalData('sec_article');
         _rts.scrollY = _rts.scrollY || 0;
     }
     _getRTS()
@@ -16,8 +15,6 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
 <div id="id-cardContainer"> </div>
 </div>`
-
-
 
     const ele_root = document.createElement('div');
     ele_root.className = "container";
@@ -37,12 +34,10 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             }
 
             ele_action_gen.disabled = true;
-            ele_article.innerHTML = "AI正在构思故事中...";
+            ele_article.innerHTML = "AI is generating articles ...";
             const resultText = await ai.genArticle(pickedArray.join(', '));
             if (resultText) {
-                _rts.generatedArticle = resultText;
-                dictionary.saveRuntimeStatus();
-                dictionary.saveRecords();
+                dictionary.setArticle(resultText, true);
             }
             _renderArticle();
 
@@ -65,7 +60,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
     });
 
     function _renderArticle() {
-        const _paragraphs = _rts.generatedArticle?.split(/\n/).filter(para => para.trim() !== '');
+        const _paragraphs = dictionary.getArticle()?.split(/\n/).filter(para => para.trim() !== '');
         const finalHtml = _paragraphs?.map(para => { return `<p>${para}</p>`; }).join('');
 
         ele_article.innerHTML = finalHtml ?? "";
