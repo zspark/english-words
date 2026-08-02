@@ -56,7 +56,7 @@ export default {
 
         const requestType = data.requestType;
         const userID = data.userID;
-        const lastSyncTime = data.lastSyncTime;
+        const syncTime = data.syncTime;
         const _exist = await checkUserExists(env, userID);
         if (!_exist) {
             return Response.json(
@@ -107,7 +107,7 @@ export default {
 
             try {
                 const content = JSON.parse(result.content);
-                if (lastSyncTime > content.meta.lastSyncTime) {
+                if (syncTime > content.meta.syncTime) {
                     return Response.json({
                         success: true,
                         info: "Already Synced.",
