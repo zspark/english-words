@@ -194,7 +194,7 @@ function initDictionary(ff) {
         detail.level = detail.level || '';
         detail.note = detail.note || '';
         detail.links = detail.links || '';
-        detail.time = detail.time || new Date().toISOString();
+        detail.time = detail.time || Date.now();
         detail.tags = detail.tags || '';
     }
 
