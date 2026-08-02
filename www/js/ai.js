@@ -76,7 +76,8 @@ json格式如下：
 1. 只有meaning使用中文，其他全部使用英文；
 2. 按照常用含义排序，然后依次用不同意思造句，最多5个；
 3. 所有单词作为JSON键时全部小写；
-4. links去重，英文逗号分隔。`;
+4. links去重，英文逗号分隔。
+5. 必须是正确的JSON格式`;
 
         logger.log(_question);
         return _question;
