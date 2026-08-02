@@ -175,11 +175,8 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
                 return;
             }
 
-            const _question = ai.askChatGPTForWordsInfo(_rawData);
+            const _question = ai.getAIMeaningQuestion(_rawData);
             _copyText(_question);
-
-            //const resultText = await ai.askChatGPTForWordsInfo(_rawData);
-            //_importss(resultText, false);
         }
     });
 
