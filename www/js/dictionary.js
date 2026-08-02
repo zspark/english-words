@@ -33,7 +33,7 @@ function initDictionary(ff) {
             let _v = _obj[key];
             if (!_v) {
                 _v = defaultValue;
-                _obj[key] = _v;
+                if (defaultValue) _obj[key] = defaultValue;
             }
             return _v;
         }

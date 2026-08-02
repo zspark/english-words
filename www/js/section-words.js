@@ -356,21 +356,24 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     }
 
     function keyEvent(event) {
-        if (event.key === "Enter") {
-            if (navigator.isFocused()) {
-                navigator.setBlur();
-            } else {
-                navigator.setFocus();
-            }
-        } else if (event.key === "Escape") {
-            if (navigator.isFocused()) {
-                navigator.setBlur();
-                navigator.resetFilter();
-                dictionary.saveLocalData();
-                _updateWordList();
-                _renderWords(true);
-            }
-        } else if (event.key === "Delete") {
+        // if (event.key === "Enter") {
+        //     if (navigator.isFocused()) {
+        //         navigator.setBlur();
+        //     } else {
+        //         navigator.setFocus();
+        //     }
+        // } else if (event.key === "Escape") {
+        //     if (navigator.isFocused()) {
+        //         navigator.setBlur();
+        //         navigator.resetFilter();
+        //         dictionary.saveLocalData();
+        //         _updateWordList();
+        //         _renderWords(true);
+        //     }
+        // } 
+
+
+        if (event.key === "Delete") {
             if (selectedWords.length != 0) {
                 selectedWords.forEach(w => {
                     dictionary.deleteWord(w);
