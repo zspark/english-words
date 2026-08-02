@@ -56,7 +56,6 @@ export default {
 
         const requestType = data.requestType;
         const userID = data.userID;
-        const syncTime = data.syncTime;
         const _exist = await checkUserExists(env, userID);
         if (!_exist) {
             return Response.json(
@@ -107,20 +106,12 @@ export default {
 
             try {
                 const content = JSON.parse(result.content);
-                if (syncTime >= content.meta.syncTime) {
-                    return Response.json({
-                        success: true,
-                        info: "Already Synced.",
-                        userID: userID
-                    });
-                } else {
-                    return Response.json({
-                        success: true,
-                        info: "Going to Sync.",
-                        userID: userID,
-                        content: content
-                    });
-                }
+                return Response.json({
+                    success: true,
+                    info: "Going to Sync.",
+                    userID: userID,
+                    content: content
+                });
             } catch {
                 return Response.json({
                     success: false,
