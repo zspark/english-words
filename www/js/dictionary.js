@@ -104,6 +104,7 @@ function initDictionary(ff) {
     }
 
     async function saveData() {
+        _metaProxy.get("syncTime", Date.now(), true);
         await _toServer({
             requestType: "save",
             content: _assemblePermenentData(),
@@ -237,7 +238,6 @@ function initDictionary(ff) {
 
         _wordsProxy.set(word, _detail, true);
         _dispWordEvt(word, _action);
-        _metaProxy.set('syncTime', Date.now(), true);
         _needToUpload = true;
     }
 
@@ -280,7 +280,6 @@ function initDictionary(ff) {
 
         _wordsProxy.remove(word, true);
         _dispWordEvt(word, "delete");
-        _metaProxy.set('syncTime', Date.now(), true);
         _needToUpload = true;
     }
 
@@ -344,7 +343,6 @@ function initDictionary(ff) {
         const _tagArr = _metaProxy.get('tags', []);
         _tagArr.length = 0;
         _tagArr.push(...tags);
-        _metaProxy.set("syncTime", Date.now(), true);
         _needToUpload = true;
     }
 
@@ -374,7 +372,6 @@ function initDictionary(ff) {
             _recordsProxy.set(_w, _out);
         });
         _recordsProxy.saveToLocal();
-        _metaProxy.set("syncTime", Date.now(), true);
         _needToUpload = true;
         _dispRecordEvt("new");
     }
@@ -422,7 +419,6 @@ function initDictionary(ff) {
     function setSyncInterval(second) {
         second = second > 0 ? second : getSyncInterval();
         _metaProxy.set("syncInterval", second);
-        _metaProxy.set("syncTime", Date.now());
         _metaProxy.saveToLocal();
         _needToUpload = true;
         _timer();

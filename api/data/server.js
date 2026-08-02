@@ -107,7 +107,7 @@ export default {
 
             try {
                 const content = JSON.parse(result.content);
-                if (syncTime > content.meta.syncTime) {
+                if (syncTime >= content.meta.syncTime) {
                     return Response.json({
                         success: true,
                         info: "Already Synced.",
