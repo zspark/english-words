@@ -56,31 +56,22 @@ export default {
 
         const requestType = data.requestType;
         const userID = data.userID;
-        const _exist = await checkUserExists(env, userID);
-        if (!_exist) {
-            return Response.json(
-                {
-                    success: false,
-                    info: "User not Exist."
-                },
-                { status: 400 }
-            );
-        }
+
 
         // =========================
         // Check userID
         // =========================
-
-        if (!userID || typeof userID !== "string") {
+        const _exist = await checkUserExists(env, userID);
+        if (!_exist) {
             return Response.json(
+                {},
                 {
-                    success: false,
-                    info: "Valid userID is required",
-                    userID: userID ?? null
-                },
-                { status: 400 }
+                    status: 400,
+                    statusText: "User Not Found"
+                }
             );
         }
+
 
         // =========================
         // GET DATA
@@ -97,11 +88,10 @@ export default {
                 .first();
 
             if (!result) {
-                return Response.json({
-                    success: false,
-                    info: "User data not found",
-                    userID: userID
-                }, { status: 404 });
+                return Response.json({}, {
+                    status: 404,
+                    statusText: "User data not found"
+                });
             }
 
             try {
@@ -113,11 +103,10 @@ export default {
                     content: content
                 });
             } catch {
-                return Response.json({
-                    success: false,
-                    info: "Stored content is invalid JSON",
-                    userID: userID
-                }, { status: 500 });
+                return Response.json({}, {
+                    status: 500,
+                    statusText: "Stored content is invalid JSON"
+                });
             }
 
 
@@ -132,11 +121,10 @@ export default {
             const content = data.content;
 
             if (content === undefined) {
-                return Response.json({
-                    success: false,
-                    info: "content is required",
-                    userID: userID
-                }, { status: 400 });
+                return Response.json({}, {
+                    status: 400,
+                    statusText: "content is required"
+                });
             }
 
             const contentJSON = JSON.stringify(content);
@@ -170,10 +158,9 @@ export default {
         // Unknown request type
         // =========================
 
-        return Response.json({
-            success: false,
-            info: "Unknown requestType",
-            userID: userID
-        }, { status: 400 });
+        return Response.json({}, {
+            status: 400,
+            statusText: "Unknown requestType"
+        });
     }
 };
