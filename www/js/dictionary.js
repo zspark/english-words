@@ -161,7 +161,6 @@ function initDictionary(ff) {
             _wordsProxy.append(data, true);
         }
 
-        _needToUpload = true;
         _dispDictEvt("imported");
     };
 
