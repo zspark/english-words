@@ -94,7 +94,7 @@ export default {
 
 
             try {
-                const _lastSyncTime = content.updated_at;
+                const _lastSyncTime = result.updated_at;
                 if (syncTime >= _lastSyncTime) {
                     return Response.json({
                         success: true,
