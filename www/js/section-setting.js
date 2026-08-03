@@ -91,6 +91,8 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     const elem_user = ele_root.querySelector("#id-userID input");
     elem_user.type = 'password';
     const elem_syncInerval = ele_root.querySelector("#id-syncInterval input");
+    elem_syncInerval.type = 'number';
+    elem_syncInerval.inputmode = "numeric";
     const elem_key = ele_root.querySelector("#id-APIKEY input");
     const elem_provider = ele_root.querySelector("#id-provider select");
 
@@ -157,7 +159,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         if (e.target.dataset.index === "0") {//save
             const _tags = elem_tags.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
             dictionary.setTags(_tags);
-            dictionary.setSyncInterval(elem_syncInerval.value);
+            dictionary.setSyncInterval(Number(elem_syncInerval.value));
 
             const _localData = dictionary.getLocalData("sec_setting");
             _localData['ai_key'] = elem_key.value;
