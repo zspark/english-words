@@ -170,7 +170,7 @@ function initDictionary(ff) {
     }
 
     function clearDictionary() {
-        _localProxy.clear();
+        //_localProxy.clear();
         _metaProxy.clear();
         _recordsProxy.clear();
         _wordsProxy.clear();
