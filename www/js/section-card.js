@@ -16,27 +16,20 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         <div class="vocab-header">
             <div id="vocab"></div>
             <button id="btn-pronounce" class="icon-btn icon s28px">
-                <svg viewBox="0 0 24 24"
-                    fill="none" 
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                     <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                 </svg>
             </button>
+            <button id="btn-ai" class="icon-btn icon s28px">
+                <svg viewBox="0 0 44.007 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m43.607 16.7-4.6-3.8V5.5a1 1 0 0 0-.6-.9l-9.9-4.5h-.4l-.6.2-5.5 3.6-5.5-3.7-.6-.2h-.4l-9.9 4.6a1 1 0 0 0-.6.9v7.4l-4.6 3.8a.8.8 0 0 0-.4.8v9a.8.8 0 0 0 .4.8l4.6 3.8v7.4a1 1 0 0 0 .6.9l9.9 4.5h.4l.6-.2 5.5-3.6 5.5 3.7.6.2h.4l9.9-4.5a1 1 0 0 0 .6-.9v-7.5l4.6-3.8a.8.8 0 0 0 .4-.7v-9.2a.8.8 0 0 0-.4-.7m-5.1 6.8h1.5v1.6l-3.5 2.8-.4.3-.4-.2a1.4 1.4 0 0 0-2 .7 1.5 1.5 0 0 0 .6 2l.7.3v5.4l-6.6 3.1-4.2-2.8-.7-.5V23.5h1.5a1.5 1.5 0 0 0 0-3h-1.5V7.7l.7-.5 4.2-2.8 6.6 3.1v5.4l-.7.3a1.5 1.5 0 0 0-.6 2 1.4 1.4 0 0 0 1.3.9l.7-.2.4-.2.4.3 3.5 2.9v1.6h-1.5a1.5 1.5 0 0 0 0 3m-19.5 0h1.5v12.8l-.7.5-4.2 2.8-6.6-3.1v-5.4l.7-.3a1.5 1.5 0 0 0 .6-2 1.4 1.4 0 0 0-2-.7l-.4.2-.4-.3-3.5-2.9v-1.6h1.5a1.5 1.5 0 0 0 0-3h-1.5v-1.6l3.5-2.8.4-.3.4.2.7.2a1.4 1.4 0 0 0 1.3-.9 1.5 1.5 0 0 0-.6-2l-.7-.3V7.5l6.6-3.1 4.2 2.8.7.5v12.8h-1.5a1.5 1.5 0 0 0 0 3"/>
+                    <path d="M11.907 7.9a1.8 1.8 0 0 0 0 2.2l2.6 2.5v2.8l-4 4v5.2l4 4v2.8l-2.6 2.5a1.8 1.8 0 0 0 0 2.2 1.5 1.5 0 0 0 1.1.4 1.5 1.5 0 0 0 1.1-.4l3.4-3.5v-5.2l-4-4v-2.8l4-4v-5.2l-3.4-3.5a1.8 1.8 0 0 0-2.2 0m17.6 4.7 2.6-2.5a1.8 1.8 0 0 0 0-2.2 1.8 1.8 0 0 0-2.2 0l-3.4 3.5v5.2l4 4v2.8l-4 4v5.2l3.4 3.5a1.7 1.7 0 0 0 2.2 0 1.8 1.8 0 0 0 0-2.2l-2.6-2.5v-2.8l4-4v-5.2l-4-4z"/>
+                </svg>
+            </button>
             <button id="card-edit-btn" class="icon-btn icon s28px">
-                <svg 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    stroke-width="2" 
-                    stroke-linecap="round" 
-                    stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"></path>
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                 </svg>
@@ -87,6 +80,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_voc = ele_card_display.querySelector("#vocab");
     const ele_actionAA = ele_card_display.querySelector("#id-actionsAA");
     const ele_btn_pronounce = ele_root.querySelector("#btn-pronounce")
+    const ele_btn_ai = ele_root.querySelector("#btn-ai")
     const ele_ipa = ele_card_display.querySelector("#ipa");
     const ele_meaning = ele_card_display.querySelector("#meaning");
     const ele_level = ele_card_display.querySelector("#level");
@@ -235,6 +229,12 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         pronunciation.pronounce(word);
     });
 
+    ele_btn_ai.addEventListener("click", () => {
+        const word = ele_voc.textContent.trim();
+        if (!word) return;
+        const _q = ai.getQuestionAboutWord(word);
+        window.open(`https://chatgpt.com/?q=${_q}`, "_blank");
+    });
     ele_new_voc.addEventListener("input", (event) => {
         const _word = ele_new_voc.value.trim().toLowerCase();
         _renderEditPanel(_word);

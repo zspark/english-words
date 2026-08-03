@@ -83,9 +83,21 @@ json格式如下：
         return _question;
     }
 
+    function getQuestionAboutWord(word) {
+        const _question = `详细用汉语解释这个英语单词：${word} 
+
+要求：
+1. 要有汉语意思与音标；
+2. 要有例句；`;
+
+        logger.log(_question);
+        return _question;
+    }
+
     return {
         genArticle,
         genMeaning,
         getAIMeaningQuestion,
+        getQuestionAboutWord,
     }
 }
