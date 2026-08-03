@@ -54,6 +54,7 @@ export default {
 
         const requestType = data.requestType;
         const userID = data.userID;
+        const syncTime = data.syncTime;
 
 
         // =========================
@@ -91,14 +92,25 @@ export default {
                 });
             }
 
+
             try {
                 const content = JSON.parse(result.content);
-                return Response.json({
-                    success: true,
-                    info: "Successfully Synced.",
-                    userID: userID,
-                    content: content
-                });
+                const _lastSyncTime = content.meta.syncTime;
+                if (syncTime >= _lastSyncTime) {
+                    return Response.json({
+                        success: true,
+                        info: "Your dictionary is already up to date.",
+                        userID: userID
+                    });
+                } else {
+
+                    return Response.json({
+                        success: true,
+                        info: "Successfully Synced.",
+                        userID: userID,
+                        content: content
+                    });
+                }
             } catch {
                 return Response.json({
                     success: false,
@@ -124,8 +136,9 @@ export default {
                 });
             }
 
-            const contentJSON = JSON.stringify(content);
             const updatedAt = Date.now();
+            content.meta.syncTime = updatedAt;
+            const contentJSON = JSON.stringify(content);
 
             await env.DB
                 .prepare(`
@@ -149,6 +162,7 @@ export default {
                 success: true,
                 userID: userID,
                 info: "Successfully saved.",
+                syncTime: updatedAt
             });
         }
 

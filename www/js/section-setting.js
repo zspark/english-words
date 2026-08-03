@@ -157,12 +157,14 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         if (e.target.dataset.index === "0") {//save
             const _tags = elem_tags.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
             dictionary.setTags(_tags);
-            dictionary.setAIProvider(elem_provider.value);
-            dictionary.setAIKey(elem_key.value);
-            dictionary.saveLocalData();
-
-            dictionary.setUserID(elem_user.value);
             dictionary.setSyncInterval(elem_syncInerval.value);
+
+            const _localData = dictionary.getLocalData("sec_setting");
+            _localData['ai_key'] = elem_key.value;
+            _localData['ai_provider'] = elem_provider.value;
+            _localData['userID'] = elem_user.value;
+            dictionary.saveLocalData();
+            ;
         }
     });
 
@@ -210,10 +212,12 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 
     function active() {
         elem_tags.value = dictionary.getTags().join(',');
-        elem_key.value = dictionary.getAIKey();
-        elem_user.value = dictionary.getUserID();
         elem_syncInerval.value = dictionary.getSyncInterval();
-        elem_provider.value = dictionary.getAIProvider();
+
+        const _localData = dictionary.getLocalData("sec_setting");
+        elem_key.value = _localData['ai_key'] || "";
+        elem_provider.value = _localData['ai_provider'] || "";
+        elem_user.value = _localData['userID'] || "";
 
     }
     function keyEvent() { }

@@ -8,8 +8,8 @@ function initDictionary(ff) {
 
     let _needToUpload = false;
     function createStorageProxy(key) {
-        const _tmp = JSON.parse(localStorage.getItem(key));
-        const _obj = _tmp || {};
+        let _tmp = JSON.parse(localStorage.getItem(key));
+        let _obj = _tmp || {};
 
         function isEmpty() {
             return !_tmp;
@@ -21,9 +21,8 @@ function initDictionary(ff) {
             Object.assign(_obj, data);
             if (save) saveToLocal();
         }
-        function saveToLocal(upload = true) {
+        function saveToLocal() {
             localStorage.setItem(key, JSON.stringify(_obj));
-            if (upload) _needToUpload = true;
         }
         function set(key, value, save = false) {
             _obj[key] = value;
@@ -46,7 +45,8 @@ function initDictionary(ff) {
         }
         function clear() {
             localStorage.removeItem(key);
-            Object.keys(_obj).forEach(key => delete _obj[key]);
+            _tmp = null;
+            _obj = {};
         }
         return { saveToLocal, get, set, clear, isEmpty, has, remove, data, append }
     }
@@ -56,15 +56,17 @@ function initDictionary(ff) {
     const _wordsProxy = createStorageProxy('__wordCache__');
 
     async function _toServer(data) {
-        const userID = _localProxy.get('userID');
+        const userID = getLocalData("sec_setting")['userID'] || "";
         if (!userID) {
-            logger.error(`Need to provide user ID`);
+            const _s = `Need to provide user ID`;
+            logger.error(_s);
+            _dispDictEvt(`sync`, _s);
             return;
         }
 
         // _dispDictEvt(`begin:${data.requestType}`);
-        _dispDictEvt(`begin:sync`);
         logger.log(`C -> S request type: ${data.requestType}`);
+        _dispDictEvt(`begin:sync`);
         data.userID = userID;
         const _response = await fetch("../api/data", {
             method: "POST",
@@ -78,6 +80,7 @@ function initDictionary(ff) {
             if (_response.status === 200) {
                 const _responseData = await _response.json();
                 if (_responseData.success) {
+                    _metaProxy.set("syncTime", _responseData.syncTime, true);
                     if (_responseData.content) {
                         importDictionaryByContent(_responseData.content);
                         logger.debug(`${_responseData.content}`);
@@ -115,7 +118,6 @@ function initDictionary(ff) {
     }
 
     async function saveData() {
-        _metaProxy.get("syncTime", Date.now(), true);
         await _toServer({
             requestType: "save",
             content: _assemblePermenentData(),
@@ -157,6 +159,7 @@ function initDictionary(ff) {
             _wordsProxy.append(data, true);
         }
 
+        _needToUpload = true;
         _dispDictEvt("imported");
     };
 
@@ -188,11 +191,6 @@ function initDictionary(ff) {
 
     function clearRecords() {
         _recordsProxy.clear();
-        _needToUpload = true;
-    };
-
-    function saveRecords() {
-        _recordsProxy.saveToLocal();
         _needToUpload = true;
     };
 
@@ -394,31 +392,7 @@ function initDictionary(ff) {
     }
 
     function saveLocalData() {
-        _localProxy.saveToLocal(false);
-    }
-
-    function getAIKey() {
-        return _localProxy.get('ai_key', '');
-    }
-
-    function setAIKey(key) {
-        return _localProxy.set('ai_key', key);
-    }
-
-    function getAIProvider() {
-        return _localProxy.get('ai_provider', '');
-    }
-
-    function setAIProvider(key) {
-        _localProxy.set('ai_provider', key, true);
-    }
-
-    function getUserID() {
-        return _localProxy.get('userID', '');
-    }
-
-    function setUserID(userID) {
-        _localProxy.set('userID', userID, true);
+        _localProxy.saveToLocal();
     }
 
     function getSyncInterval() {
@@ -427,8 +401,7 @@ function initDictionary(ff) {
 
     function setSyncInterval(second) {
         second = second > 0 ? second : getSyncInterval();
-        _metaProxy.set("syncInterval", second);
-        _metaProxy.saveToLocal();
+        _metaProxy.set("syncInterval", second, true);
         _needToUpload = true;
         _timer();
     }
@@ -452,10 +425,19 @@ function initDictionary(ff) {
 
     function setArticle(content, save = false) {
         _metaProxy.set("article", content, save);
-
+        _needToUpload = true;
     }
     function getArticle() {
         return _metaProxy.get("article", "");
+    }
+
+
+    function getAIKey() {
+        return getLocalData("sec_setting")['ai_key'] || "";
+    }
+
+    function getAIProvider() {
+        return getLocalData("sec_setting")['ai_provider'] || "";
     }
 
 
@@ -486,23 +468,17 @@ function initDictionary(ff) {
 
         getRecords,
         clearRecords,
-        saveRecords,
+        setArticle,
+        getArticle,
+        getSyncInterval,
+        setSyncInterval,
 
         getLocalData,
         saveLocalData,
 
-        setAIKey,
         getAIKey,
         getAIProvider,
-        setAIProvider,
 
-        setArticle,
-        getArticle,
-
-        getUserID,
-        setUserID,
-        getSyncInterval,
-        setSyncInterval,
     })
     return __this__;
 }

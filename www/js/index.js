@@ -202,6 +202,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
 <p>${e.detail.message}</p>`,
                 "Got It", () => { },
             );
+        } else if (e.detail.action === "sync") {
+            components.showMask(`
+<p>${e.detail.message}</p>`,
+                "Got It", () => { },
+            );
         }
     });
 
