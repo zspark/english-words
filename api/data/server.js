@@ -52,9 +52,7 @@ export default {
             );
         }
 
-        const requestType = data.requestType;
         const userID = data.userID;
-        const syncTime = data.syncTime;
 
 
         // =========================
@@ -71,54 +69,46 @@ export default {
         }
 
 
+
+        const requestType = data.requestType;
+        const syncTime = data.syncTime;
         // =========================
         // GET DATA
         // =========================
         if (requestType === "get") {
-
-            const result = await env.DB
-                .prepare(`
-                    SELECT content
-                    FROM user_data
-                    WHERE userID = ?
-                `)
-                .bind(userID)
-                .first();
-
-            if (!result) {
-                return Response.json({
-                    success: false,
-                    info: "User data not found"
-                });
-            }
-
-
             try {
-                const _lastSyncTime = result.updated_at;
-                if (syncTime >= _lastSyncTime) {
+                const result = await env.DB.prepare(`
+                        SELECT updated_at, content
+                        FROM user_data
+                        WHERE userID = ?
+                    `).bind(userID).first();
+                if (!result) {
+                    return Response.json({
+                        success: false,
+                        info: "User data not found"
+                    });
+                }
+
+                if (syncTime >= result.updated_at) {
                     return Response.json({
                         success: true,
                         info: "Your dictionary is already up to date.",
                         userID: userID
                     });
                 } else {
-                    
-                    const content = JSON.parse(result.content);
                     return Response.json({
                         success: true,
                         info: "Successfully Synced.",
                         userID: userID,
-                        content: content
+                        content: JSON.parse(result.content)
                     });
                 }
             } catch {
                 return Response.json({
                     success: false,
-                    info: "Stored content is an invalid JSON"
+                    info: "Content parsing error, consult administrator!"
                 });
             }
-
-
         }
 
         // =========================
