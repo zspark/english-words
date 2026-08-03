@@ -62,7 +62,8 @@ function initDictionary(ff) {
             return;
         }
 
-        _dispDictEvt(`begin:${data.requestType}`);
+        // _dispDictEvt(`begin:${data.requestType}`);
+        _dispDictEvt(`begin:sync`);
         logger.log(`C -> S request type: ${data.requestType}`);
         data.userID = userID;
         const _response = await fetch("../api/data", {
@@ -74,17 +75,27 @@ function initDictionary(ff) {
         });
 
         try {
-            const _responseData = await _response.json();
-            if (_responseData.success) {
-                if (_responseData.content) importDictionaryByContent(_responseData.content);
-                logger.log(`S -> C ${_responseData.info}`);
+            if (_response.status === 200) {
+                const _responseData = await _response.json();
+                if (_responseData.success) {
+                    if (_responseData.content) {
+                        importDictionaryByContent(_responseData.content);
+                        logger.debug(`${_responseData.content}`);
+                    }
+                    logger.log(`S -> C ${_responseData.info}`);
+                } else {
+                    logger.error(`S -> C ${_responseData.info}`);
+                }
+                _dispDictEvt(`end:sync`, _responseData.info);
             } else {
-                logger.error(`S -> C ${_responseData.info}`);
+                logger.error(`S -> C ${_response.statusText}`);
+                _dispDictEvt(`end:sync`, _response.statusText);
             }
         } catch (err) {
             logger.vital(`To server: ${err}`);
+            _dispDictEvt(`end:sync`, err);
         }
-        _dispDictEvt(`end:${data.requestType}`);
+        // _dispDictEvt(`end:${data.requestType}`);
     }
 
     async function loadData() {
@@ -142,10 +153,8 @@ function initDictionary(ff) {
             _metaProxy.append(data.meta, true);
             _recordsProxy.append(data.record, true);
             _wordsProxy.append(data.dict, true);
-            alert(`Imported ${Object.keys(data.dict).length} words`);
         } else {
             _wordsProxy.append(data, true);
-            alert(`Imported ${Object.keys(data).length} words`);
         }
 
         _dispDictEvt("imported");
@@ -287,8 +296,8 @@ function initDictionary(ff) {
         __this__.dispatchEvent(new CustomEvent(__this__.EVT_WORD, { detail: { word, action } }));
     }
 
-    function _dispDictEvt(action) {
-        __this__.dispatchEvent(new CustomEvent(__this__.EVT_DICT, { detail: { action } }));
+    function _dispDictEvt(action, msg = '') {
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_DICT, { detail: { action, message: msg } }));
     }
 
     function _dispRecordEvt(action) {

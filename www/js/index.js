@@ -185,6 +185,25 @@ document.addEventListener("DOMContentLoaded", (e) => {
         );
     }
 
+    dictionary.addEventListener(dictionary.EVT_DICT, e => {
+        if (e.detail.action === "imported") {
+            components.showMask(`
+<p>Succefully Imported Data to Dictionary.</p>`,
+                "Got It", () => { },
+            );
+        } else if (e.detail.action === "delete") {
+            components.showMask(`
+<p>Succefully Clear the Dictionary.</p>`,
+                "Got It", () => { },
+            );
+        } else if (e.detail.action === "end:sync") {
+            components.showMask(`
+<p>${e.detail.message}</p>`,
+                "Got It", () => { },
+            );
+        }
+    });
+
     dictionary.loadData();
 });
 
