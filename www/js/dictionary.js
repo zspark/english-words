@@ -85,7 +85,8 @@ function initDictionary(ff) {
                 const _responseData = await _response.json();
                 if (_responseData.success) {
                     if (_responseData.code === 200) {
-                        _metaProxy.set("syncTime", _responseData.syncTime, true);
+                        getLocalData("sec_setting")["syncTime"] = _responseData.syncTime;
+                        saveLocalData();
                     }
                     if (_responseData.content) {
                         importDictionaryByContent(_responseData.content);
@@ -110,7 +111,7 @@ function initDictionary(ff) {
     async function loadData() {
         await _toServer({
             requestType: "get",
-            syncTime: _metaProxy.get("syncTime", 1),
+            syncTime: getLocalData("sec_setting")['syncTime'] || 1,
         })
     }
 
@@ -392,6 +393,14 @@ function initDictionary(ff) {
         return readOnly(_recordsProxy.data());
     }
 
+    function setArticle(content, save = false) {
+        _metaProxy.set("article", content, save);
+        _needToUpload = true;
+    }
+    function getArticle() {
+        return _metaProxy.get("article", "");
+    }
+
     function getLocalData(sectionName) {
         return _localProxy.get(sectionName, {});
     }
@@ -401,41 +410,32 @@ function initDictionary(ff) {
     }
 
     function getSyncInterval() {
-        return _metaProxy.get("syncInterval", 10);
+        return getLocalData("sec_setting")['syncInterval'] || 10;
     }
 
     function setSyncInterval(second) {
         second = second > 0 ? second : getSyncInterval();
-        _metaProxy.set("syncInterval", second, true);
-        _needToUpload = true;
-        _timer();
+        getLocalData("sec_setting")['syncInterval'] = second;
+        _localProxy.saveToLocal();
+        _timer(second);
     }
 
     const _timer = (function () {
         let _syncTimer;
 
-        const _fn = function () {
+        const _fn = function (second) {
             clearInterval(_syncTimer);
             _syncTimer = setInterval(() => {
                 if (_needToUpload) {
                     saveData();
                     _needToUpload = false;
                 }
-            }, getSyncInterval() * 1000);
+            }, second * 1000);
         }
 
-        _fn();
+        _fn(getSyncInterval());
         return _fn;
     })()
-
-    function setArticle(content, save = false) {
-        _metaProxy.set("article", content, save);
-        _needToUpload = true;
-    }
-    function getArticle() {
-        return _metaProxy.get("article", "");
-    }
-
 
     function getAIKey() {
         return getLocalData("sec_setting")['ai_key'] || "";
