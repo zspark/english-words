@@ -475,14 +475,14 @@ function initDictionary(ff) {
         clearRecords,
         setArticle,
         getArticle,
-        getSyncInterval,
-        setSyncInterval,
 
         getLocalData,
         saveLocalData,
 
         getAIKey,
         getAIProvider,
+        getSyncInterval,
+        setSyncInterval,
 
     })
     return __this__;
