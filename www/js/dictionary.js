@@ -88,8 +88,8 @@ function initDictionary(ff) {
                 }
                 _dispDictEvt(`end:sync`, _responseData.info);
             } else {
-                logger.error(`S -> C ${_response.statusText}`);
-                _dispDictEvt(`end:sync`, _response.statusText);
+                logger.error(`S -> C ${_response.status}`);
+                _dispDictEvt(`end:sync`, `Vital Error: ${_response.status}`);
             }
         } catch (err) {
             logger.vital(`To server: ${err}`);
