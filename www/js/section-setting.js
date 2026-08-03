@@ -27,7 +27,7 @@ ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database co
     )}
     </div>
     <div class="bs-right-align">
-        ${cmp.buttonGroupSource('btn-modal-submit', ['Import', 'Delete'])}
+        ${cmp.buttonGroupSource('btn-modal-submit', ['Append', 'Delete'])}
     </div>
 </div>`;
 

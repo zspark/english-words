@@ -1,5 +1,12 @@
 function initDeepSeek() {
 
+    function _stripJsonMarkdown(text) {
+        return text
+            .replace(/^```(?:json)?\s*\n?/i, "")
+            .replace(/\n?```$/, "")
+            .trim();
+    }
+
     async function askAI(api, question) {
         const response = await fetch("https://api.deepseek.com/chat/completions", {
             method: "POST",
@@ -24,7 +31,8 @@ function initDeepSeek() {
 
         const json = await response.json();
 
-        return json.choices?.[0]?.message?.content ?? "";
+        const _out = json.choices?.[0]?.message?.content ?? "";
+        return _stripJsonMarkdown(_out);
     }
 
     return {

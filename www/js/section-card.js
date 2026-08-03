@@ -242,6 +242,9 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     });
 
     ele_action.addEventListener("click", async e => {
+
+        ele_btnSave.classList.remove('bs-bg-twinkle');
+
         if (e.target.dataset.index === "1") {
             //fill by ai
             const word = ele_new_voc.value.trim();
@@ -254,10 +257,16 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             }
 
             const resultText = await ai.genMeaning(word);
+            // logger.debug(`AI content: ${resultText}`);
             if (!resultText) return;
-            const _detail = JSON.parse(resultText)[word];
-            _updateCardContentInEditMode(word, _detail);
-            ele_btnSave.classList.add('bs-bg-twinkle');
+            try {
+                const _detail = JSON.parse(resultText)[word];
+                _updateCardContentInEditMode(word, _detail);
+                ele_btnSave.classList.add('bs-bg-twinkle');
+            } catch (e) {
+                logger.error(`parse error: ${e}`);
+                return;
+            }
 
         } else if (e.target.dataset.index === "0") {
             //canel
@@ -285,10 +294,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             _enterReadMode();
         } else if (e.target.dataset.index === "4") {
         } else if (e.target.dataset.index === "5") {
-        }
-
-        if (e.target.dataset.index != "0") {
-            ele_btnSave.classList.remove('bs-bg-twinkle');
         }
     })
 
