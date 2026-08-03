@@ -4,6 +4,32 @@
 function initSectionImport(ai, dictionary, cmp) {
     const _jsonSource = `
 ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
+<div class="bs-right-align mt20px">
+    ${cmp.buttonGroupSource('btn-modal-submit', ['Append'])}
+</div>`;
+
+
+    const _fileSource = `
+<input type="file" id="import-file" accept=".json" class="bs-file-input" style="display:none;">
+
+<label for="import-file" class="bs-file-box h300px">
+    <div class="bs-file-icon">📁</div>
+    <div class="bs-file-title">Click to Select File</div>
+    <div class="bs-file-desc"> Only Supports .json</div>
+</label>
+
+<div class="bs-right-align mt20px">
+    ${cmp.buttonGroupSource('btn-file-submit', ['Export', 'Delete'])}
+</div>`;
+
+    const _configSource = `
+${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
+${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
+${cmp.inputSource("id-syncInterval", "Sync Interval", "how many seconds?.", false)}
+<div class="form-row">
+    ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
+    ${cmp.dropdownSource("id-provider", null, ["ChatGPT", "DeepSeek"], 0)}
+</div>
 <div class="mt20px bs-flex-between">
     <div class="bs-left-align">
         ${cmp.buttonGroupSource(
@@ -27,34 +53,8 @@ ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database co
     )}
     </div>
     <div class="bs-right-align">
-        ${cmp.buttonGroupSource('btn-modal-submit', ['Append', 'Delete'])}
+        ${cmp.buttonGroupSource('btn-config-submit', ['Save'])}
     </div>
-</div>`;
-
-
-    const _fileSource = `
-<input type="file" id="import-file" accept=".json" class="bs-file-input" style="display:none;">
-
-<label for="import-file" class="bs-file-box h300px">
-    <div class="bs-file-icon">📁</div>
-    <div class="bs-file-title">Click to Select File</div>
-    <div class="bs-file-desc"> Only Supports .json</div>
-</label>
-
-<div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-file-submit', ['Export',])}
-</div>`;
-
-    const _configSource = `
-${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
-${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
-${cmp.inputSource("id-syncInterval", "Sync Interval", "how many seconds?.", false)}
-<div class="form-row">
-    ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
-    ${cmp.dropdownSource("id-provider", null, ["ChatGPT", "DeepSeek"], 0)}
-</div>
-<div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-config-submit', ['Save'])}
 </div>`;
 
     const _aiAssist = `
@@ -160,7 +160,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
             dictionary.setAIProvider(elem_provider.value);
             dictionary.setAIKey(elem_key.value);
             dictionary.saveLocalData();
-            
+
             dictionary.setUserID(elem_user.value);
             dictionary.setSyncInterval(elem_syncInerval.value);
         }
@@ -194,14 +194,14 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         if (e.target.dataset.index == "0") {
             const _rawData = _ele_importByJSON.value.trim();
             _importss(_rawData, false);
-        } else if (e.target.dataset.index === "1") {
-            dictionary.clearDictionary();
         }
     });
     const btnExport = ele_root.querySelector("#btn-file-submit");
     btnExport.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "0") {
             dictionary.exportDatabase();
+        } else if (e.target.dataset.index === "1") {
+            dictionary.clearDictionary();
         }
     });
 

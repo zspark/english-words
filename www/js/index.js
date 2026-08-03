@@ -180,8 +180,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     if (dictionary.isDatabaseEmpty()) {
         components.showMask(`
-<p>This website is still under developing, more patience and tolerance would be much appriciated.</p>
-<p>use 'd','e' to navigate to a new word.</p>`,
+<p>This website is still under developing, more patience and tolerance would be much appriciated.</p>`,
             "Got It, Close", () => { },
         );
     }
