@@ -94,8 +94,7 @@ export default {
 
 
             try {
-                const content = JSON.parse(result.content);
-                const _lastSyncTime = content.meta.syncTime;
+                const _lastSyncTime = content.updated_at;
                 if (syncTime >= _lastSyncTime) {
                     return Response.json({
                         success: true,
@@ -103,7 +102,8 @@ export default {
                         userID: userID
                     });
                 } else {
-
+                    
+                    const content = JSON.parse(result.content);
                     return Response.json({
                         success: true,
                         info: "Successfully Synced.",
@@ -137,7 +137,6 @@ export default {
             }
 
             const updatedAt = Date.now();
-            content.meta.syncTime = updatedAt;
             const contentJSON = JSON.stringify(content);
 
             await env.DB
