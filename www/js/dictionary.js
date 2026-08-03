@@ -80,7 +80,9 @@ function initDictionary(ff) {
             if (_response.status === 200) {
                 const _responseData = await _response.json();
                 if (_responseData.success) {
-                    _metaProxy.set("syncTime", _responseData.syncTime, true);
+                    if (_responseData.code === 200) {
+                        _metaProxy.set("syncTime", _responseData.syncTime, true);
+                    }
                     if (_responseData.content) {
                         importDictionaryByContent(_responseData.content);
                         logger.debug(`${_responseData.content}`);

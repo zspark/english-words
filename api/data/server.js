@@ -92,14 +92,17 @@ export default {
                 if (syncTime >= result.updated_at) {
                     return Response.json({
                         success: true,
+                        code: 400,
                         info: "Your dictionary is already up to date.",
                         userID: userID
                     });
                 } else {
                     return Response.json({
                         success: true,
+                        code: 200,
                         info: "Successfully Synced.",
                         userID: userID,
+                        syncTime: result.updated_at,
                         content: JSON.parse(result.content)
                     });
                 }
@@ -149,6 +152,7 @@ export default {
 
             return Response.json({
                 success: true,
+                code: 200,
                 userID: userID,
                 info: "Successfully saved.",
                 syncTime: updatedAt
