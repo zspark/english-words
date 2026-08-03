@@ -22,7 +22,11 @@ function initDictionary(ff) {
             if (save) saveToLocal();
         }
         function saveToLocal() {
-            localStorage.setItem(key, JSON.stringify(_obj));
+            try {
+                localStorage.setItem(key, JSON.stringify(_obj));
+            } catch (e) {
+                logger.vital(e);
+            }
         }
         function set(key, value, save = false) {
             _obj[key] = value;
