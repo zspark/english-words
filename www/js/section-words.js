@@ -169,7 +169,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         selectedCountSpan.textContent = selectedWords.length;
         filteredCountSpan.textContent = _filteredCount;
         totalCountSpan.textContent = dictionary.getWordsCount();
-        dictionary.saveLocalData();
     }
 
     function _add(elemLi) {
