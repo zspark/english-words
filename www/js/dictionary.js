@@ -179,7 +179,7 @@ function initDictionary(ff) {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             try {
                 const imported = JSON.parse(e.target.result);
                 if (typeof imported !== "object") {
@@ -206,14 +206,14 @@ function initDictionary(ff) {
         _needToUpload = true;
     };
 
-    function _fillDetailInfosIfMissing(detail) {
+    function _fillDetailInfosIfMissing(detail, newTime = null) {
         if (!detail) return;
         detail.ipa = detail.ipa || '';
         detail.meaning = detail.meaning || '';
         detail.level = detail.level || '';
         detail.note = detail.note || '';
         detail.links = detail.links || '';
-        detail.time = detail.time || Date.now();
+        detail.time = newTime || detail.time || Date.now();
         detail.tags = detail.tags || '';
     }
 
@@ -228,7 +228,7 @@ function initDictionary(ff) {
             _detail = {};
             _action = "add";
         }
-        _fillDetailInfosIfMissing(_detail);
+        _fillDetailInfosIfMissing(_detail, Date.now());
         const oldLinks = _detail.links;
         _detail.ipa = ipa || '';
         _detail.meaning = meaning || '';
@@ -426,10 +426,10 @@ function initDictionary(ff) {
         _timer(second);
     }
 
-    const _timer = (function() {
+    const _timer = (function () {
         let _syncTimer;
 
-        const _fn = function(second) {
+        const _fn = function (second) {
             clearInterval(_syncTimer);
             _syncTimer = setInterval(() => {
                 if (_needToUpload) {

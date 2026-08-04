@@ -91,11 +91,13 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     function _updateWordList() {
         ({ word, level, tag } = navigator.getFilter());
         _words = Object.entries(dictionary.getWords(word, level, tag));
-        _sortFn && _sortFn(_words);
         _filteredCount = _words.length;
         ele_wordList.style.height = `${_filteredCount * _ITEM_HEIGHT}px`;
     }
 
+    function _sortWordList() {
+        _sortFn && _sortFn(_words);
+    }
 
     const _renderWords = (function () {
 
@@ -122,7 +124,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                     const _isActived = _rts.activedWord === _word ? 'active' : '';
 
                     htmlBuffer += `<li class="cls-word-item" style="top:${startY + (i - startItem) * _ITEM_HEIGHT}px;" data-word="${_word}" ${_isSelected} ${_isActived}>
-                                        ${_genWordContentSource(_word, _detail)}
+                                        ${_genWordHTMLSource(_word, _detail)}
                                     </li>`;
                 }
 
@@ -135,7 +137,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         }
     })();
 
-    function _genWordContentSource(word, detail) {
+    function _genWordHTMLSource(word, detail) {
         return ` <div>
                     <span class="word-name">${word}</span>
                     <span class="tag word-level">${detail.level}</span>
@@ -147,22 +149,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 <div>
                     <span class="word-meaning">${detail.meaning}</span>
                 </div>`;
-    }
-
-    function _deleteWord(word) {
-        if (!word) return;
-        _updateWordList();
-        _renderWords(true);
-    }
-
-    function _updateWord(word) {
-        if (!word) return '';
-        const _elem = ele_root.querySelector(`li[data-word="${word}"]`);
-        if (_elem) {
-            const _detail = dictionary.getWord(word);
-            const _source = _genWordContentSource(word, _detail);
-            _elem.innerHTML = _source;
-        } else { return '' }
     }
 
     function _updateStatus() {
@@ -332,11 +318,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         } else {
             _renderSortCaption(_currentSortBtn);
         }
-        _sortFn = _sortFnMap[_ds.index][_ds.order]
         _rts.sort['active'] = _ds.index;
         _rts.sort[_ds.index] = _ds.order;
         dictionary.saveLocalData();
-        _sortFn && _sortFn(_words);
+        _sortFn = _sortFnMap[_ds.index][_ds.order]
+        _sortWordList();
         _renderWords(true);
     });
 
@@ -410,10 +396,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
         // logger.log(e);
         if (e.detail.action === "modify") {
-            _updateWord(e.detail.word);
         } else if (e.detail.action === "delete") {
-            _deleteWord(e.detail.word);
+            _updateWordList();
         }
+        _sortWordList();
+        _renderWords(true);
     });
 
     card.addEventListener(card.EVT_WORD, e => {
