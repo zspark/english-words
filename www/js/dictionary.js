@@ -159,10 +159,16 @@ function initDictionary(ff) {
     // Import JSON
     function importDictionaryByContent(data) {
         if (data.__VERSION__) {
+            for (const detail of Object.values(data.meta)) {
+                _fillDetailInfosIfMissing(detail);
+            }
             _metaProxy.append(data.meta, true);
             _recordsProxy.append(data.record, true);
             _wordsProxy.append(data.dict, true);
         } else {
+            for (const detail of Object.values(data)) {
+                _fillDetailInfosIfMissing(detail);
+            }
             _wordsProxy.append(data, true);
         }
 
@@ -173,7 +179,7 @@ function initDictionary(ff) {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = function(e) {
             try {
                 const imported = JSON.parse(e.target.result);
                 if (typeof imported !== "object") {
@@ -420,10 +426,10 @@ function initDictionary(ff) {
         _timer(second);
     }
 
-    const _timer = (function () {
+    const _timer = (function() {
         let _syncTimer;
 
-        const _fn = function (second) {
+        const _fn = function(second) {
             clearInterval(_syncTimer);
             _syncTimer = setInterval(() => {
                 if (_needToUpload) {
