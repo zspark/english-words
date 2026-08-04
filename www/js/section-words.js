@@ -2,9 +2,6 @@
 
 function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigator) {
 
-    const _ITEM_HEIGHT = 88 // px;
-    const _ITEMS_EACH_SIDE = 4;
-
     const _rts = dictionary.getLocalData('sec_dict');
     _rts.selectedWords = _rts.selectedWords || [];
     _rts.activedWord = _rts.activedWord || '';
@@ -51,60 +48,66 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     const filteredCountSpan = ele_root.querySelector('#id_filteredCount');
     const selectedCountSpan = ele_root.querySelector('#selectedCount');
 
-    const _sortFnMap = {
-        "0": {
-            "N": (r) => { r.sort((a, b) => { return a[1].time > b[1].time }); },
-            "R": (r) => { r.sort((a, b) => { return a[1].time < b[1].time }); },
-        },
-        "1": {
-            "N": (r) => { r.sort((a, b) => { return a[0] > b[0] }); },
-            "R": (r) => { r.sort((a, b) => { return a[0] < b[0] }); },
-        },
-        "2": {
-            "N": (r) => { r.sort((a, b) => { return a[1].level > b[1].level }); },
-            "R": (r) => { r.sort((a, b) => { return a[1].level < b[1].level }); },
-        },
-        "3": {
-            "N": shuffle,
-            "R": shuffle,
+
+    const _wordsHandler = (function () {
+
+        const _ITEM_HEIGHT = 88 // px;
+        const _ITEMS_EACH_SIDE = 4;
+        const _SORT_FN_MAP_ = {
+            "0": {
+                "N": (r) => { r.sort((a, b) => { return a[1].time > b[1].time }); },
+                "R": (r) => { r.sort((a, b) => { return a[1].time < b[1].time }); },
+            },
+            "1": {
+                "N": (r) => { r.sort((a, b) => { return a[0] > b[0] }); },
+                "R": (r) => { r.sort((a, b) => { return a[0] < b[0] }); },
+            },
+            "2": {
+                "N": (r) => { r.sort((a, b) => { return a[1].level > b[1].level }); },
+                "R": (r) => { r.sort((a, b) => { return a[1].level < b[1].level }); },
+            },
+            "3": {
+                "N": shuffle,
+                "R": shuffle,
+            }
         }
-    }
 
-    let _sortFn = undefined;
-    let _filteredCount = 0;
-
-    function _getVisibleRange() {
-        const _topY = Math.max(0, _rts.scrollY - _ITEMS_EACH_SIDE * _ITEM_HEIGHT);
-        const startItem = Math.min(Math.floor(_topY / _ITEM_HEIGHT), _filteredCount);
-        const _bottomY = _rts.scrollY + window.innerHeight + _ITEMS_EACH_SIDE * _ITEM_HEIGHT;
-        const endItem = Math.min(Math.ceil(_bottomY / _ITEM_HEIGHT), _filteredCount);
-        // logger.debug(`startItem:${startItem}, endItem:${endItem}`);
-
-        return {
-            startItem,
-            endItem,
-            startY: startItem * _ITEM_HEIGHT,
-        };
-    }
-
-    let _words = [];
-    function _updateWordList() {
-        ({ word, level, tag } = navigator.getFilter());
-        _words = Object.entries(dictionary.getWords(word, level, tag));
-        _filteredCount = _words.length;
-        ele_wordList.style.height = `${_filteredCount * _ITEM_HEIGHT}px`;
-    }
-
-    function _sortWordList() {
-        _sortFn && _sortFn(_words);
-    }
-
-    const _renderWords = (function () {
-
+        let _sortFn = _SORT_FN_MAP_['0']['N'];
+        let _filteredCount = 0;
+        let _words = [];
         let _previousStartItem = -1;
         let _previousEndItem = -1;
 
-        return function (force = false) {
+        function _getVisibleRange() {
+            const _topY = Math.max(0, _rts.scrollY - _ITEMS_EACH_SIDE * _ITEM_HEIGHT);
+            const startItem = Math.min(Math.floor(_topY / _ITEM_HEIGHT), _filteredCount);
+            const _bottomY = _rts.scrollY + window.innerHeight + _ITEMS_EACH_SIDE * _ITEM_HEIGHT;
+            const endItem = Math.min(Math.ceil(_bottomY / _ITEM_HEIGHT), _filteredCount);
+            // logger.debug(`startItem:${startItem}, endItem:${endItem}`);
+
+            return {
+                startItem,
+                endItem,
+                startY: startItem * _ITEM_HEIGHT,
+            };
+        }
+
+        function chooseSortFunc(index, order) {
+            _sortFn = _SORT_FN_MAP_[index][order];
+        }
+
+        function updateWordList() {
+            ({ word, level, tag } = navigator.getFilter());
+            _words = Object.entries(dictionary.getWords(word, level, tag));
+            _filteredCount = _words.length;
+            ele_wordList.style.height = `${_filteredCount * _ITEM_HEIGHT}px`;
+        }
+
+        function sortWordList() {
+            _sortFn && _sortFn(_words);
+        }
+
+        function renderWords(force = false) {
             //console.time('search');
             if (_filteredCount === 0) {
                 ele_wordList.innerHTML = '<li class="no-results">word not found.</li>';
@@ -135,6 +138,14 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _updateStatus();
             //console.timeEnd('search');
         }
+
+        return {
+            chooseSortFunc,
+            sortWordList,
+            updateWordList,
+            renderWords,
+            get filteredCount() { return _filteredCount; },
+        }
     })();
 
     function _genWordHTMLSource(word, detail) {
@@ -153,7 +164,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     function _updateStatus() {
         selectedCountSpan.textContent = selectedWords.length;
-        filteredCountSpan.textContent = _filteredCount;
+        filteredCountSpan.textContent = _wordsHandler.filteredCount;
         totalCountSpan.textContent = dictionary.getWordsCount();
     }
 
@@ -254,7 +265,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             }
             dictionary.saveLocalData();
         });
-    }())
+    })()
 
     let _activedWordElem = null;
     function _activeWord(wordElem) {
@@ -278,23 +289,42 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _rts.activedWord = _w;
         }
     }
-    function _renderSortCaption(sortBtn, targetCaption = null) {
-        const _ds = sortBtn.dataset;
-        if (!targetCaption) {
-            targetCaption = _ds.order == "R" ? "N" : "R";
-        }
-        _ds.order = targetCaption;
-        if (_ds.caption == 'Random') return;
-        if (targetCaption === "R") {
-            sortBtn.innerHTML = _ds.caption.split('').reverse().join('');
-        } else {
-            sortBtn.innerHTML = _ds.caption;
-        }
-    }
 
-    let _currentSortBtn = null;
-    const ele_btnsSort = ele_root.querySelector('#id-btnsSort');
-    {
+    (function () {
+        let _currentSortBtn = null;
+
+        function _renderSortCaption(sortBtn, targetCaption = null) {
+            const _ds = sortBtn.dataset;
+            if (!targetCaption) {
+                targetCaption = _ds.order == "R" ? "N" : "R";
+            }
+            _ds.order = targetCaption;
+            if (_ds.caption == 'Random') return;
+            if (targetCaption === "R") {
+                sortBtn.innerHTML = _ds.caption.split('').reverse().join('');
+            } else {
+                sortBtn.innerHTML = _ds.caption;
+            }
+        }
+
+        const ele_btnsSort = ele_root.querySelector('#id-btnsSort');
+        ele_btnsSort.addEventListener('click', (e) => {
+            const _ds = e.target.dataset;
+            e.target.classList.add("active");
+            if (e.target != _currentSortBtn) {
+                _currentSortBtn?.classList.remove('active');
+                _currentSortBtn = e.target;
+            } else {
+                _renderSortCaption(_currentSortBtn);
+            }
+            _rts.sort['active'] = _ds.index;
+            _rts.sort[_ds.index] = _ds.order;
+            dictionary.saveLocalData();
+            _wordsHandler.chooseSortFunc(_ds.index, _ds.order);
+            _sortWordList();
+            _renderWords(true);
+        });
+
         const _arr = [...ele_btnsSort.querySelectorAll("button")];
         for (let i = 0, N = _arr.length; i < N; ++i) {
             let _ds = _arr[i].dataset;
@@ -306,25 +336,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _currentSortBtn = _arr[Number(_rts.sort.active)]
         _currentSortBtn.classList.add("active");
         const _ds = _currentSortBtn.dataset;
-        _sortFn = _sortFnMap[_ds.index][_ds.order];
-    }
-
-    ele_btnsSort.addEventListener('click', (e) => {
-        const _ds = e.target.dataset;
-        e.target.classList.add("active");
-        if (e.target != _currentSortBtn) {
-            _currentSortBtn?.classList.remove('active');
-            _currentSortBtn = e.target;
-        } else {
-            _renderSortCaption(_currentSortBtn);
-        }
-        _rts.sort['active'] = _ds.index;
-        _rts.sort[_ds.index] = _ds.order;
-        dictionary.saveLocalData();
-        _sortFn = _sortFnMap[_ds.index][_ds.order]
-        _sortWordList();
-        _renderWords(true);
-    });
+        _wordsHandler.chooseSortFunc(_ds.index, _ds.order);
+    })()
 
     function setSync(scrollY) {
         _rts.scrollY = scrollY;
@@ -341,32 +354,16 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     }
 
     function keyEvent(event) {
-        // if (event.key === "Enter") {
-        //     if (navigator.isFocused()) {
-        //         navigator.setBlur();
-        //     } else {
-        //         navigator.setFocus();
-        //     }
-        // } else if (event.key === "Escape") {
-        //     if (navigator.isFocused()) {
-        //         navigator.setBlur();
-        //         navigator.resetFilter();
-        //         dictionary.saveLocalData();
-        //         _updateWordList();
-        //         _renderWords(true);
-        //     }
-        // } 
-
-
         if (event.key === "Delete") {
             if (selectedWords.length != 0) {
                 selectedWords.forEach(w => {
-                    dictionary.deleteWord(w);
+                    dictionary.deleteWord(w, false);
                 })
                 selectedWords.length = 0;
                 dictionary.saveLocalData();
-                _updateWordList();
-                _renderWords(true);
+                _wordsHandler.updateWordList();
+                _wordsHandler.sortWordList();
+                _wordsHandler.renderWords(true);
             }
         }
 
@@ -386,9 +383,9 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     dictionary.addEventListener(dictionary.EVT_DICT, e => {
         // logger.log(e);
-
-        _updateWordList();
-        _renderWords(true);
+        _wordsHandler.updateWordList();
+        _wordsHandler.sortWordList();
+        _wordsHandler.renderWords(true);
         if (e.detail.action === "imported") {
         } else if (e.detail.action === "delete") {
         }
@@ -397,25 +394,14 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         // logger.log(e);
         if (e.detail.action === "modify") {
         } else if (e.detail.action === "delete") {
-            _updateWordList();
+            _wordsHandler.updateWordList();
         }
-        _sortWordList();
-        _renderWords(true);
+        _wordsHandler.sortWordList();
+        _wordsHandler.renderWords(true);
     });
 
     card.addEventListener(card.EVT_WORD, e => {
         //logger.log(e);
-        return;
-        /*
-        //logger.debug("card changed current shown word");
-        const eleArray = ele_root.querySelectorAll("li.word-card");
-        eleArray.forEach(ele => {
-            if (ele.dataset.word === e.detail.currentWord) {
-                _activeWord(ele);
-                return;
-            }
-        });
-        */
     });
 
     navigator.setFilter(_rts.filter.search, _rts.filter.level, _rts.filter.tag);
@@ -427,13 +413,15 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _activeWord(null);
         _clearSelection();
         dictionary.saveLocalData();
-        _updateWordList();
         _updateStatus();
-        _renderWords(true);
+        _wordsHandler.updateWordList();
+        _wordsHandler.sortWordList();
+        _wordsHandler.renderWords(true);
     });
 
-    _updateWordList();
-    _renderWords();
+    _wordsHandler.updateWordList();
+    _wordsHandler.sortWordList();
+    _wordsHandler.renderWords(true);
 
     return {
         ele_root,

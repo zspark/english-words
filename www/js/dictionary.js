@@ -284,7 +284,7 @@ function initDictionary(ff) {
         _wordsProxy.saveToLocal();
     }
 
-    function deleteWord(word) {
+    function deleteWord(word, dispatch = true) {
         if (!word || !_wordsProxy.has(word)) return;
 
         const _parseLinks = (str) => {
@@ -298,7 +298,7 @@ function initDictionary(ff) {
         });
 
         _wordsProxy.remove(word, true);
-        _dispWordEvt(word, "delete");
+        if (dispatch) _dispWordEvt(word, "delete");
         _needToUpload = true;
     }
 
