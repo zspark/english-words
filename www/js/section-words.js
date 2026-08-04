@@ -322,7 +322,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             dictionary.saveLocalData();
             _wordsHandler.chooseSortFunc(_ds.index, _ds.order);
             _sortWordList();
-            _renderWords(true);
+            _wordsHandler.renderWords(true);
         });
 
         const _arr = [...ele_btnsSort.querySelectorAll("button")];
@@ -341,7 +341,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     function setSync(scrollY) {
         _rts.scrollY = scrollY;
-        _renderWords();
+        _wordsHandler.renderWords();
     }
     function deactive() {
         _rts.scrollY = window.scrollY;
