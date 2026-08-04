@@ -94,6 +94,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     elem_syncInerval.type = 'number';
     elem_syncInerval.inputmode = "numeric";
     const elem_key = ele_root.querySelector("#id-APIKEY input");
+    elem_key.type = 'password';
     const elem_provider = ele_root.querySelector("#id-provider select");
 
     const _ele_importByFile = ele_root.querySelector("#id-tab-body #import-file");

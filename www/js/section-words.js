@@ -397,6 +397,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         if (e.detail.action === "modify") {
         } else if (e.detail.action === "delete") {
             _wordsHandler.updateWordList();
+        } else if (e.detail.action === "add") {
+            _wordsHandler.updateWordList();
         }
         _wordsHandler.sortWordList();
         _wordsHandler.renderWords(true);

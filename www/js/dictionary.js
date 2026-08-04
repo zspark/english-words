@@ -59,61 +59,74 @@ function initDictionary(ff) {
     const _recordsProxy = createStorageProxy('__recordCache__');
     const _wordsProxy = createStorageProxy('__wordCache__');
 
-    async function _toServer(data) {
-        const userID = getLocalData("sec_setting")['userID'] || "";
-        if (!userID) {
-            const _s = `Need to provide user ID`;
-            logger.error(_s);
-            _dispDictEvt(`sync`, _s);
-            return;
-        }
-
-        // _dispDictEvt(`begin:${data.requestType}`);
-        logger.log(`C -> S request type: ${data.requestType}`);
-        _dispDictEvt(`begin:sync`);
-        data.userID = userID;
-        const _response = await fetch("../api/data", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data, null, 4),
-        });
-
-        try {
-            if (_response.status === 200) {
-                const _responseData = await _response.json();
-                if (_responseData.success) {
-                    if (_responseData.code === 200) {
-                        getLocalData("sec_setting")["syncTime"] = _responseData.syncTime;
-                        saveLocalData();
-                    }
-                    if (_responseData.content) {
-                        importDictionaryByContent(_responseData.content);
-                        logger.debug(`${_responseData.content}`);
-                    }
-                    logger.log(`S -> C ${_responseData.info}`);
-                } else {
-                    logger.error(`S -> C ${_responseData.info}`);
-                }
-                _dispDictEvt(`end:sync`, _responseData.info);
-            } else {
-                logger.error(`S -> C ${_response.status}`);
-                _dispDictEvt(`end:sync`, `Vital Error: ${_response.status}`);
+    const _serverProxy = (function () {
+        async function _toServer(data) {
+            const userID = getLocalData("sec_setting")['userID'] || "";
+            if (!userID) {
+                const _s = `Need to provide user ID`;
+                logger.error(_s);
+                return;
             }
-        } catch (err) {
-            logger.vital(`To server: ${err}`);
-            _dispDictEvt(`end:sync`, err);
-        }
-        // _dispDictEvt(`end:${data.requestType}`);
-    }
 
-    async function loadData() {
-        await _toServer({
-            requestType: "get",
-            syncTime: getLocalData("sec_setting")['syncTime'] || 1,
-        })
-    }
+            // _dispDictEvt(`begin:${data.requestType}`);
+            logger.log(`C -> S request type: ${data.requestType}`);
+            _dispDictEvt(`begin:sync`);
+            data.userID = userID;
+            const _response = await fetch("../api/data", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data, null, 4),
+            });
+
+            try {
+                if (_response.status === 200) {
+                    const _responseData = await _response.json();
+                    if (_responseData.success) {
+                        if (_responseData.code === 200) {
+                            getLocalData("sec_setting")["syncTime"] = _responseData.syncTime;
+                            saveLocalData();
+                        }
+                        if (_responseData.content) {
+                            importDictionaryByContent(_responseData.content);
+                            logger.debug(`${_responseData.content}`);
+                        }
+                        logger.log(`S -> C ${_responseData.info}`);
+                    } else {
+                        logger.error(`S -> C ${_responseData.info}`);
+                    }
+                    _dispDictEvt(`end:sync`, _responseData.info);
+                } else {
+                    logger.error(`S -> C ${_response.status}`);
+                    _dispDictEvt(`end:sync`, `Vital Error: ${_response.status}`);
+                }
+            } catch (err) {
+                logger.vital(`To server: ${err}`);
+                _dispDictEvt(`end:sync`, err);
+            }
+            // _dispDictEvt(`end:${data.requestType}`);
+        }
+
+        async function loadData() {
+            await _toServer({
+                requestType: "get",
+                syncTime: getLocalData("sec_setting")['syncTime'] || 1,
+            })
+        }
+
+        async function saveData() {
+            await _toServer({
+                requestType: "save",
+                content: _assemblePermenentData(),
+            })
+        }
+
+        return {
+            loadData,
+            saveData,
+        }
+    })()
 
     function _assemblePermenentData() {
         return {
@@ -123,14 +136,6 @@ function initDictionary(ff) {
             "dict": _wordsProxy.data()
         };
     }
-
-    async function saveData() {
-        await _toServer({
-            requestType: "save",
-            content: _assemblePermenentData(),
-        })
-    }
-
 
     function isDatabaseEmpty() {
         return _metaProxy.isEmpty() && _recordsProxy.isEmpty() && _wordsProxy.isEmpty();
@@ -433,7 +438,7 @@ function initDictionary(ff) {
             clearInterval(_syncTimer);
             _syncTimer = setInterval(() => {
                 if (_needToUpload) {
-                    saveData();
+                    _serverProxy.saveData();
                     _needToUpload = false;
                 }
             }, second * 1000);
@@ -458,8 +463,8 @@ function initDictionary(ff) {
         EVT_WORD: "EVT_WORD",
         EVT_DICT: "EVT_DICT",
 
-        loadData,
-        saveData,
+        loadData: _serverProxy.loadData,
+        saveData: _serverProxy.saveData,
 
         isDatabaseEmpty,
         exportDatabase,
