@@ -168,14 +168,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         totalCountSpan.textContent = dictionary.getWordsCount();
     }
 
-    function _add(elemLi) {
-        const _w = elemLi.dataset.word;
-        if (!selectedWords.includes(_w)) {
-            selectedWords.push(_w);
-            elemLi.setAttribute('select', "");
-        }
-    }
-
     function _clearSelection() {
         ele_wordList.querySelectorAll("li[select]").forEach(elemLi => {
             elemLi.removeAttribute('select', "");
@@ -207,10 +199,19 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             }
             return null;
         }
+
+        function _add(elemLi) {
+            const _w = elemLi.dataset.word;
+            if (!selectedWords.includes(_w)) {
+                selectedWords.push(_w);
+                elemLi.setAttribute('select', "");
+            }
+            return true;
+        }
         function _highlight(elem) {
             _clearSelection();
             const _betweenElem = _getSiblingsBetween(_activedWordElem, elem);
-            _betweenElem.forEach(elem => _add(elem, false))
+            _betweenElem.every(_add);
             _updateStatus();
             dictionary.saveLocalData();
         }
@@ -321,7 +322,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _rts.sort[_ds.index] = _ds.order;
             dictionary.saveLocalData();
             _wordsHandler.chooseSortFunc(_ds.index, _ds.order);
-            _sortWordList();
+            _wordsHandler.sortWordList();
             _wordsHandler.renderWords(true);
         });
 
@@ -372,8 +373,9 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _activeWord(_activedWordElem.nextElementSibling);
         } else if (event.key === "e") {
             _activeWord(_activedWordElem.previousElementSibling);
-        } else if (event.key === "a") {
+        } else if (event.key === "f") {
             pronunciation.pronounce(_activedWordElem?.dataset?.word)
+        } else if (event.key === "s") {
         }
     }
 
