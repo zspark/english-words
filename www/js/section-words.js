@@ -139,11 +139,28 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             //console.timeEnd('search');
         }
 
+        function getWordsBetween_include(w1, w2) {
+            if (!w1 || !w2) return [];
+            if (w1.length <= 0 || w2.length <= 0) return [];
+            if (w1 === w2) return w1;
+
+            let _i1 = _words.findIndex(item => item[0] === w1);
+            let _i2 = _words.findIndex(item => item[0] === w2);
+            if (_i1 > _i2) {
+                let _tmp = _i1;
+                _i1 = _i2;
+                _i2 = _tmp;
+            }
+
+            return _words.slice(_i1, _i2 + 1);
+        }
+
         return {
             chooseSortFunc,
             sortWordList,
             updateWordList,
             renderWords,
+            getWordsBetween_include,
             get filteredCount() { return _filteredCount; },
         }
     })();
@@ -176,20 +193,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     }
 
     (function () {
-        function _getSiblingsBetween(el1, el2) {
-            if (el1?.parentElement !== el2?.parentElement) {
-                return [];
-            }
-
-            const children = [...el1.parentElement.children];
-            const i1 = children.indexOf(el1);
-            const i2 = children.indexOf(el2);
-
-            const start = Math.min(i1, i2);
-            const end = Math.max(i1, i2);
-
-            return children.slice(start, end + 1);
-        }
         function _selectTargetElement(elem) {
             while (elem) {
                 if (elem.dataset.word) {
@@ -200,19 +203,13 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             return null;
         }
 
-        function _add(elemLi) {
-            const _w = elemLi.dataset.word;
-            if (!selectedWords.includes(_w)) {
-                selectedWords.push(_w);
-                elemLi.setAttribute('select', "");
-            }
-            return true;
-        }
         function _highlight(elem) {
-            _clearSelection();
-            const _betweenElem = _getSiblingsBetween(_activedWordElem, elem);
-            _betweenElem.every(_add);
-            _updateStatus();
+            const _arr = _wordsHandler.getWordsBetween_include(_rts.activedWord, elem.dataset.word);
+            selectedWords.length = 0;
+            _arr.forEach((item) => {
+                selectedWords.push(item[0]);
+            });
+            _wordsHandler.renderWords(true);
         }
         const TIME_SHRESHOLD = 200; //ms
         let _timeStart = 0;
