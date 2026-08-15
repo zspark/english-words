@@ -48,18 +48,16 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         const tag = tagFilter.value;
         __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word, level, tag } }));
     }
-    searchInput.addEventListener('input', (e) => { _disp(); });
-    levelFilter.addEventListener('change', (e) => { _disp(); });
-    tagFilter.addEventListener('change', (e) => { _disp(); });
-    searchBtn.addEventListener('click', () => {
-        resetFilter();
-        _disp();
-    });
+    searchInput.addEventListener('input', _disp);
+    levelFilter.addEventListener('change', _disp);
+    tagFilter.addEventListener('change', _disp);
+    searchBtn.addEventListener('click', resetFilter);
 
     function resetFilter() {
         searchInput.value = "";
         levelFilter.selectedIndex = 0;
         tagFilter.selectedIndex = 0;
+        _disp();
     }
     function setFilter(word, level, tag) {
         searchInput.value = word;

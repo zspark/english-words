@@ -149,11 +149,21 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key);
-        if (!isControlKey(event.key)) {
-            if (isEditing()) return;
+        if (isEditing()) {
+            if (_navigator.isFocused()) {
+                if (event.key === "Enter") {
+                    _navigator.setBlur();
+                }else if (event.key === "Escape") {
+                    _navigator.resetFilter();
+                }
+            }
+        } else {
+            _currentSection?.keyEvent(event)
+            if (event.key === "Enter") {
+                _navigator.setFocus();
+            }
+            event.stopImmediatePropagation()
         }
-        _currentSection?.keyEvent(event);
-        event.stopImmediatePropagation()
     })
 
     const _rts = dictionary.getLocalData('homepage');

@@ -91,7 +91,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     const ele_post_actions = ele_result.querySelector("#id-post-actions");
 
     ele_testingType.addEventListener("change", (e) => {
-        logger.debug("Selected value:", e.target.value);
+        // logger.debug("Selected value:", e.target.value);
         const ele_question = ele_form.querySelector("#id-question");
         let _s = _getQuestionStemSource(e.target.value);
         ele_question.outerHTML = _s;
@@ -112,7 +112,7 @@ function initTestSection(ai, dictionary, cmp, secWords, pronunciation) {
     });
 
     ele_answerForm.addEventListener("change", (e) => {
-        logger.debug("Answer Selected Value:", e.target.value);
+        // logger.debug("Answer Selected Value:", e.target.value);
 
         switch (e.target.value) {
             case "Multichoice":

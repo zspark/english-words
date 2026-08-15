@@ -51,7 +51,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     const _wordsHandler = (function () {
 
-        const _ITEM_HEIGHT = 88 // px;
+        const _ITEM_HEIGHT = 67 // px;
         const _ITEMS_EACH_SIDE = 4;
         const _SORT_FN_MAP_ = {
             "0": {
