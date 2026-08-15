@@ -142,7 +142,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         function getWordsBetween_include(w1, w2) {
             if (!w1 || !w2) return [];
             if (w1.length <= 0 || w2.length <= 0) return [];
-            if (w1 === w2) return w1;
+            if (w1 === w2) return [[w1]];
 
             let _i1 = _words.findIndex(item => item[0] === w1);
             let _i2 = _words.findIndex(item => item[0] === w2);
