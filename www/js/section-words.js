@@ -75,20 +75,20 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         let _sortFn = _SORT_FN_MAP_['0']['N'];
         let _filteredCount = 0;
         let _words = [];
-        let _previousStartItem = -1;
-        let _previousEndItem = -1;
+        let _previousStartIndex = -1;
+        let _previousEndIndex = -1;
 
         function _getVisibleRange() {
             const _topY = Math.max(0, _rts.scrollY - _ITEMS_EACH_SIDE * _ITEM_HEIGHT);
-            const startItem = Math.min(Math.floor(_topY / _ITEM_HEIGHT), _filteredCount);
+            const startIndex = Math.min(Math.floor(_topY / _ITEM_HEIGHT), _filteredCount);
             const _bottomY = _rts.scrollY + window.innerHeight + _ITEMS_EACH_SIDE * _ITEM_HEIGHT;
-            const endItem = Math.min(Math.ceil(_bottomY / _ITEM_HEIGHT), _filteredCount);
-            // logger.debug(`startItem:${startItem}, endItem:${endItem}`);
+            const endIndex = Math.min(Math.ceil(_bottomY / _ITEM_HEIGHT), _filteredCount);
+            // logger.debug(`startIndex:${startIndex}, endIndex:${endIndex}`);
 
             return {
-                startItem,
-                endItem,
-                startY: startItem * _ITEM_HEIGHT,
+                startIndex,
+                endIndex,
+                startY: startIndex * _ITEM_HEIGHT,
             };
         }
 
@@ -112,21 +112,21 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             if (_filteredCount === 0) {
                 ele_wordList.innerHTML = '<li class="no-results">word not found.</li>';
             } else {
-                const { startItem, endItem, startY } = _getVisibleRange();
+                const { startIndex, endIndex, startY } = _getVisibleRange();
                 if (!force) {
-                    if (startItem === _previousStartItem && endItem === _previousEndItem) return;
-                    _previousStartItem = startItem;
-                    _previousEndItem = endItem;
+                    if (startIndex === _previousStartIndex && endIndex === _previousEndIndex) return;
+                    _previousStartIndex = startIndex;
+                    _previousEndIndex = endIndex;
                 }
 
                 let htmlBuffer = '';
-                for (let i = startItem; i < endItem; ++i) {
+                for (let i = startIndex; i < endIndex; ++i) {
                     [_word, _detail] = _words[i]
 
                     const _isSelected = selectedWords.includes(_word) ? 'select' : '';
                     const _isActived = _rts.activedWord === _word ? 'active' : '';
 
-                    htmlBuffer += `<li class="cls-word-item" style="top:${startY + (i - startItem) * _ITEM_HEIGHT}px;" data-word="${_word}" ${_isSelected} ${_isActived}>
+                    htmlBuffer += `<li class="cls-word-item" style="top:${startY + (i - startIndex) * _ITEM_HEIGHT}px;" data-word="${_word}" ${_isSelected} ${_isActived}>
                                         ${_genWordHTMLSource(_word, _detail)}
                                     </li>`;
                 }
@@ -190,7 +190,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
             return children.slice(start, end + 1);
         }
-        function _selectRightElement(elem) {
+        function _selectTargetElement(elem) {
             while (elem) {
                 if (elem.dataset.word) {
                     return elem;
@@ -213,7 +213,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             const _betweenElem = _getSiblingsBetween(_activedWordElem, elem);
             _betweenElem.every(_add);
             _updateStatus();
-            dictionary.saveLocalData();
         }
         const TIME_SHRESHOLD = 200; //ms
         let _timeStart = 0;
@@ -221,7 +220,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         let _downElem = null;
         let _consecutiveTimes = 0;
         ele_wordList.addEventListener('pointerdown', (e) => {
-            //logger.debug("mouse down.");
+            // logger.debug("mouse down.");
             // logger.debug(`${_elem.tagName}`);
             _timeStart = performance.now();
             if (_timeStart - _timeEnd < TIME_SHRESHOLD) {
@@ -229,13 +228,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             } else {
                 _consecutiveTimes = 0;
             }
-            _downElem = _selectRightElement(e.target);
-            //ele_wordList.addEventListener('pointermove', _moveFn);
+            _downElem = _selectTargetElement(e.target);
         });
         ele_wordList.addEventListener('pointerup', (e) => {
-            //logger.debug("mouse up.");
-            //ele_wordList.removeEventListener('pointermove', _moveFn);
-            const _upElem = _selectRightElement(e.target);
+            // logger.debug("mouse up.");
+            const _upElem = _selectTargetElement(e.target);
             if (!_upElem) return;
             if (_upElem === _downElem) {
                 _timeEnd = performance.now();
