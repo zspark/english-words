@@ -1,18 +1,20 @@
-function initSectionPronunciation(dictionary) {
+function initPronunciation(dictionary) {
     const MP3_PATH = "./audio/";
 
     function printMissings() {
         logger.log(`These words have no audio files:
+start -----------------
 
-${[..._missingAudios].join(",")}
+${dictionary.getMissingPronunciationWords(_existingAudios)}
 
-done!`)
+----------------- end`)
     }
 
-    let _existingAudios = {};
+    window.printWrodsMissingPronunciations = printMissings;
+
+    let _existingAudios = null;
     let _currentAudio = null;
     let _currentLoadingAudio = null;
-    const _missingAudios = new Set();
 
     function _playExistMp3(word) {
         const _p = new Promise((resolve, reject) => {
@@ -24,7 +26,6 @@ done!`)
                 resolve(_audio);
             };
             _audio.onerror = () => {
-                //logger.error(`Invalid audio or file not found: ${_audio.word}`);
                 logger.error(`Audio file: ${_currentLoadingAudio.word}.mp3 not exist, but exist in audio database.`);
                 reject(_audio);
             };
@@ -46,7 +47,6 @@ done!`)
         utterance.lang = "en-US";
         utterance.rate = 0.8; //speed of pronunciation.
         speechSynthesis.speak(utterance);
-        _missingAudios.add(word);
     }
 
     function _pronounce(word) {
@@ -88,14 +88,13 @@ done!`)
                 //logger.debug(`Then.resolve called by ${audio.word}`);
                 audio.play();
                 _currentAudio = audio;
-                _missingAudios.delete(audio.word);
             }, (audio) => {
                 //logger.debug(`Then.reject called by ${audio.word}`);
                 _currentAudio = null;
                 _pronounceSynthetic(audio.word);
             });
         } else {
-            logger.debug(`Audio file ${word}.mp3 has not collectied yet.`);
+            // logger.debug(`Audio file ${word}.mp3 has not collectied yet.`);
             _pronounceSynthetic(word);
         }
     }
@@ -119,7 +118,6 @@ done!`)
             word = word.trim().toLowerCase();
             _pronounceSynthetic(word);
         },
-        printMissings,
     }
 
     return _api;

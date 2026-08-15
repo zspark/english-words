@@ -456,6 +456,13 @@ function initDictionary(ff) {
         return getLocalData("sec_setting")['ai_provider'] || "";
     }
 
+    function getMissingPronunciationWords(existingAudios) {
+        const missingWords = Object.keys(_wordsProxy.data())
+            .filter(word => !Object.hasOwn(existingAudios, word))
+            .join(',');
+
+        return missingWords;
+    }
 
     const __this__ = new EventTarget()
     Object.assign(__this__, {
@@ -494,6 +501,8 @@ function initDictionary(ff) {
         getAIProvider,
         getSyncInterval,
         setSyncInterval,
+
+        getMissingPronunciationWords,
 
     })
     return __this__;

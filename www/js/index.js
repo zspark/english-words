@@ -96,14 +96,13 @@ let section_setting = null;
 let section_card = null;
 let _currentSection = null;
 let _currentSectionElemBtn = null;
-let pronunciation = null;
 
 document.addEventListener("DOMContentLoaded", (e) => {
     const _fuzzyFind = initFuzzyFind();
     const dictionary = initDictionary(_fuzzyFind);
     const components = initComponents();
     const _ai = initAI(dictionary);
-    pronunciation = initSectionPronunciation(dictionary);
+    const pronunciation = initPronunciation(dictionary);
 
     function _switchToSection(id) {
         let _nextSection;
