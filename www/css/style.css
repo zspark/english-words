@@ -138,9 +138,9 @@ body {
 }
 
 #article .active {
-    background: #3b82f6 !important;
+    background: var(--color-active) !important;
     color: white !important;
-    border-bottom-color: #2563eb !important;
+    border-bottom-color: var(--color-active) !important;
     box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4) !important;
 }
 
@@ -174,20 +174,20 @@ body {
 }
 
 #edit-btn:hover {
-    color: #1890ff;
-    border-color: #91d5ff;
+    color: var(--btn-primary);
+    border-color: var(--btn-primary);
     background-color: #e6f7ff;
 }
 
 #save-btn {
-    background-color: #1890ff;
-    border-color: #1890ff;
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
     color: white;
 }
 
 #save-btn:hover {
-    background-color: #40a9ff;
-    border-color: #40a9ff;
+    background-color: var(--color-hover);
+    border-color: var(--color-hover);
 }
 
 #delete-btn {
@@ -287,7 +287,7 @@ summary {
     list-style: none;
     padding: 18px 24px;
     font-weight: 600;
-    color: #2563eb;
+    color: var(--color-active);
     cursor: pointer;
     user-select: none;
     outline: none;
@@ -309,8 +309,8 @@ summary::after {
     content: "";
     width: 6px;
     height: 6px;
-    border-right: 2px solid #2563eb;
-    border-bottom: 2px solid #2563eb;
+    border-right: 2px solid var(--color-active);
+    border-bottom: 2px solid var(--color-active);
     transform: rotate(45deg);
     transition: transform 0.3s ease;
     margin-right: 4px;
@@ -415,13 +415,13 @@ details[open] summary::after {
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    background: #2563eb;
+    background: var(--color-active);
     color: white;
 }
 
 #cache-tools button:hover,
 .import-label:hover {
-    background: #1d4ed8;
+    background: var(--color-hover);
 }
 
 .import-label {
@@ -431,7 +431,7 @@ details[open] summary::after {
 
 .editing {
     padding: 8px;
-    border: 1px dashed #2563eb;
+    border: 1px dashed var(--color-active);
     border-radius: 8px;
     background: #f8fbff;
     min-height: 32px;
@@ -450,15 +450,15 @@ details[open] summary::after {
     border-radius: 999px;
     background: #eef4ff;
     border: 1px solid #c7d7ff;
-    color: #2563eb;
+    color: var(--color-active);
     text-decoration: none;
     cursor: pointer;
-    transition: all .2s ease;
+    transition: all 0.2s ease;
     user-select: none;
 }
 
 #linked-words a:hover {
-    background: #2563eb;
+    background: var(--color-active);
     color: white;
     transform: translateY(-1px);
 }
@@ -642,18 +642,18 @@ details[open] summary::after {
 }
 
 .btn-primary {
-    background: #1890ff;
+    background: var(--btn-primary);
     color: #fff;
-    border-color: #1890ff;
+    border-color: var(--btn-primary);
 }
 
 .btn-primary:hover {
-    background: #40a9ff;
+    background: var(--color-hover);
 }
 
 .btn-secondary {
-    background: #fff;
-    color: #555;
+    background: var(--color-background);
+    color: #475569;
 }
 
 .btn-secondary:hover {
@@ -776,19 +776,6 @@ details[open] summary::after {
     border: none;
 }
 
-.btn-primary {
-    background-color: #2563eb;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #1d4ed8;
-}
-
-.btn-secondary {
-    background-color: #f1f5f9;
-    color: #475569;
-}
 
 .btn-secondary:hover {
     background-color: #e2e8f0;
@@ -1490,7 +1477,7 @@ details[open] summary::after {
     }
 
     .cls-card {
-        position: block;
+        position: static;
         padding: 10px;
     }
 
