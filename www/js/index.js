@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             if (_navigator.isFocused()) {
                 if (event.key === "Enter") {
                     _navigator.setBlur();
-                }else if (event.key === "Escape") {
+                } else if (event.key === "Escape") {
                     _navigator.resetFilter();
                 }
             }
@@ -162,7 +162,17 @@ document.addEventListener("DOMContentLoaded", (e) => {
             }
             event.stopImmediatePropagation()
         }
-    })
+    });
+
+    (function () {
+        const _localData = dictionary.getLocalData("sec_setting");
+        const _darkTheme = _localData['theme'];
+        if (_darkTheme) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    })();
 
     const _rts = dictionary.getLocalData('homepage');
     logger.log(`current section id: ${_rts.sectionID}`);

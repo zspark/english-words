@@ -326,7 +326,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             _ds.caption = _arr[i].innerHTML;
             _renderSortCaption(_arr[i], _o);
         }
-        _currentSortBtn = _arr[Number(_rts.sort.active)]
+        _currentSortBtn = _arr[Number(_rts.sort.active || '0')]
         _currentSortBtn.classList.add("active");
         const _ds = _currentSortBtn.dataset;
         _wordsHandler.chooseSortFunc(_ds.index, _ds.order);

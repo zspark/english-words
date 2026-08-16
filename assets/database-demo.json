@@ -1,7 +1,7 @@
 {
     "__VERSION__": "0.2.0",
     "meta": {
-        "syncInterval": "9",
+        "syncInterval": 5,
         "tags": [
             "STEM",
             "ANIMAL",
@@ -11,53 +11,11 @@
             "phrase",
             "rare",
             "SOCIETY",
-            "spelling"
+            "spelling",
+            "CASUAL"
         ],
-        "syncTime": 1785648045460,
+        "syncTime": 1785764442545,
         "article": "<span class=\"word\">Indispensable</span> as it was, the old lighthouse on Clepkey Point had never seen a night like this. A storm of <span class=\"word\">unprecedented</span> fury had swallowed the horizon, and every wave that struck the rocks seemed to invent a new kind of violence. The keeper, Mara, had spent her life reading the sea’s moods, but this was no mood—it was a decision.\n\nShe knew that the official charts showed no <span class=\"word\">discrepancy</span> between her position and the shipping lanes, yet the tide was behaving with a <span class=\"word\">sophisticated</span> cruelty, shifting the sandbars in ways that made her old maps useless. A <span class=\"word\">plausible</span> explanation existed, of course: a deep-sea quake had tilted the seabed. But knowing that did nothing to <span class=\"word\">exacerbate</span> or soften the danger—it only made the waiting worse.\n\nHer hands, gnarled by salt and decades of rope, were <span class=\"word\">resilient</span> in a way that surprised even her. She checked the lamp’s mechanism twice, then a third time, because the only <span class=\"word\">incentive</span> that mattered tonight was the next twelve hours of someone else’s life. The lamp’s beam cut through the black, a thin, honest finger of light, and she held it steady.\n\nHours later, when the storm finally broke, a small cargo ship limped into the bay—listing, but alive. The captain later said he’d seen her light “like a promise that refused to lie.” Mara only nodded. She was already thinking of tomorrow, when the <span class=\"word\">indispensable</span> chore of scraping barnacles off the lantern glass would begin again, and when a <span class=\"word\">plausible</span> calm would make everyone forget how close the night had come to erasing them all. She didn’t mind. Forgetting was part of being <span class=\"word\">resilient</span> too.",
-        "runtime": {
-            "sec_dict": {
-                "activedWord": "writ",
-                "selectedWords": [],
-                "filter": {
-                    "search": "",
-                    "level": "ALL",
-                    "tag": "ALL"
-                },
-                "sort": {
-                    "0": "N",
-                    "1": "R",
-                    "2": "N",
-                    "3": "N",
-                    "active": 0
-                },
-                "scrollY": 0
-            },
-            "sec_article": {
-                "generatedArticle": "The autumn harvest market was a riot of color, but Elara’s stall was the quietest corner. She sold only what she grew in her hidden valley garden: a glossy <span class=\"word\">zucchini</span> here, a knobby purple <span class=\"word\">yam</span> there. Her specialty, however, was the pale green <span class=\"word\">winter melon</span>, which she claimed could cool any fever of the heart.\n\nOne evening, a weary hunter named Tom stopped by, carrying a slab of smoked <span class=\"word\">venison</span> and a string of wild <span class=\"word\">watercress</span>. “Trade?” he asked, setting them on her wooden counter. Elara smiled and pointed to a bundle of crisp <span class=\"word\">water chestnut</span>s. “These will sweeten your stew,” she said. Tom shook his head. “I prefer the bite of a raw <span class=\"word\">turnip</span>.” He pulled one from his pocket, white as moonlight.\n\nShe laughed, and the sound startled a plump <span class=\"word\">turkey</span> from a nearby crate. “Then you must try my roasted <span class=\"word\">turkey</span> with <span class=\"word\">tomato</span> glaze tomorrow,” she said, pointing to a neat row of ruby <span class=\"word\">tomato</span>es. “But tonight,” she added, “I’m making a simple chowder with <span class=\"word\">tuna</span>, <span class=\"word\">yam</span>, and that <span class=\"word\">winter melon</span> you’ve been eyeing.”\n\nTom hesitated. “I don’t trust <span class=\"word\">winter melon</span>. Too quiet.” Elara sliced a thin piece and offered it. “Quiet things hold the most flavor.” He bit into it—cool, tender, surprisingly sweet. He looked at the <span class=\"word\">venison</span>, then at the <span class=\"word\">watercress</span>, then at her.\n\n“Alright,” he said, pulling a worn bag of <span class=\"word\">tuna</span> from his coat. “But I cook the <span class=\"word\">venison</span> my way.” Elara nodded, and together they built a fire, tossing <span class=\"word\">turnip</span> chunks and <span class=\"word\">water chestnut</span>s into the pot while the <span class=\"word\">turkey</span> pecked at stray seeds near their feet.\n\nBy midnight, the chowder was gone, the <span class=\"word\">tomato</span> glaze had caramelized over the <span class=\"word\">venison</span>, and Tom admitted the <span class=\"word\">winter melon</span> had, indeed, softened something inside him. As they parted, he left a single <span class=\"word\">yam</span> on her counter—a promise to return when the next harvest turned the valley gold.",
-                "scrollY": 0
-            },
-            "homepage": {
-                "sectionID": "sec-setting"
-            },
-            "sec_test": {
-                "requirement": {
-                    "repeat": 1,
-                    "timeEach": 5,
-                    "optionCount": 4,
-                    "upperCase": false,
-                    "questionForm": [
-                        "word",
-                        "ipa"
-                    ],
-                    "toTest": "meaning",
-                    "answerForm": "multichoice"
-                }
-            },
-            "sec_record": {
-                "scrollY": 0
-            }
-        },
         "lastSyncTime": 1785593851416
     },
     "record": {
@@ -680,7 +638,8 @@
             "meaning": "adj. 连续的, 连贯的",
             "links": "consecutively, successive, sequence",
             "note": "The sports team secured victory for three consecutive years.",
-            "time": 1785459295629
+            "time": 1785459295629,
+            "tags": ""
         },
         "constitute": {
             "ipa": "/ˈkɑːnstətuːt/",
@@ -3141,9 +3100,10 @@
             "ipa": "/briːtʃ/",
             "level": "C1",
             "meaning": "n. 违反;破坏;漏洞;缺口;v. 违反;破坏;攻破",
-            "links": "breached, breaching, breach of contract, security breach, data breach",
+            "links": "breached, breaching, breach of contract, security breach, data breach, bleach",
             "note": "The company was fined for a serious breach of privacy.\nHackers exploited a security breach in the system.",
-            "time": 1785459298709
+            "time": 1785459298709,
+            "tags": ""
         },
         "breakdown": {
             "ipa": "/ˈbreɪkdaʊn/",
@@ -7408,7 +7368,8 @@
             "meaning": "adj. 外交的；外交上的；圆滑的；策略性的",
             "links": "diplomat, diplomacy, diplomatically, undiplomatic",
             "note": "The two countries are trying to find a diplomatic solution.\nShe gave a diplomatic answer to avoid offending anyone.",
-            "time": 1785459303709
+            "time": 1786455214562,
+            "tags": ""
         },
         "directory": {
             "ipa": "/dəˈrektəri/",
@@ -7848,7 +7809,8 @@
             "meaning": "v. 授权；使有能力；使有自主权；增强……的信心",
             "links": "empowered, empowering, empowerment, disempower",
             "note": "The program aims to empower young people with practical skills.\nEmployees are empowered to make decisions without asking their managers.",
-            "time": 1785459304259
+            "time": 1785459304259,
+            "tags": ""
         },
         "enact": {
             "ipa": "/ɪˈnækt/",
@@ -9005,7 +8967,8 @@
             "meaning": "adj. 即将发生的；迫近的；临近的",
             "links": "imminently, imminence",
             "note": "The government warned that a major storm was imminent.\nThe workers were evacuated because the danger was imminent.",
-            "time": 1785459305699
+            "time": 1785459305699,
+            "tags": ""
         },
         "implementation": {
             "ipa": "/ˌɪmpləmenˈteɪʃən/",
@@ -10994,10 +10957,11 @@
         "premise": {
             "ipa": "/ˈpremɪs/",
             "level": "C1",
-            "meaning": "n. 前提；假设；基础；经营场所；v. 以……为前提",
-            "links": "premises, premised, premising, premise on, premise that",
-            "note": "The argument is based on a false premise.\nThe entire project rests on the premise that demand will increase.",
-            "time": 1785459308179
+            "meaning": "n. 前提；假定",
+            "links": "premises,premiss",
+            "note": "The entire argument rests on a false premise.",
+            "time": 1785994987914,
+            "tags": ""
         },
         "premium": {
             "ipa": "/ˈpriːmiəm/",
@@ -11716,7 +11680,8 @@
             "meaning": "n. 橄榄球争球；混乱的人群；敏捷开发方法",
             "links": "scrums, scrum master, scrum team, scrum meeting",
             "note": "Our software team has a short scrum every morning.",
-            "time": 1785459309069
+            "time": 1785459309069,
+            "tags": ""
         },
         "compulsory": {
             "ipa": "/kəmˈpʌlsəri/",
@@ -12653,9 +12618,10 @@
             "ipa": "/væˈleɪ/",
             "level": "B2",
             "meaning": "n. 代客泊车员; 贴身男仆\nv. 清洁(车辆)",
-            "links": "valeted, valeting, servant",
+            "links": "valeted, valeting, servant, butler",
             "note": "He left his car key with the hotel valet at the main entrance.\nThe butler served devotedly as the wealthy gentleman's personal valet.\nThey offered to valet the car inside and out while he waited.",
-            "time": 1785459310209
+            "time": 1785459310209,
+            "tags": ""
         },
         "overdue": {
             "ipa": "/ˌoʊvərˈduː/",
@@ -17793,10 +17759,11 @@
         "asphalt": {
             "ipa": "/ˈæsfɔːlt/",
             "level": "B2",
-            "meaning": "n. 沥青, 柏油",
-            "links": "pavement, road, bitumen",
-            "note": "Workers poured hot asphalt to resurface the damaged road.",
-            "time": 1785459316519
+            "meaning": "n. 沥青；柏油路面",
+            "links": "asphalted,asphalting,bitumen",
+            "note": "The road was covered with fresh asphalt.",
+            "time": 1785805636267,
+            "tags": ""
         },
         "lexus": {
             "ipa": "/ˈleksəs/",
@@ -20178,9 +20145,10 @@
             "ipa": "/ˈhjuːmər/",
             "level": "B1",
             "meaning": "n. 幽默; 幽默感 | v. 迎合; 纵容",
-            "links": "humorous, sense of humor, funny",
+            "links": "humorous, sense of humor, funny, humerus",
             "note": "His warm sense of humor helped break the ice at the party.\nJust humor him for a minute so we can avoid an argument.",
-            "time": 1785459319449
+            "time": 1785459319449,
+            "tags": ""
         },
         "talkative": {
             "ipa": "/ˈtɔːkətɪv/",
@@ -21551,7 +21519,8 @@
             "meaning": "v. 拖，拉，牵引; n. 拖拽",
             "links": "tows, towed, towing",
             "note": "The breakdown truck came to tow our car to the garage.\nOur car was given a tow after the engine failed.",
-            "time": 1785459321129
+            "time": 1785459321129,
+            "tags": ""
         },
         "fidelity": {
             "ipa": "/fɪˈdeləti/",
@@ -22191,9 +22160,10 @@
             "ipa": "/veɪp/",
             "level": "B1",
             "meaning": "v. 吸电子烟; n. 电子烟",
-            "links": "vaping, vapes, vaped",
+            "links": "vaping, vapes, vaped, vapor",
             "note": "It is strictly forbidden to vape inside public buildings.\nHe bought a fresh new vape from the local corner store.",
-            "time": 1785459321919
+            "time": 1785459321919,
+            "tags": ""
         },
         "combustion": {
             "ipa": "/kəmˈbʌstʃən/",
@@ -22854,7 +22824,8 @@
             "meaning": "n. 理解，理解力，阅读理解",
             "links": "comprehend, comprehensible",
             "note": "The math exam tested both reading and logical comprehension.",
-            "time": 1785459322729
+            "time": 1785459322729,
+            "tags": ""
         },
         "thrill": {
             "ipa": "/θrɪl/",
@@ -23832,7 +23803,8 @@
             "meaning": "v. 摇摇晃晃; v. 使震惊; v. 错开(时间)",
             "links": "staggering, staggers, staggered",
             "note": "The injured man began to stagger down the street.\nThe high costs staggered the young startup business.\nWorking hours were staggered to prevent overcrowding.",
-            "time": 1785459323939
+            "time": 1785459323939,
+            "tags": ""
         },
         "pernicious": {
             "ipa": "/pərˈnɪʃəs/",
@@ -26305,7 +26277,8 @@
             "meaning": "adj. 二次的(数学); n. 二次方程式",
             "links": "quadratic equation",
             "note": "Students practiced solving quadratic equations in algebra class.",
-            "time": 1785459326999
+            "time": 1785940315105,
+            "tags": "STEM"
         },
         "logarithmic": {
             "ipa": "/ˌlɔːɡəˈrɪðmɪk/",
@@ -26313,7 +26286,8 @@
             "meaning": "adj. 对数的",
             "links": "logarithm, logarithmically",
             "note": "The Richter earthquake scale is a logarithmic measurement system.",
-            "time": 1785459327009
+            "time": 1785940305386,
+            "tags": "STEM"
         },
         "plot": {
             "ipa": "/plɑːt/",
@@ -26329,7 +26303,8 @@
             "meaning": "n. 支架，牙套; v. 做好准备(brace oneself); v. 支撑",
             "links": "braces, braced, bracing",
             "note": "She wore a metal dental brace on her teeth for two years.\nResidents braced themselves for the incoming hurricane.\nUse wooden beams to brace the collapsing wall.",
-            "time": 1785459327029
+            "time": 1785459327029,
+            "tags": ""
         },
         "azimuthal": {
             "ipa": "/ˌæzɪˈmʌθl/",
@@ -26337,7 +26312,8 @@
             "meaning": "adj. 方位角的",
             "links": "azimuth",
             "note": "The telescope relies on an azimuthal mounting system.",
-            "time": 1785459327039
+            "time": 1785940264186,
+            "tags": "STEM"
         },
         "snippet": {
             "ipa": "/ˈsnɪpɪt/",
@@ -26367,9 +26343,10 @@
             "ipa": "/ˈkoʊlən/",
             "level": "B2",
             "meaning": "n. 冒号(:); n. 结肠",
-            "links": "colons, semi-colon",
+            "links": "colons, semicolon",
             "note": "Use a colon to introduce an itemized list of examples.\nHealth check-ups can detect early cancer of the colon.",
-            "time": 1785459327079
+            "time": 1785940236549,
+            "tags": ""
         },
         "magenta": {
             "ipa": "/məˈdʒentə/",
@@ -26404,8 +26381,8 @@
             "meaning": "n. 汇合，聚集，融合",
             "links": "converge, convergent",
             "note": "The convergence of technology and health care creates new opportunities.",
-            "tags": "",
-            "time": 1785459327119
+            "tags": "STEM",
+            "time": 1785940202251
         },
         "judicious": {
             "ipa": "/dʒuːˈdɪʃəs/",
@@ -26417,12 +26394,13 @@
             "time": 1785459327129
         },
         "parallelogram": {
-            "ipa": "/ˌpær.əˈlel.ə.ɡræm/",
+            "ipa": "/ˌpærəˈleləɡræm/",
             "level": "B2",
             "meaning": "n. 平行四边形",
             "links": "parallel, rectangle, rhombus",
             "note": "A opposite sides of a parallelogram are equal in length.\nCalculate the area of the parallelogram given its base and height.",
-            "time": 1785459327139
+            "time": 1785940586192,
+            "tags": "STEM"
         },
         "divergence": {
             "ipa": "/daɪˈvɜːr.dʒəns/",
@@ -26430,7 +26408,8 @@
             "meaning": "n. 分歧;差异;发散",
             "links": "diverge, divergent, convergence",
             "note": "There is a growing divergence of opinion on this issue.\nThe divergence between the two economic theories became clear.",
-            "time": 1785459327149
+            "time": 1785940184386,
+            "tags": "STEM"
         },
         "gradient": {
             "ipa": "/ˈɡreɪ.di.ənt/",
@@ -26438,7 +26417,8 @@
             "meaning": "n. 坡度;斜率;梯度",
             "links": "grade, gradual, slope",
             "note": "The road has a steep gradient of 10 percent.\nCalculate the gradient of the line on the graph.",
-            "time": 1785459327159
+            "time": 1785459327159,
+            "tags": ""
         },
         "first-order": {
             "ipa": "/ˌfɜːrstˈɔːr.dɚ/",
@@ -26446,7 +26426,8 @@
             "meaning": "adj. 一阶的;头等重要的;第一级的",
             "links": "second-order, order, primary",
             "note": "We need to solve a first-order differential equation.\nThis is a problem of first-order importance to the company.",
-            "time": 1785459327169
+            "time": 1785459327169,
+            "tags": "STEM"
         },
         "determinant": {
             "ipa": "/dɪˈtɜːr.mɪ.nənt/",
@@ -26454,8 +26435,8 @@
             "meaning": "n. 决定因素;行列式",
             "links": "determine, determination, determined",
             "note": "Price is often the main determinant of consumer choice.\nWe calculated the determinant of the 3x3 matrix.",
-            "tags": "",
-            "time": 1785459327179
+            "tags": "STEM",
+            "time": 1785940166461
         },
         "logarithm": {
             "ipa": "/ˈlɑː.ɡə.rɪ.ðəm/",
@@ -26463,7 +26444,8 @@
             "meaning": "n. 对数",
             "links": "logarithmic, log, exponent",
             "note": "The Richter scale uses a logarithm to measure earthquake magnitude.\nTake the natural logarithm of both sides of the equation.",
-            "time": 1785459327189
+            "time": 1785459327189,
+            "tags": "STEM"
         },
         "taylor": {
             "ipa": "/ˈteɪ.lɚ/",
@@ -26480,7 +26462,8 @@
             "meaning": "n. 算术;计算",
             "links": "arithmetical, arithmetically, mathematics",
             "note": "He made a simple error in basic arithmetic.\nThe student excels at mental arithmetic.",
-            "time": 1785459327209
+            "time": 1785459327209,
+            "tags": "STEM"
         },
         "calculus": {
             "ipa": "/ˈkæl.kjə.ləs/",
@@ -26488,7 +26471,8 @@
             "meaning": "n. 微积分;结石",
             "links": "calculate, calculation, calculator",
             "note": "Calculus is an essential subject for engineering students.\nThe doctor detected a renal calculus during the exam.",
-            "time": 1785459327219
+            "time": 1785459327219,
+            "tags": "STEM"
         },
         "delimiter": {
             "ipa": "/dɪˈlɪm.ɪ.tɚ/",
@@ -26496,7 +26480,8 @@
             "meaning": "n. 分隔符",
             "links": "delimit, delimitation, limit",
             "note": "Commas are commonly used as a delimiter in CSV files.\nSelect a suitable delimiter to separate the data fields.",
-            "time": 1785459327229
+            "time": 1785459327229,
+            "tags": "STEM"
         },
         "euler": {
             "ipa": "/ˈɔɪ.lɚ/",
@@ -26538,7 +26523,8 @@
             "meaning": "n. 枯萎病;阴影;不良影响 v. 破坏;使枯萎",
             "links": "blighted, ruin, spoil",
             "note": "Potato blight destroyed the entire crop that year.\nUrban decay is a blight on the beauty of the city.\nInjuries blighted his promising athletic career.",
-            "time": 1785459327279
+            "time": 1785459327279,
+            "tags": ""
         },
         "vow": {
             "ipa": "/vaʊ/",
@@ -26555,7 +26541,8 @@
             "meaning": "n. 敌意;仇恨",
             "links": "enemy, hostile, hostility",
             "note": "There was deep-seated enmity between the two families.\nYears of conflict left a legacy of bitterness and enmity.",
-            "time": 1785459327299
+            "time": 1785459327299,
+            "tags": ""
         },
         "snare": {
             "ipa": "/sneər/",
@@ -26663,9 +26650,10 @@
             "ipa": "/proʊn/",
             "level": "B2",
             "meaning": "adj. 易于…的;倾向于…的;俯卧的",
-            "links": "prostrate, vulnerable, inclined",
+            "links": "prostrate, vulnerable, inclined, prone to",
             "note": "Tired drivers are prone to making dangerous mistakes.\nHe lay prone on the bed, staring at the floor.",
-            "time": 1785459327429
+            "time": 1785459327429,
+            "tags": ""
         },
         "imitate": {
             "ipa": "/ˈɪm.ə.teɪt/",
@@ -26681,7 +26669,8 @@
             "meaning": "n. 民意调查;投票 v. 对…进行民意调查;获得选票",
             "links": "survey, vote, polling",
             "note": "The latest opinion poll shows a drop in support.\nVoters will go to the polls tomorrow.\nThe party polled over 40 percent of the total vote.",
-            "time": 1785459327449
+            "time": 1785459327449,
+            "tags": ""
         },
         "lurk": {
             "ipa": "/lɝːk/",
@@ -26689,7 +26678,8 @@
             "meaning": "v. 潜伏;埋伏;暗藏",
             "links": "lurker, skulk, hide",
             "note": "Dangers may lurk in the dark corners of the internet.\nA suspicious figure was seen lurking near the bank.",
-            "time": 1785459327459
+            "time": 1785459327459,
+            "tags": ""
         },
         "disposition": {
             "ipa": "/ˌdɪs.pəˈzɪʃ.ən/",
@@ -26697,13 +26687,14 @@
             "meaning": "n. 性格;气质;倾向;配置",
             "links": "dispose, disposed, temperament",
             "note": "She has a cheerful and friendly disposition.\nHe showed a disposition to agree with our plan.",
-            "time": 1785459327469
+            "time": 1785940070916,
+            "tags": "rare"
         },
         "forfeit": {
             "ipa": "/ˈfɔːr.fɪt/",
             "level": "C2",
             "meaning": "v. (因过错)丧失;被没收 n. 罚金;丧失的东西",
-            "links": "forfeiture, surrender, loss",
+            "links": "forfeiture, surrender, loss, forsake",
             "note": "If you break the contract, you forfeit your deposit.\nHe paid a heavy forfeit for his careless mistake.",
             "time": 1785459327479,
             "tags": ""
@@ -26730,10 +26721,10 @@
             "ipa": "/ˈveɪ.pɚ/",
             "level": "B2",
             "meaning": "n. 蒸气;水汽",
-            "links": "evaporate, vaporize, steam",
+            "links": "evaporate, vaporize, steam,vape",
             "note": "Water vapor turned into tiny droplets on the window.\nThe liquid turns rapidly into vapor when heated.",
             "tags": "",
-            "time": 1785459327509
+            "time": 1785940029755
         },
         "slap": {
             "ipa": "/slæp/",
@@ -26741,7 +26732,8 @@
             "meaning": "v. 拍打;掌掴 n. 掌掴;拍打声",
             "links": "smack, hit, slapping",
             "note": "She slapped him across the face in anger.\nHe gave the counter a loud slap with his palm.",
-            "time": 1785459327519
+            "time": 1785940006136,
+            "tags": "CASUAL"
         },
         "feisty": {
             "ipa": "/ˈfaɪ.sti/",
@@ -26749,7 +26741,8 @@
             "meaning": "adj. 活力充沛的;好斗的;有骨气的",
             "links": "spunky, feistiness, spirited",
             "note": "She is a feisty young woman who stands up for herself.\nThe small puppy was spunky and feisty.",
-            "time": 1785459327529
+            "time": 1785459327529,
+            "tags": ""
         },
         "graze": {
             "ipa": "/ɡreɪz/",
@@ -26821,12 +26814,13 @@
             "time": 1785459327609
         },
         "remedy": {
-            "ipa": "/ˈrem.ə.di/",
+            "ipa": "/ˈremədi/",
             "level": "B2",
             "meaning": "n. 补救办法;药物 v. 纠正;补救",
             "links": "remedial, cure, fix",
             "note": "Hot tea with lemon is a popular cold remedy.\nAction must be taken to remedy the situation.",
-            "time": 1785459327619
+            "time": 1785939910126,
+            "tags": ""
         },
         "berry": {
             "ipa": "/ˈber.i/",
@@ -26834,7 +26828,8 @@
             "meaning": "n. 浆果;莓",
             "links": "strawberries, blueberries, fruit",
             "note": "We picked fresh wild berries in the woods.\nShe loves yogurt topped with mixed berries.",
-            "time": 1785459327629
+            "time": 1785939883614,
+            "tags": "FOOD, PLANT"
         },
         "sting": {
             "ipa": "/stɪŋ/",
@@ -26905,7 +26900,8 @@
             "meaning": "n. (为取得优势的)开场策略;招数",
             "links": "maneuver, ploy, tactic",
             "note": "His opening gambit was to offer a discount.\nIt was a risky gambit, but it paid off handsomely.",
-            "time": 1785459327709
+            "time": 1785459327709,
+            "tags": ""
         },
         "prank": {
             "ipa": "/præŋk/",
@@ -26921,8 +26917,8 @@
             "meaning": "n. 推荐;转诊;转介",
             "links": "refer, reference, recommendation",
             "note": "You need a referral from your doctor to see the specialist.\nThe business gained many clients through word-of-mouth referral.",
-            "tags": "",
-            "time": 1785459327729
+            "tags": "rare",
+            "time": 1785939828000
         },
         "lick": {
             "ipa": "/lɪk/",
@@ -27011,7 +27007,8 @@
             "meaning": "v. 改变;修改(衣服)",
             "links": "alteration, change, modify",
             "note": "Nothing can alter the fact that we failed.\nShe took the dress to a tailor to alter it.",
-            "time": 1785459327829
+            "time": 1785459327829,
+            "tags": ""
         },
         "determinate": {
             "ipa": "/dɪˈtɜːr.mɪ.nət/",
@@ -27044,7 +27041,7 @@
             "level": "B2",
             "note": "大声呼吁者",
             "links": "vocal,advocate",
-            "tags": "SOCIETY",
+            "tags": "SOCIETY, phrase",
             "time": 1785459327869
         },
         "virtual": {
@@ -27125,7 +27122,8 @@
             "meaning": "adj. 生物力学的",
             "links": "biomechanics, biomechanist, mechanics, biological",
             "note": "The athlete underwent a biomechanical analysis to improve her running efficiency.\nEngineers used biomechanical principles to design a more comfortable prosthetic limb.",
-            "time": 1785459327979
+            "time": 1785459327979,
+            "tags": "STEM"
         },
         "factorial": {
             "ipa": "/fækˈtɔːriəl/",
@@ -27133,7 +27131,8 @@
             "meaning": "n. 阶乘; adj. 阶乘的",
             "links": "factor, factorize, factorization",
             "note": "The factorial of 5 is calculated as 5 × 4 × 3 × 2 × 1, which equals 120.\nIn mathematics, the factorial function grows faster than most polynomial expressions.",
-            "time": 1785459327989
+            "time": 1785939633347,
+            "tags": "STEM"
         },
         "electromyography": {
             "ipa": "/ɪˌlektroʊmaɪˈɑːɡrəfi/",
@@ -27141,7 +27140,8 @@
             "meaning": "n. 肌电图检查; 肌电图学",
             "links": "electromyogram, EMG, myography, electromyographic",
             "note": "The doctor ordered an electromyography to evaluate the patient's nerve function in her legs.\nElectromyography is commonly used in biomechanical research to measure muscle activation.",
-            "time": 1785459327999
+            "time": 1785939641537,
+            "tags": "STEM"
         },
         "pareto": {
             "ipa": "/pəˈreɪtoʊ/",
@@ -27149,7 +27149,8 @@
             "meaning": "adj. 帕累托的 (尤指帕累托法则/80-20法则)",
             "links": "Pareto principle, Vilfredo Pareto, efficiency, distribution",
             "note": "Applying the Pareto principle, the team focused on fixing the 20% of bugs that caused 80% of the crashes.\nThe consultant recommended a Pareto analysis to identify key profit drivers.",
-            "time": 1785459328009
+            "time": 1785939670045,
+            "tags": "STEM"
         },
         "parity": {
             "ipa": "/ˈpærəti/",
@@ -27213,7 +27214,8 @@
             "meaning": "v. 放松; 镇静; 歇着",
             "links": "chilled out, chilling out, relax, unwind, calm down",
             "note": "After finishing our exams, we decided to spend the afternoon chilling out on the beach.\nJust chill out for a minute and let me explain what actually happened.",
-            "time": 1785459328089
+            "time": 1785939558861,
+            "tags": "phrase"
         },
         "skid": {
             "ipa": "/skɪd/",
@@ -27245,7 +27247,8 @@
             "meaning": "prep./phr. 除了...之外; 不同于",
             "links": "except, besides, apart from, aside from",
             "note": "I have no preferences other than ensuring the project finishes on schedule.\nThe store owner accepts no payment methods other than cash or immediate bank transfer.",
-            "time": 1785459328129
+            "time": 1785459328129,
+            "tags": "phrase"
         },
         "judder": {
             "ipa": "/ˈdʒʌdər/",
@@ -27253,7 +27256,8 @@
             "meaning": "v. 剧烈震动; 剧烈颤抖; n. 剧烈震动",
             "links": "juddered, juddering, vibrate, shudder, shake",
             "note": "The old elevator began to judder violently as it approached the top floor.\nA sudden judder in the steering wheel warned the driver that a tire might be failing.",
-            "time": 1785459328139
+            "time": 1785459328139,
+            "tags": ""
         },
         "hazel": {
             "ipa": "/ˈheɪzl/",
@@ -27261,7 +27265,8 @@
             "meaning": "n. 榛树; 淡褐色; adj. 浅褐色的; 榛色的",
             "links": "hazelnut, hazel eyes, brown-green",
             "note": "She has striking hazel eyes that seem to change color in the sunlight.\nThe walking stick was handcrafted from a sturdy branch of wild hazel.",
-            "time": 1785459328149
+            "time": 1785939530256,
+            "tags": "PLANT"
         },
         "gourd": {
             "ipa": "/ɡʊrd/",
@@ -27269,7 +27274,8 @@
             "meaning": "n. 葫芦; 瓠瓜; 葫芦科植物; 葫芦制成的容器",
             "links": "bitter gourd, bottle gourd, squash, pumpkin",
             "note": "Dried gourds were historically carved and used as water canteens in many cultures.\nThey decorated the front porch with colorful autumn gourds and pumpkins.",
-            "time": 1785459328159
+            "time": 1785459328159,
+            "tags": "PLANT"
         },
         "business": {
             "ipa": "/ˈbɪznəs/",
@@ -27332,14 +27338,6 @@
             "note": "Children go to school on weekdays.\nHe is the headmaster of the school.",
             "tags": "",
             "time": 1785459297419
-        },
-        "friend": {
-            "ipa": "英:/frend/ 美:/frend/",
-            "level": "A1",
-            "meaning": "n. 朋友",
-            "links": "friends, friendly, friendship, befriend",
-            "note": "She is my best friend.\nThey have been friends for years.",
-            "tags": ""
         },
         "family": {
             "ipa": "英:/'fæməli/ 美:/'fæməli/",
@@ -27404,21 +27402,14 @@
             "tags": "",
             "time": 1785459297489
         },
-        "behind": {
-            "ipa": "/bɪˈhaɪnd/",
-            "level": "A1",
-            "meaning": "prep./adv. 在…后面; prep. 落后于",
-            "links": "behindness",
-            "note": "The broom is kept in the corner behind the door.\nHe fell behind the rest of the class in mathematics.",
-            "time": 1785459327959
-        },
         "nurse": {
             "ipa": "/nɜːrs/",
             "level": "A1",
             "meaning": "n. 护士; v. 护理，看护",
             "links": "nursing, nursery, nurses",
             "note": "The hospital nurse took my blood pressure and temperature.\nShe stayed home to nurse her sick child back to health.",
-            "time": 1785459327969
+            "time": 1785459327969,
+            "tags": ""
         },
         "dispenser": {
             "ipa": "/dɪ'spensər/",
@@ -27445,7 +27436,7 @@
             "links": "vulval,vulvar",
             "note": "1. Medical textbooks provide detailed diagrams of the vulva for anatomy students.",
             "time": 1785459328171,
-            "tags": ""
+            "tags": "STEM"
         },
         "taint": {
             "ipa": "/teɪnt/",
@@ -27479,7 +27470,7 @@
             "meaning": "vt. 抛弃；遗弃；放弃（尤指珍爱之物）",
             "level": "C1",
             "note": "Formal or literary term; implies leaving something or someone permanently, often with a sense of loss or moral failure.",
-            "links": "forsaken,forsakes,forsaking",
+            "links": "forsaken,forsakes,forfeit,abandon",
             "time": 1785459328175,
             "tags": ""
         },
@@ -27488,7 +27479,7 @@
             "meaning": "n. 小溪，细流；v. （液体）细流般地流动",
             "level": "C2",
             "note": "Relatively rare, often used in literary or geological contexts.",
-            "links": "rill, rill-like, rilled",
+            "links": "rill, rill-like, rilled,stream",
             "time": 1785459328176,
             "tags": ""
         },
@@ -27505,9 +27496,807 @@
             "ipa": "/ˈbraɪdəl/",
             "meaning": "n. 马勒，缰绳；v. 控制，抑制；动怒，生气",
             "level": "B2",
-            "note": "This word has both noun and verb forms with different common meanings.",
+            "note": "This word has both noun and verb forms with different common meanings.\n\nHis unbridled enthusiasm for the project led to some reckless decisions.（他对这个项目的放肆热情导致了一些鲁莽的决定。）",
             "links": "bridled,bridling,bridler,unbridle",
-            "time": 1785459328180,
+            "time": 1785939071429,
+            "tags": ""
+        },
+        "pummel": {
+            "ipa": "/ˈpʌməl/",
+            "meaning": "v. 连续猛击；殴打；打击",
+            "level": "C1",
+            "note": "Commonly used in sports or physical conflict contexts.\nThe boxer pummeled his opponent until the referee stopped the fight.\n拳击手连续猛击对手，直到裁判终止比赛。",
+            "links": "pummelled,pummelling,pummels",
+            "time": 1785662246684,
+            "tags": ""
+        },
+        "elongate": {
+            "ipa": "/ɪˈlɔːŋɡeɪt/",
+            "meaning": "v. 拉长；延长；伸长",
+            "level": "B2",
+            "note": "The verb form is typically used in scientific or formal contexts.",
+            "links": "elongation,elongated",
+            "time": 1785724902171,
+            "tags": ""
+        },
+        "unbridle": {
+            "ipa": "/ʌnˈbraɪdəl/",
+            "meaning": "v. 解除对……的束缚；放纵；不受控制",
+            "level": "C2",
+            "note": "Often used figuratively to mean to release from restraint or control.",
+            "links": "unbridled,unbridling,bridle",
+            "time": 1785939057304,
+            "tags": ""
+        },
+        "lubrication": {
+            "ipa": "/ˌluːbrɪˈkeɪʃən/",
+            "level": "B2",
+            "meaning": "n. 润滑；润滑作用",
+            "links": "lubricate,lubricated,lubricating,lubricant",
+            "note": "Proper lubrication reduces friction and prevents wear.",
+            "time": 1786424419242,
+            "tags": ""
+        },
+        "bitumen": {
+            "ipa": "/ˈbɪtʃʊmən/",
+            "level": "C1",
+            "meaning": "n. 沥青；天然沥青",
+            "links": "bituminous, asphalt",
+            "note": "Bitumen is commonly used in road construction.",
+            "time": 1785797042528,
+            "tags": ""
+        },
+        "seizure": {
+            "ipa": "/ˈsiːʒər/",
+            "level": "B2",
+            "meaning": "n. 癫痫发作；查封；夺取；抱死",
+            "links": "seize,seized,seizing",
+            "note": "Engine seizure can occur when lubrication fails.",
+            "time": 1785797042538,
+            "tags": ""
+        },
+        "peg": {
+            "ipa": "/peɡ/",
+            "level": "B2",
+            "meaning": "n. 钉子；挂钩；踏杆；v. 用钉固定",
+            "links": "pegged,pegging",
+            "note": "Keep your feet firmly on the pegs while riding.",
+            "time": 1785797042548,
+            "tags": ""
+        },
+        "footrest": {
+            "ipa": "/ˈfʊtrest/",
+            "level": "B1",
+            "meaning": "n. 搁脚处；脚踏",
+            "links": "footrests",
+            "note": "Adjust the footrest for a comfortable riding position.",
+            "time": 1785797042558,
+            "tags": ""
+        },
+        "motorcyclist": {
+            "ipa": "/ˈməʊtəsaɪklɪst/",
+            "level": "B1",
+            "meaning": "n. 摩托车骑手",
+            "links": "motorcycle,motorcycling",
+            "note": "Every motorcyclist should wear protective gear.",
+            "time": 1785797042568,
+            "tags": ""
+        },
+        "emerge from": {
+            "ipa": "/ɪˈmɜːrdʒ frəm/",
+            "level": "B1",
+            "meaning": "phr. 从……出现；从……出来；摆脱",
+            "links": "emerge,emerged,emerging",
+            "note": "The rider emerged from the tunnel into bright sunlight.",
+            "time": 1785797042578,
+            "tags": "phrase"
+        },
+        "mattress": {
+            "ipa": "/ˈmætrəs/",
+            "level": "B1",
+            "meaning": "n. 床垫",
+            "links": "mattresses",
+            "note": "A good mattress improves sleep quality.",
+            "time": 1785797042588,
+            "tags": ""
+        },
+        "spank": {
+            "ipa": "/spæŋk/",
+            "level": "C1",
+            "meaning": "v. 打屁股；拍打；n. 打屁股",
+            "links": "spanked,spanking,spanks",
+            "note": "The parent threatened to spank the naughty child.",
+            "time": 1785941078811,
+            "tags": "CASUAL"
+        },
+        "corpora": {
+            "ipa": "/ˈkɔːrpərə/",
+            "level": "C2",
+            "meaning": "n. 语料库；文集（corpus 的复数）",
+            "links": "corpus",
+            "note": "Large corpora are widely used in computational linguistics.",
+            "time": 1785797042600,
+            "tags": ""
+        },
+        "wretch": {
+            "ipa": "/retʃ/",
+            "level": "C2",
+            "meaning": "n. 可怜人；卑鄙的人",
+            "links": "wretched,wretchedly,wretchedness",
+            "note": "The poor wretch had nowhere to sleep.",
+            "time": 1785797042610,
+            "tags": ""
+        },
+        "causeway": {
+            "ipa": "/ˈkɔːzweɪ/",
+            "level": "C2",
+            "meaning": "n. 堤道；高架道路",
+            "links": "causeways",
+            "note": "The bridge connects to the island by a long causeway.",
+            "time": 1785797042620,
+            "tags": ""
+        },
+        "exhaust": {
+            "ipa": "/ɪɡˈzɔːst/",
+            "meaning": "v. 使精疲力尽；耗尽；详尽讨论 n. （车辆等的）排气管；废气",
+            "level": "B2",
+            "note": "Exhaust can be both a verb and a noun.\n中文释义一：使筋疲力尽；（使）极度疲惫\n\n近义词：drain, tire out, wear out\n\n反义词：energize, reinvigorate\n\n例句1：After running a marathon, Jane felt completely exhausted and needed to rest for a few days.\n\n例句2：My job is so demanding that it exhausts me both mentally and physically.\n\n中文释义二：放出（某种物质，如废气、废水、废渣等）\n\n近义词：discharge, emit, release\n\n反义词：absorb, soak up\n\n例句1：The factory was fined for unlawfully exhausting pollutants into the river.\n\n例句2：The car's exhaust system needs to be repaired because it is releasing too much harmful gas into the air.\n#例句",
+            "links": "exhausted,exhausting,exhaustion,exhaustive",
+            "time": 1785821978261,
+            "tags": ""
+        },
+        "spillage": {
+            "ipa": "/ˈspɪlɪdʒ/",
+            "meaning": "n. 泄漏；溢出；溢出量",
+            "level": "C1",
+            "note": "The spillage of oil caused severe environmental damage.",
+            "links": "spill,spilled,spilling,leakage",
+            "time": 1785939360324,
+            "tags": ""
+        },
+        "pellet": {
+            "ipa": "/ˈpelɪt/",
+            "level": "C1",
+            "meaning": "n. 小颗粒；丸粒；微粒",
+            "links": "pelleted,pelletize,pelleting",
+            "note": "The wood pellets are burned to produce renewable bioenergy.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "paralysis": {
+            "ipa": "/pəˈræləsɪs/",
+            "level": "C1",
+            "meaning": "n. 瘫痪，麻痹；瘫痪状态",
+            "links": "paralyze,paralytic,paralyzed",
+            "note": "The accident resulted in a temporary paralysis of his left arm.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "paralyze": {
+            "ipa": "/ˈpærəlaɪz/",
+            "level": "B2",
+            "meaning": "v. 使瘫痪；使麻痹；使瘫痪瘫痪",
+            "links": "paralysis,paralytic,paralyzing",
+            "note": "A nationwide transit strike could paralyze the whole city.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "parry": {
+            "ipa": "/ˈpæri/",
+            "level": "C2",
+            "meaning": "v. 挡开，避开（攻击）；巧妙回避（问题） n. 招架；回避",
+            "links": "parried,parrying",
+            "note": "She skillfully managed to parry all hostile questions from reporters.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "unravel": {
+            "ipa": "/ʌnˈrævl/",
+            "level": "C1",
+            "meaning": "v. 解开，拆散；澄清，揭开（谜团）；崩溃，瓦解",
+            "links": "unraveled,unraveling,ravel",
+            "note": "Detectives are working tirelessly to unravel the complex mystery.",
+            "time": 1785938839610,
+            "tags": ""
+        },
+        "acupuncture": {
+            "ipa": "/ˈækjupʌŋktʃər/",
+            "level": "B2",
+            "meaning": "n. 针灸，针灸疗法",
+            "links": "acupuncturist,acupressure",
+            "note": "Acupuncture is an essential branch of traditional Chinese medicine.",
+            "time": 1785938880846,
+            "tags": "STEM"
+        },
+        "bleach": {
+            "ipa": "/bliːtʃ/",
+            "level": "B2",
+            "meaning": "v. 漂白；使褪色 n. 漂白剂",
+            "links": "bleached,bleaching,bleacher,breach",
+            "note": "You can use a small amount of bleach to restore white fabrics.",
+            "time": 1785938932510,
+            "tags": ""
+        },
+        "scum": {
+            "ipa": "/skʌm/",
+            "level": "C2",
+            "meaning": "n. 浮渣，泡沫；人渣，败类",
+            "links": "scummy,scummed",
+            "note": "A thin layer of scum formed on top of the boiling liquid.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "solvent": {
+            "ipa": "/ˈsɒlvənt/",
+            "level": "C1",
+            "meaning": "n. 溶剂 adj. 有偿付能力的",
+            "links": "solvency,insolvent,dissolve",
+            "note": "Water is often described as a universal solvent in chemistry.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "pricey": {
+            "ipa": "/ˈpraɪsi/",
+            "level": "B2",
+            "meaning": "adj. 昂贵的，价格高昂的",
+            "links": "price,pricy,priceiness",
+            "note": "Dining at rooftop restaurants in the capital can be quite pricey.",
+            "time": 1785938629516,
+            "tags": ""
+        },
+        "ravel": {
+            "ipa": "/ˈrævəl/",
+            "meaning": "v. 缠结；解开；使混乱",
+            "level": "B2",
+            "note": "This word has two opposite meanings: to tangle or to untangle.",
+            "links": "raveler,raveling,ravelment, unravel",
+            "time": 1785938829785,
+            "tags": ""
+        },
+        "leakage": {
+            "ipa": "/ˈliːkɪdʒ/",
+            "meaning": "n. 泄漏；渗漏；漏出物",
+            "level": "B2",
+            "note": "The leakage of confidential information was a major concern.\n- The plumber fixed the leakage in the pipe.\n(管道漏水问题被管道工修复了。)\n- The leakage of confidential information caused a security breach.\n(机密信息的泄露导致了安全漏洞。)",
+            "links": "leak,leakages",
+            "time": 1785939418796,
+            "tags": ""
+        },
+        "prone to": {
+            "ipa": "/proʊn tuː/",
+            "meaning": "倾向于；易于（发生某事）",
+            "level": "B2",
+            "note": "Used to describe a tendency or likelihood of being affected by something.",
+            "links": "prone,pronencess",
+            "time": 1785940111986,
+            "tags": "phrase"
+        },
+        "semicolon": {
+            "ipa": "/ˈsɛmɪˌkoʊlən/",
+            "meaning": "n. 分号",
+            "level": "B2",
+            "note": "A semicolon is used to connect closely related independent clauses.",
+            "links": "semicolons",
+            "time": 1785940243022,
+            "tags": ""
+        },
+        "beforehand": {
+            "ipa": "/bɪˈfɔːrhænd/",
+            "level": "B2",
+            "meaning": "adv. 预先；事先",
+            "links": "before,hand",
+            "note": "They had prepared everything beforehand.",
+            "time": 1785982532708,
+            "tags": ""
+        },
+        "clavicle": {
+            "ipa": "/ˈklævɪkl/",
+            "level": "C2",
+            "meaning": "n. 锁骨",
+            "links": "clavicular",
+            "note": "He fractured his clavicle during the rugby match.",
+            "time": 1785983147740
+        },
+        "scapula": {
+            "ipa": "/ˈskæpjələ/",
+            "level": "C2",
+            "meaning": "n. 肩胛骨",
+            "links": "scapular,scapulae",
+            "note": "The pain was localized near her right scapula.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "humerus": {
+            "ipa": "/ˈhjuːmərəs/",
+            "level": "C2",
+            "meaning": "n. 肱骨",
+            "links": "humeral,humor,humorous",
+            "note": "The upper arm consists of a single long bone called the humerus.",
+            "tags": "STEM",
+            "time": 1786413029206
+        },
+        "acromion": {
+            "ipa": "/əˈkroʊmiən/",
+            "level": "C2",
+            "meaning": "n. 肩峰",
+            "links": "acromial",
+            "note": "The acromion forms the highest point of the shoulder.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "coracoid process": {
+            "ipa": "/ˈkɔːrəkɔɪd ˈprɑːses/",
+            "level": "C2",
+            "meaning": "n. 喙突",
+            "links": "coracoid,process",
+            "note": "The coracoid process serves as an attachment site for several muscles.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "glenoid cavity": {
+            "ipa": "/ˈɡliːnɔɪd ˈkævəti/",
+            "level": "C2",
+            "meaning": "n. 关节盂；肩盂",
+            "links": "glenoid,cavity",
+            "note": "The head of the humerus fits into the glenoid cavity.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "rotator cuff": {
+            "ipa": "/ˈroʊteɪtər kʌf/",
+            "level": "C1",
+            "meaning": "n. 肩袖；旋转肌袖",
+            "links": "rotator,cuff",
+            "note": "Swimmers often suffer from rotator cuff injuries due to repetitive movement.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "deltoid": {
+            "ipa": "/ˈdeltɔɪd/",
+            "level": "C2",
+            "meaning": "n. 三角肌；adj. 三角形的",
+            "links": "deltoids",
+            "note": "The deltoid muscle helps raise the arm away from the body.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "supraspinatus": {
+            "ipa": "/ˌsuːprəspɪˈneɪtəs/",
+            "level": "C2",
+            "meaning": "n. 冈上肌",
+            "links": "supraspinous",
+            "note": "The supraspinatus muscle initiates abduction of the shoulder.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "infraspinatus": {
+            "ipa": "/ˌɪnfrəspɪˈneɪtəs/",
+            "level": "C2",
+            "meaning": "n. 冈下肌",
+            "links": "infraspinous",
+            "note": "The infraspinatus plays a critical role in external rotation of the arm.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "teres minor": {
+            "ipa": "/ˈtɪəriːz ˈmaɪnər/",
+            "level": "C2",
+            "meaning": "n. 小圆肌",
+            "links": "teres,minor",
+            "note": "The teres minor is one of the four rotator cuff muscles.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "teres major": {
+            "ipa": "/ˈtɪəriːz ˈmeɪdʒər/",
+            "level": "C2",
+            "meaning": "n. 大圆肌",
+            "links": "teres,major",
+            "note": "The teres major assists in adducting and internally rotating the arm.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "subscapularis": {
+            "ipa": "/ˌsʌbˌskæpjʊˈleərɪs/",
+            "level": "C2",
+            "meaning": "n. 肩胛下肌",
+            "links": "subscapular",
+            "note": "The subscapularis provides major stability to the anterior shoulder.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "trapezius": {
+            "ipa": "/trəˈpiːziəs/",
+            "level": "C2",
+            "meaning": "n. 斜方肌",
+            "links": "trapezoid",
+            "note": "Stress often causes tension in the trapezius muscle.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "pectoralis major": {
+            "ipa": "/ˌpektəˈreɪlɪs ˈmeɪdʒər/",
+            "level": "C2",
+            "meaning": "n. 胸大肌",
+            "links": "pectoral,pectoralis",
+            "note": "Bench pressing works the pectoralis major effectively.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "pectoralis minor": {
+            "ipa": "/ˌpektəˈreɪlɪs ˈmaɪnər/",
+            "level": "C2",
+            "meaning": "n. 胸小肌",
+            "links": "pectoral,pectoralis",
+            "note": "The pectoralis minor lies underneath the pectoralis major.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "latissimus dorsi": {
+            "ipa": "/ləˈtɪsɪməs ˈdɔːrsaɪ/",
+            "level": "C2",
+            "meaning": "n. 背阔肌",
+            "links": "latissimus,dorsal",
+            "note": "Pull-ups primarily target the latissimus dorsi.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "levator scapulae": {
+            "ipa": "/lɪˈveɪtər ˈskæpjʊliː/",
+            "level": "C2",
+            "meaning": "n. 肩胛提肌",
+            "links": "levator,scapula",
+            "note": "Poor posture can lead to tightness in the levator scapulae.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "rhomboid major": {
+            "ipa": "/ˈrɒmbɔɪd ˈmeɪdʒər/",
+            "level": "C2",
+            "meaning": "n. 大菱形肌",
+            "links": "rhomboid,major",
+            "note": "The rhomboid major connects the scapula to the vertebrae.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "rhomboid minor": {
+            "ipa": "/ˈrɒmbɔɪd ˈmaɪnər/",
+            "level": "C2",
+            "meaning": "n. 小菱形肌",
+            "links": "rhomboid,minor",
+            "note": "The rhomboid minor works alongside the rhomboid major to retract the scapula.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "serratus anterior": {
+            "ipa": "/səˈreɪtəs ænˈtɪəriər/",
+            "level": "C2",
+            "meaning": "n. 前锯肌",
+            "links": "serratus,anterior",
+            "note": "The serratus anterior is sometimes called the boxer's muscle.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "coracobrachialis": {
+            "ipa": "/ˌkɔːrəkoʊˌbreɪkiˈæliːs/",
+            "level": "C2",
+            "meaning": "n. 喙肱肌",
+            "links": "coracoid,brachial",
+            "note": "The coracobrachialis flexes and adducts the arm at the glenohumeral joint.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "glenohumeral joint": {
+            "ipa": "/ˌɡliːnoʊˈhjuːmərəl dʒɔɪnt/",
+            "level": "C2",
+            "meaning": "n. 肩肱关节；肩关节",
+            "links": "glenoid,humeral,joint",
+            "note": "The glenohumeral joint is the most mobile ball-and-socket joint in the body.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "acromioclavicular joint": {
+            "ipa": "/əˌkroʊmioʊkləˈvɪkjələr dʒɔɪnt/",
+            "level": "C2",
+            "meaning": "n. 肩锁关节",
+            "links": "acromion,clavicle,joint",
+            "note": "A shoulder separation typically involves damage to the acromioclavicular joint.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "sternoclavicular joint": {
+            "ipa": "/ˌstɜːrnoʊkləˈvɪkjələr dʒɔɪnt/",
+            "level": "C2",
+            "meaning": "n. 胸锁关节",
+            "links": "sternum,clavicle,joint",
+            "note": "The sternoclavicular joint connects the upper limb directly to the axial skeleton.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "glenoid labrum": {
+            "ipa": "/ˈɡliːnɔɪd ˈleɪbrəm/",
+            "level": "C2",
+            "meaning": "n. 盂唇；关节盂唇",
+            "links": "glenoid,labral",
+            "note": "A glenoid labrum tear can cause instability in the shoulder.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "subacromial bursa": {
+            "ipa": "/ˌsʌbəˈkroʊmiəl ˈbɜːrsə/",
+            "level": "C2",
+            "meaning": "n. 肩峰下滑囊",
+            "links": "subacromial,bursitis",
+            "note": "Inflammation of the subacromial bursa causes pain during overhead movements.",
+            "tags": "STEM",
+            "time": 1785983147740
+        },
+        "friend": {
+            "ipa": "英:/frend/ 美:/frend/",
+            "level": "A1",
+            "meaning": "n. 朋友",
+            "links": "friends, friendly, friendship, befriend",
+            "note": "She is my best friend.\nThey have been friends for years.",
+            "tags": ""
+        },
+        "behind": {
+            "ipa": "/bɪˈhaɪnd/",
+            "level": "A1",
+            "meaning": "prep./adv. 在…后面; prep. 落后于",
+            "links": "behindness",
+            "note": "The broom is kept in the corner behind the door.\nHe fell behind the rest of the class in mathematics.",
+            "time": 1785459327959
+        },
+        "butler": {
+            "ipa": "/ˈbʌtlər/",
+            "level": "B2",
+            "meaning": "n. 男管家",
+            "links": "butlership,valet",
+            "note": "The butler served the guests with flawless etiquette.",
+            "time": 1785995051057,
+            "tags": ""
+        },
+        "metaphor": {
+            "ipa": "/ˈmetəfər/",
+            "level": "C1",
+            "meaning": "n. 暗喻；比喻",
+            "links": "metaphorical,metaphorically,metaphorize",
+            "note": "Life is often compared to a journey, which is a common metaphor.",
+            "time": 1785994987914,
+            "tags": ""
+        },
+        "metaphorical": {
+            "ipa": "/ˌmetəˈfɒrɪkl/",
+            "level": "C1",
+            "meaning": "adj. 隐喻的；比喻的",
+            "links": "metaphor,metaphorically",
+            "note": "He was speaking in a metaphorical sense, not taking it literally.",
+            "time": 1785994987914,
+            "tags": ""
+        },
+        "stratify": {
+            "ipa": "/ˈstrætɪfaɪ/",
+            "level": "C2",
+            "meaning": "v. （使）分层；（使）形成阶层",
+            "links": "stratification,stratified,stratifying",
+            "note": "Social mobility can be hindered in heavily stratified societies.",
+            "time": 1785994987914,
+            "tags": ""
+        },
+        "stratification": {
+            "ipa": "/ˌstrætɪfɪˈkeɪʃn/",
+            "level": "C2",
+            "meaning": "n. 层理；阶层化；分层",
+            "links": "stratify,stratified",
+            "note": "Sociologists study the stratification of classes within urban populations.",
+            "time": 1785994987914,
+            "tags": ""
+        },
+        "quirk": {
+            "ipa": "/kwɜːrk/",
+            "level": "C2",
+            "meaning": "n. 怪癖；奇事；巧合",
+            "links": "quirky,quirkiness,quirkily",
+            "note": "Everyone has their own individual quirks and habits.",
+            "time": 1785994987914,
+            "tags": ""
+        },
+        "altruistic": {
+            "ipa": "/ˌæltruˈɪstɪk/",
+            "level": "C2",
+            "meaning": "adj. 利他的；无私的",
+            "links": "altruism,altruistically",
+            "note": "Her altruistic acts brought comfort to many families in need.",
+            "time": 1785994987914,
+            "tags": ""
+        },
+        "pronation": {
+            "ipa": "/proʊˈneɪʃn/",
+            "level": "C2",
+            "meaning": "n. 旋前；伏卧；（足部）内翻",
+            "links": "pronate,pronator,supination",
+            "note": "Excessive pronation while running can lead to joint injuries.",
+            "time": 1785995101470,
+            "tags": "STEM"
+        },
+        "supination": {
+            "ipa": "/ˌsuːpɪˈneɪʃn/",
+            "level": "C2",
+            "meaning": "n. 旋后；仰卧；（足部）外翻",
+            "links": "supinate,supinator,pronation",
+            "note": "Supination occurs when turning the forearm to bring the palm upward.",
+            "time": 1785995109605,
+            "tags": "STEM"
+        },
+        "hurl": {
+            "ipa": "/hɜːrl/",
+            "meaning": "vt. 猛投；用力扔；大声叫骂；呕吐",
+            "level": "B2",
+            "note": "Used for throwing with force or shouting abuse.",
+            "links": "hurler,hurling",
+            "time": 1786268462778,
+            "tags": ""
+        },
+        "cartpole": {
+            "ipa": "/ˈkɑːrtpoʊl/",
+            "meaning": "n. 倒立摆（控制理论中的经典动力学系统示例）",
+            "level": "B2",
+            "note": "Commonly used in reinforcement learning and control theory as a benchmark task.",
+            "links": "cartpole",
+            "time": 1786332358000,
+            "tags": ""
+        },
+        "flock": {
+            "ipa": "/flɒk/",
+            "meaning": "n. 鸟群；羊群；人群；v. 群集；聚集",
+            "level": "B1",
+            "note": "A flock of birds flew over the lake.",
+            "links": "flocking,flocked",
+            "time": 1786407667807,
+            "tags": ""
+        },
+        "cohesion": {
+            "ipa": "/koʊˈhiːʒən/",
+            "meaning": "n. 凝聚；凝聚力；结合；内聚性",
+            "level": "",
+            "note": "The social cohesion of the community was strengthened by the festival.",
+            "links": "cohesive,cohesively,cohesiveness",
+            "time": 1786407728785,
+            "tags": ""
+        },
+        "repulsion": {
+            "ipa": "/rɪˈpʌlʃən/",
+            "meaning": "n. 排斥；反感；厌恶；斥力",
+            "level": "",
+            "note": "Used in physics and psychology contexts.",
+            "links": "repulse,repulsive,repulsively",
+            "time": 1786409293104,
+            "tags": ""
+        },
+        "roulette": {
+            "ipa": "/ruːˈlet/",
+            "level": "C1",
+            "meaning": "n. 轮盘赌",
+            "links": "",
+            "note": "They spent the evening playing roulette at the casino.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "cohesive": {
+            "ipa": "/koʊˈhiːsɪv/",
+            "meaning": "adj. 有凝聚力的；使结合的；团结的",
+            "level": "C1",
+            "note": "The team was cohesive and worked well together.",
+            "links": "cohesively,cohesiveness",
+            "time": 1786424031703,
+            "tags": ""
+        },
+        "lubricate": {
+            "ipa": "/ˈluːbrɪkeɪt/",
+            "meaning": "vt. 给……加润滑油；使润滑",
+            "level": "B2",
+            "note": "Used to reduce friction between moving parts.",
+            "links": "lubrication,lubricant,lubricious",
+            "time": 1786424413501,
+            "tags": ""
+        },
+        "lubricant": {
+            "ipa": "/ˈluːbrɪkənt/",
+            "meaning": "n. 润滑剂；润滑油",
+            "level": "B2",
+            "note": "A substance used to reduce friction between moving surfaces.",
+            "links": "lubricate,lubrication,lubricity",
+            "time": 1786424438381,
+            "tags": ""
+        },
+        "diplomacy": {
+            "ipa": "/dɪˈploʊməsi/",
+            "meaning": "n. 外交；外交手腕；交际手段",
+            "level": "B2",
+            "note": "Diplomacy is the art of dealing with people in a sensitive and effective way.",
+            "links": "diplomat,diplomatic,diplomatically",
+            "time": 1786455226341,
+            "tags": ""
+        },
+        "callous": {
+            "ipa": "/ˈkæləs/",
+            "level": "C2",
+            "meaning": "adj. 起老茧的；冷酷无情的",
+            "links": "callously,callousness",
+            "note": "His callous treatment of the animals shocked everyone.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "perturb": {
+            "ipa": "/pərˈtɜːrb/",
+            "level": "C2",
+            "meaning": "vt. 使不安；使烦恼；扰乱",
+            "links": "perturbed,perturbation,perturbing",
+            "note": "News of the sudden financial crisis did not perturb him.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "stubborn": {
+            "ipa": "/ˈstʌbərn/",
+            "level": "B1",
+            "meaning": "adj. 固执的；顽固的；难对付的",
+            "links": "stubbornly,stubbornness",
+            "note": "He is too stubborn to admit that he made a mistake.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "bide": {
+            "ipa": "/baɪd/",
+            "level": "C2",
+            "meaning": "vt. 等待；居留",
+            "links": "",
+            "note": "He decided to bide his time until the right opportunity came along.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "deck": {
+            "ipa": "/dek/",
+            "level": "B1",
+            "meaning": "n. 甲板；层；一副（纸牌） vt. 装饰",
+            "links": "decked,decking",
+            "note": "We sat on the deck of the boat and watched the sunset.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "thigh": {
+            "ipa": "/θaɪ/",
+            "level": "B1",
+            "meaning": "n. 股；大腿",
+            "links": "thighs",
+            "note": "She pulled the muscle in her left thigh during the race.",
+            "time": 1786848726429,
+            "tags": ""
+        },
+        "placebo": {
+            "ipa": "/pləˈsiːboʊ/",
+            "meaning": "n. 安慰剂；无效的疗法",
+            "level": "B2",
+            "note": "A substance with no therapeutic effect, often used in clinical trials.",
+            "links": "placebos,placebo effect",
+            "time": 1786871426536,
+            "tags": ""
+        },
+        "artisan": {
+            "ipa": "/ˈɑːrtəzn/",
+            "level": "C1",
+            "meaning": "n. 工匠；手艺人 adj. 传统手工艺制作的",
+            "links": "artisanal,artisans",
+            "note": "The market was full of local artisans selling handmade crafts.",
+            "time": 1786872084135,
+            "tags": ""
+        },
+        "thesaurus": {
+            "ipa": "/θɪˈsɔːrəs/",
+            "level": "C1",
+            "meaning": "n. 同义词词典；近义词典",
+            "links": "thesauri,thesauruses",
+            "note": "You can use a thesaurus to find synonyms for common words.",
+            "time": 1786872084135,
             "tags": ""
         }
     }
