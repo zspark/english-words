@@ -48,7 +48,18 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         const tag = tagFilter.value;
         __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word, level, tag } }));
     }
-    searchInput.addEventListener('input', _disp);
+    searchInput.addEventListener('input', (e) => {
+
+        const word = searchInput.value;
+        const _has = dictionary.hasWord(word);
+        if (_has) {
+            searchInput.classList.remove("color-red");
+        }else{
+            searchInput.classList.add("color-red");
+        }
+
+        _disp();
+    });
     levelFilter.addEventListener('change', _disp);
     tagFilter.addEventListener('change', _disp);
     searchBtn.addEventListener('click', resetFilter);
