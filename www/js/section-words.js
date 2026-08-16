@@ -263,7 +263,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         const _tmp = [...ele_wordList.querySelectorAll("li")];
         let _activedWordElem = _tmp.filter(ele => ele.hasAttribute('active'))[0];
         if (_activedWordElem) {
-            if (_activedWordElem.dataset.word === word) return;
+            if (_activedWordElem.dataset.word === word) {
+                pronunciation.pronounce(word);
+                card.renderCard(word);
+                return;
+            }
             _activedWordElem.removeAttribute("active");
             _rts.activedWord = '';
         }

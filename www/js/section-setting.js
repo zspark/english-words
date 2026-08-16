@@ -167,7 +167,6 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
             _localData['ai_provider'] = elem_provider.value;
             _localData['userID'] = elem_user.value;
             dictionary.saveLocalData();
-            ;
         }
     });
 

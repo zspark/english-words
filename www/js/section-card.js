@@ -54,11 +54,11 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             ${cmp.inputSource("id-new-vocab", "", "word", true)}
             ${cmp.dropdownSource("id-new-level", null, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 0)}
         </div>
-        ${cmp.inputSource("id-new-ipa", "Phonetic (IPA)", "", false)}
+        ${cmp.inputSource("id-new-ipa", "", "Phonetic (IPA)", false)}
+        ${cmp.inputSource("id-new-meaning", "", "Meaning", false)}
+        ${cmp.textareaSource("id-new-note", "", "h150px", "Note ...", false)}
+        ${cmp.inputSource("id-new-links", "", "Related Words (Comma Separated)", false)}
         ${cmp.clickableBlockSource("id-new-tags", "Tags")}
-        ${cmp.inputSource("id-new-meaning", "Meaning", "", false)}
-        ${cmp.textareaSource("id-new-note", "Note", "h150px", "", false)}
-        ${cmp.inputSource("id-new-links", "Linked Words (Comma Separated)", "", false)}
     </div>
 
     <div class="bs-right-align mt20px">
