@@ -50,8 +50,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
 
     const _wordsHandler = (function () {
-
-        const _ITEM_HEIGHT = 67 // px;
+        const _ITEM_HEIGHT = isDesktop() ? 33 : 67 // px;
         const _ITEMS_EACH_SIDE = 4;
         const _SORT_FN_MAP_ = {
             "0": {
@@ -164,10 +163,10 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     })();
 
     function _genWordHTMLSource(word, detail) {
+        //        <span class="tag word-tag">${detail.tags || ""}</span>
         return ` <div>
                     <span class="word-name">${word}</span>
                     <span class="tag word-level">${detail.level}</span>
-                    <span class="tag word-tag">${detail.tags || ""}</span>
                 </div>
                 <div>
                     <span class="word-ipa">${detail.ipa}</span>

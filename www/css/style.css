@@ -204,6 +204,7 @@ body {
 
 .vocab-header {
     display: flex;
+    align-items: center;
 }
 
 .cls-word-basic {
@@ -213,7 +214,7 @@ body {
 }
 
 #vocab {
-    font-size: 1.3rem;
+    font-size: 2.0rem;
     font-weight: 700;
     margin-right: 0.8rem;
 }
@@ -517,9 +518,12 @@ details[open] summary::after {
     border: 2px solid transparent;
     border-radius: 6px;
     width: 100%;
-    height: 67px;
+    height: 33px;
     cursor: pointer;
     position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .cls-word-item:hover {
@@ -535,7 +539,7 @@ details[open] summary::after {
 }
 
 .word-name {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 700;
     flex-shrink: 0;
     margin-right: 0.25rem;
@@ -546,6 +550,7 @@ details[open] summary::after {
     font-family: var(--font-ipa);
     flex-shrink: 0;
     font-style: italic;
+    color: gray;
 }
 
 .word-meaning {
@@ -1501,5 +1506,10 @@ details[open] summary::after {
     #top-bar-right,
     #top-bar-left {
         justify-content: space-evenly;
+    }
+
+    .cls-word-item {
+        height: 67px;
+        display: block;
     }
 }
