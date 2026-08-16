@@ -132,8 +132,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 }
 
                 ele_wordList.innerHTML = htmlBuffer;
-
-                _activedWordElem = [...ele_wordList.querySelectorAll("li")].filter(ele => ele.hasAttribute('active'))[0];
             }
             _updateStatus();
             //console.timeEnd('search');
@@ -237,7 +235,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
                 if (_timeElapsed < TIME_SHRESHOLD) {
                     //logger.debug("click");
                     if (_downElem) {
-                        _activeWord(_downElem);
+                        _activeWord(_downElem.dataset.word);
                     }
                     if (_consecutiveTimes === 1) {
                         _consecutiveTimes++;
@@ -262,26 +260,23 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         });
     })()
 
-    let _activedWordElem = null;
-    function _activeWord(wordElem) {
-        if (_activedWordElem === wordElem && wordElem) {
-            const _w = wordElem.dataset.word;
-            pronunciation.pronounce(_w);
-            return;
-        }
-
+    function _activeWord(word) {
+        const _tmp = [...ele_wordList.querySelectorAll("li")];
+        let _activedWordElem = _tmp.filter(ele => ele.hasAttribute('active'))[0];
         if (_activedWordElem) {
+            if (_activedWordElem.dataset.word === word) return;
             _activedWordElem.removeAttribute("active");
-            _activedWordElem = null;
             _rts.activedWord = '';
         }
-        if (wordElem) {
-            const _w = wordElem.dataset.word;
-            pronunciation.pronounce(_w);
-            card.renderCard(_w);
-            wordElem.setAttribute("active", "");
-            _activedWordElem = wordElem;
-            _rts.activedWord = _w;
+
+        if (!word || word.length <= 0) return;
+
+        _activedWordElem = _tmp.filter(ele => ele.dataset.word === word)[0];
+        if (_activedWordElem) {
+            pronunciation.pronounce(word);
+            card.renderCard(word);
+            _activedWordElem.setAttribute("active", "");
+            _rts.activedWord = word;
         }
     }
 
@@ -362,13 +357,15 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
             }
         }
 
-        if (!_activedWordElem) return;
+        const _tmp = [...ele_wordList.querySelectorAll("li")];
+        if (_tmp.length <= 0) return;
+        let _activedWordElem = _tmp.filter(ele => ele.hasAttribute('active'))[0];
         if (event.key === "d") {
-            _activeWord(_activedWordElem.nextElementSibling);
+            _activeWord((_activedWordElem?.nextElementSibling ?? _tmp[0]).dataset.word);
         } else if (event.key === "e") {
-            _activeWord(_activedWordElem.previousElementSibling);
+            _activeWord((_activedWordElem?.previousElementSibling ?? _tmp[_tmp.length - 1]).dataset.word);
         } else if (event.key === "f") {
-            pronunciation.pronounce(_activedWordElem?.dataset?.word)
+            pronunciation.pronounce(_activedWordElem?.dataset.word)
         } else if (event.key === "s") {
         }
     }
@@ -408,14 +405,29 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         _rts.filter.search = word;
         _rts.filter.level = level;
         _rts.filter.tag = tag;
-        _activeWord(null);
         _clearSelection();
-        dictionary.saveLocalData();
+        _delaySaver.save();
         _updateStatus();
         _wordsHandler.updateWordList();
         _wordsHandler.sortWordList();
         _wordsHandler.renderWords(true);
+        _activeWord(word)
     });
+
+    const _delaySaver = (function () {
+        let _timer = null;
+        function save() {
+            if (!_timer) {
+                _timer = setTimeout((e) => {
+                    dictionary.saveLocalData();
+                    _timer = null;
+                }, 1000);
+            }
+        }
+        return {
+            save,
+        }
+    })();
 
     _wordsHandler.updateWordList();
     _wordsHandler.sortWordList();
