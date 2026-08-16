@@ -108,10 +108,10 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
         const _file = event.target.files[0];
         //const fileName = _file.name;
         //const extension = fileName.split(".").pop();
-        _importss(_file, true);
+        _importData(_file, true);
     });
 
-    function _importss(content, isFile) {
+    function _importData(content, isFile) {
         if (!content) {
             logger.log(`no JSON detected`);
             alert(`no JSON detected`);
@@ -198,7 +198,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     btnSubmit.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "0") {
             const _rawData = _ele_importByJSON.value.trim();
-            _importss(_rawData, false);
+            _importData(_rawData, false);
         }
     });
     const btnExport = ele_root.querySelector("#btn-file-submit");

@@ -98,8 +98,7 @@ let _currentSection = null;
 let _currentSectionElemBtn = null;
 
 document.addEventListener("DOMContentLoaded", (e) => {
-    const _fuzzyFind = initFuzzyFind();
-    const dictionary = initDictionary(_fuzzyFind);
+    const dictionary = initDictionary();
     const components = initComponents();
     const _ai = initAI(dictionary);
     const pronunciation = initPronunciation(dictionary);

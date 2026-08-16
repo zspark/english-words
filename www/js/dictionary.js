@@ -4,7 +4,7 @@
 
 const __VERSION__ = "0.2.0"
 
-function initDictionary(ff) {
+function initDictionary() {
 
     let _needToUpload = false;
     function createStorageProxy(key) {
@@ -58,6 +58,51 @@ function initDictionary(ff) {
     const _metaProxy = createStorageProxy('__metaCache__');
     const _recordsProxy = createStorageProxy('__recordCache__');
     const _wordsProxy = createStorageProxy('__wordCache__');
+
+    const _searchAPI = (function () {
+        function _create() {
+            return new FlexSearch.Index({
+                preset: "memory",
+                tokenize: "full",
+                resolution: 5,
+                minlength: 1
+            });
+        }
+
+        let _flexSearch = _create();
+
+        function addWord(word) {
+            _flexSearch.add(word, word);
+        }
+
+        function addWords(words) {
+            const _arr = Object.entries(words);
+            for (let i = 0, N = _arr.length; i < N; ++i) {
+                _flexSearch.add(_arr[i][0], _arr[i][0]);
+            }
+        }
+
+        function search(query) {
+            if (query.length <= 0) return null;
+            return _flexSearch.search(query);
+        }
+
+        function removeWord(word) {
+            _flexSearch.remove(word)
+        }
+        function clear() {
+            _flexSearch = _create();
+        }
+
+        return {
+            search,
+            addWord,
+            addWords,
+            removeWord,
+            clear,
+        }
+    })()
+    _searchAPI.addWords(_wordsProxy.data())
 
     const _serverProxy = (function () {
         async function _toServer(data) {
@@ -170,11 +215,13 @@ function initDictionary(ff) {
             _metaProxy.append(data.meta, true);
             _recordsProxy.append(data.record, true);
             _wordsProxy.append(data.dict, true);
+            _searchAPI.addWords(data.dict)
         } else {
             for (const detail of Object.values(data)) {
                 _fillDetailInfosIfMissing(detail);
             }
             _wordsProxy.append(data, true);
+            _searchAPI.addWords(data)
         }
 
         _dispDictEvt("imported");
@@ -203,6 +250,7 @@ function initDictionary(ff) {
         _metaProxy.clear();
         _recordsProxy.clear();
         _wordsProxy.clear();
+        _searchAPI.clear();
         _dispDictEvt("delete");
     };
 
@@ -303,6 +351,7 @@ function initDictionary(ff) {
         });
 
         _wordsProxy.remove(word, true);
+        _searchAPI.remove(word);
         if (dispatch) _dispWordEvt(word, "delete");
         _needToUpload = true;
     }
@@ -327,24 +376,20 @@ function initDictionary(ff) {
         level = level.toUpperCase();
         tag = tag.toUpperCase();
 
+        const _allWords = Object.entries(_wordsProxy.data());
+        const _selected = _searchAPI.search(searchQuery) ?? Object.keys(_wordsProxy.data());
         const out = {};
-        for (const [word, detail] of Object.entries(_wordsProxy.data())) {
+        for (const [word, detail] of _allWords) {
             const matchesLevel = (level === 'ALL' || detail.level?.toUpperCase() === level);
             const matchesTag = (tag === 'ALL' || detail.tags?.toUpperCase().includes(tag));
+            const matchesSearch = _selected.includes(word);
 
-            if (matchesLevel && matchesTag) {
+            if (matchesLevel && matchesTag && matchesSearch) {
                 out[word] = detail
             }
         }
 
-        const out2 = {};
-        const _keys = Object.keys(out)
-        const _selected = ff.find(_keys, searchQuery)
-        _selected.forEach(w => {
-            out2[w] = out[w];
-        });
-
-        return readOnly(out2);
+        return readOnly(out);
     }
 
     function hasWord(word) {
