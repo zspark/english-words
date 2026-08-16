@@ -49,15 +49,12 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word, level, tag } }));
     }
     searchInput.addEventListener('input', (e) => {
-
         const word = searchInput.value;
-        const _has = dictionary.hasWord(word);
-        if (_has) {
+        if (word.length <= 0 || dictionary.hasWord(word)) {
             searchInput.classList.remove("color-red");
-        }else{
+        } else {
             searchInput.classList.add("color-red");
         }
-
         _disp();
     });
     levelFilter.addEventListener('change', _disp);
@@ -68,6 +65,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         searchInput.value = "";
         levelFilter.selectedIndex = 0;
         tagFilter.selectedIndex = 0;
+        searchInput.classList.remove("color-red");
         _disp();
     }
     function setFilter(word, level, tag) {
