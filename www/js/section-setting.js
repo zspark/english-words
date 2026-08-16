@@ -173,7 +173,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     const _btnAi = ele_root.querySelector("#btn-ai-submit");
     _btnAi.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {//generate
-            const _rawData = _ele_importByAI.value.trim();
+            const _rawData = dictionary.getMissingWords(_ele_importByAI.value.trim());
             if (!_rawData) {
                 logger.log(`no words detected`);
                 return;

@@ -509,6 +509,16 @@ function initDictionary() {
         return missingWords;
     }
 
+    function getMissingWords(wordsStr) {
+        const _out = wordsStr
+            .split(',')
+            .map(word => word.trim().toLowerCase())
+            .filter(word => word.length > 0 && !hasWord(word))
+            .join(',');
+
+        return _out;
+    }
+
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         EVT_RECORD: "EVT_RECORD",
@@ -548,6 +558,7 @@ function initDictionary() {
         setSyncInterval,
 
         getMissingPronunciationWords,
+        getMissingWords,
 
     })
     return __this__;
