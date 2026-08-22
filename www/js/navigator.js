@@ -124,6 +124,28 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
 
     bodyElem.prepend(ele_root);
 
+    function keyEvent(event) {
+        if (isFocused()) {
+            if (event.key === "Enter") {
+                if (event.ctrlKey) {
+                } else {
+                    setBlur();
+                }
+            } else if (event.key === "Escape") {
+                resetFilter();
+            }
+            return false;
+        } else {
+            if (!isEditing()) {
+                if (event.key === "Enter") {
+                    setFocus();
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     const EVT_FILTER = "evt_filter";
     const __this__ = new EventTarget()
     Object.assign(__this__, {
@@ -137,9 +159,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         setFilter,
         getFilter,
 
-        setFocus,
-        setBlur,
-        isFocused,
+        keyEvent,
 
         EVT_FILTER,
     });

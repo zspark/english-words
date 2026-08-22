@@ -147,21 +147,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key);
-        if (isEditing()) {
-            if (_navigator.isFocused()) {
-                if (event.key === "Enter") {
-                    _navigator.setBlur();
-                } else if (event.key === "Escape") {
-                    _navigator.resetFilter();
-                }
-            }
-        } else {
+        if (_navigator.keyEvent(event)) {
             _currentSection?.keyEvent(event)
-            if (event.key === "Enter") {
-                _navigator.setFocus();
-            }
-            event.stopImmediatePropagation()
         }
+        event.stopImmediatePropagation()
     });
 
     (function () {
