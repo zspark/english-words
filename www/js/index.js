@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     _navigator = initNavigator(document.body, components, dictionary, _switchToSection, () => { });
     section_card = initCardSection(_ai, dictionary, components, pronunciation);
-    section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation, _navigator);
+    section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation);
     section_article = initArticleSection(_ai, dictionary, components, section_card, pronunciation);
     section_test = initTestSection(_ai, dictionary, components, section_words, pronunciation);
     section_result = initResultSection(dictionary, components, section_card, pronunciation);

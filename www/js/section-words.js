@@ -1,6 +1,6 @@
 
 
-function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigator) {
+function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
 
     const _rts = dictionary.getLocalData('sec_dict');
     _rts.selectedWords = _rts.selectedWords || [];
@@ -20,12 +20,19 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     }
 
     const selectedWords = _rts.selectedWords;
-    //${cmp.buttonGroupSource('id-btns', ['Clear Pick', 'Pick 5', 'Pick 10', 'Pick 20', 'Pick All'])}
-    //${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], 0)}
+
     const wordListSource = `
 <div class="bs-panel">
-    <div class="controls">
-        ${cmp.buttonGroupSource('id-btnsSort', ['Time', 'AZ', 'Level', 'Random'], [])}
+    <div class="word-header">
+
+        <div class="controls">
+            ${cmp.buttonGroupSource('id-btnsSort', ['Time', 'AZ', 'Level', 'Random'], [])}
+        </div>
+        
+        <div class="controls">
+            ${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], -1)}
+            ${cmp.dropdownSource("id-tagFilter", null, [], -1)}
+        </div>
     </div>
 
     <div id="current-status" class="status-bar">
@@ -48,6 +55,27 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     const filteredCountSpan = ele_root.querySelector('#id_filteredCount');
     const selectedCountSpan = ele_root.querySelector('#selectedCount');
 
+    const levelFilter = ele_root.querySelector('#id-levelFilter select');
+    const tagFilter = ele_root.querySelector('#id-tagFilter select');
+
+    (function () {
+        function _disp() {
+            _rts.filter.level = levelFilter.value;
+            _rts.filter.tag = tagFilter.value;
+            _clearSelection();
+            _updateStatus();
+            _wordsHandler.updateWordList();
+            _wordsHandler.sortWordList();
+            _wordsHandler.renderWords(true);
+            dictionary.saveLocalData();
+        }
+        levelFilter.addEventListener('change', _disp);
+        tagFilter.addEventListener('change', _disp);
+
+        tagFilter.innerHTML = cmp.dropdownOptionSource(["ALL", ...dictionary.getTags()], 0);
+        levelFilter.value = _rts.filter.level;
+        tagFilter.value = _rts.filter.tag;
+    })()
 
     const _wordsHandler = (function () {
         const _ITEM_HEIGHT = isDesktop() ? 33 : 67 // px;
@@ -96,8 +124,9 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
         }
 
         function updateWordList() {
-            ({ word, level, tag } = navigator.getFilter());
-            _words = Object.entries(dictionary.getWords(word, level, tag));
+            level = levelFilter.value;
+            tag = tagFilter.value;
+            _words = Object.entries(dictionary.getWords('', level, tag));
             _filteredCount = _words.length;
             ele_wordList.style.height = `${_filteredCount * _ITEM_HEIGHT}px`;
         }
@@ -342,7 +371,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
 
     function active() {
         window.scrollTo(0, _rts.scrollY);
-        navigator.setFilter(_rts.filter.search, _rts.filter.level, _rts.filter.tag);
         ele_card.replaceChildren(card.ele_root)
     }
 
@@ -401,36 +429,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation, navigat
     card.addEventListener(card.EVT_WORD, e => {
         //logger.log(e);
     });
-
-    navigator.setFilter(_rts.filter.search, _rts.filter.level, _rts.filter.tag);
-    navigator.addEventListener(navigator.EVT_FILTER, (e) => {
-        ({ word, level, tag } = e.detail);
-        _rts.filter.search = word;
-        _rts.filter.level = level;
-        _rts.filter.tag = tag;
-        _clearSelection();
-        _delaySaver.save();
-        _updateStatus();
-        _wordsHandler.updateWordList();
-        _wordsHandler.sortWordList();
-        _wordsHandler.renderWords(true);
-        _activeWord(word)
-    });
-
-    const _delaySaver = (function () {
-        let _timer = null;
-        function save() {
-            if (!_timer) {
-                _timer = setTimeout((e) => {
-                    dictionary.saveLocalData();
-                    _timer = null;
-                }, 1000);
-            }
-        }
-        return {
-            save,
-        }
-    })();
 
     _wordsHandler.updateWordList();
     _wordsHandler.sortWordList();

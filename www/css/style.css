@@ -129,8 +129,7 @@ body {
     gap: 10px;
 }
 
-#top-bar-right,
-#top-bar-left {
+.horizon{
     display: flex;
     padding: 0.25rem;
     border-radius: 8px;
@@ -1547,8 +1546,7 @@ svg {
         padding: 10px 20px;
     }
 
-    #top-bar-right,
-    #top-bar-left {
+    .horizon {
         justify-content: space-evenly;
     }
 

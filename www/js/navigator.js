@@ -1,6 +1,6 @@
 function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackFn) {
     const _source = `
-<div id="top-bar-left">
+<div id="top-bar-left" class="horizon">
     <div id="sec-dictionary" class="sec-btn"><span>WORDS</span></div>
     <div id="sec-read" class="sec-btn"><span>ARTICLE</span></div>
     <div id="sec-test" class="sec-btn"><span>TEST</span></div>
@@ -13,10 +13,8 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     </div>
 </div>
 
-<div id="top-bar-right">
+<div id="top-bar-right" class="horizon">
     ${cmp.searchSource("id-searchInput", "Search word while inputting")}
-    ${cmp.dropdownSource("id-levelFilter", null, ["ALL", "A1", "A2", "B1", "B2", "C1", "C2"], -1)}
-    ${cmp.dropdownSource("id-tagFilter", null, [], -1)}
 </div>`;
 
     const ele_root = document.createElement('div');
@@ -33,17 +31,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     const ele_right = ele_root.querySelector("#top-bar-right");
     const searchInput = ele_right.querySelector('#id-searchInput input');
     const searchBtn = ele_right.querySelector('#id-searchInput button');
-    const levelFilter = ele_right.querySelector('#id-levelFilter select');
-    const tagFilter = ele_right.querySelector('#id-tagFilter select');
-    tagFilter.innerHTML = cmp.dropdownOptionSource(["ALL", ...dictionary.getTags()], 0);
 
-
-    function _disp() {
-        const word = searchInput.value;
-        const level = levelFilter.value;
-        const tag = tagFilter.value;
-        __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word, level, tag } }));
-    }
     searchInput.addEventListener('input', (e) => {
         const word = searchInput.value;
         if (word.length <= 0 || dictionary.hasWord(word)) {
@@ -51,26 +39,15 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         } else {
             searchInput.classList.add("color-red");
         }
-        _disp();
+
+        _delaySaver.save();
     });
-    levelFilter.addEventListener('change', _disp);
-    tagFilter.addEventListener('change', _disp);
     searchBtn.addEventListener('click', resetFilter);
 
     function resetFilter() {
         searchInput.value = "";
-        levelFilter.selectedIndex = 0;
-        tagFilter.selectedIndex = 0;
         searchInput.classList.remove("color-red");
-        _disp();
-    }
-    function setFilter(word, level, tag) {
-        searchInput.value = word;
-        levelFilter.value = level;
-        tagFilter.value = tag;
-    }
-    function getFilter() {
-        return { word: searchInput.value, level: levelFilter.value, tag: tagFilter.value };
+        __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word: "" } }));
     }
     function isFocused() {
         return document.activeElement === searchInput;
@@ -146,6 +123,21 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         }
     }
 
+    const _delaySaver = (function () {
+        let _timer = null;
+        function save() {
+            if (!_timer) {
+                _timer = setTimeout((e) => {
+                    dictionary.saveLocalData();
+                    _timer = null;
+                }, 1000);
+            }
+        }
+        return {
+            save,
+        }
+    })();
+
     const EVT_FILTER = "evt_filter";
     const __this__ = new EventTarget()
     Object.assign(__this__, {
@@ -154,10 +146,6 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         activeTest,
         activeResult,
         activeSetting,
-
-        resetFilter,
-        setFilter,
-        getFilter,
 
         keyEvent,
 
