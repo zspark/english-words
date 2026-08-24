@@ -78,7 +78,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
     })()
 
     const _wordsHandler = (function () {
-        const _ITEM_HEIGHT = isDesktop() ? 33 : 67 // px;
+        const _ITEM_HEIGHT = isDesktop() ? 33 : 53 // px;
         const _ITEMS_EACH_SIDE = 4;
         const _SORT_FN_MAP_ = {
             "0": {
@@ -198,8 +198,6 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                     &nbsp;&nbsp;
                     <span class="word-name">${word}</span>
                     <span class="tag word-level">${detail.level}</span>
-                </div>
-                <div>
                     <span class="word-ipa">${detail.ipa}</span>
                 </div>
                 <div>
