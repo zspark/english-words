@@ -141,7 +141,7 @@ body {
     align-items: center;
 }
 
-.content-right{
+.content-right {
     justify-content: flex-end;
 }
 
@@ -581,17 +581,23 @@ details[open] summary::after {
     gap: 5px;
 }
 
-.cls-word-item:hover {
-    /* transform: scale(1.02); */
-    transform: translateX(5px);
-}
-
 .cls-word-item[select] {
     background-color: var(--color-selected);
 }
 
 .cls-word-item[active] {
     border: 2px solid var(--color-active);
+}
+
+.cls-word-item:hover {
+    background-color: var(--color-hover);
+    /* transform: scale(1.02); */
+    /* transform: translateX(5px); */
+}
+
+.word-num {
+    font-size: 0.9rem;
+    color: gray;
 }
 
 .word-name {

@@ -155,7 +155,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
                     const _isActived = _rts.activedWord === _word ? 'active' : '';
 
                     htmlBuffer += `<li class="cls-word-item" style="top:${startY + (i - startIndex) * _ITEM_HEIGHT}px;" data-word="${_word}" ${_isSelected} ${_isActived}>
-                                        ${_genWordHTMLSource(_word, _detail)}
+                                        ${_genWordHTMLSource(i, _word, _detail)}
                                     </li>`;
                 }
 
@@ -191,9 +191,11 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         }
     })();
 
-    function _genWordHTMLSource(word, detail) {
+    function _genWordHTMLSource(index, word, detail) {
         //        <span class="tag word-tag">${detail.tags || ""}</span>
         return ` <div>
+                    <span class="word-num">${index + 1}</span>
+                    &nbsp;&nbsp;
                     <span class="word-name">${word}</span>
                     <span class="tag word-level">${detail.level}</span>
                 </div>
