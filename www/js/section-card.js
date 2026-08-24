@@ -10,59 +10,67 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         ${cmp.buttonGroupSource('id-actionsAA', [' Back '], [])}
     </div>` : "";
     const source = `
-<div id="card-display" class="card">
-
-    <div id="id-body">
-        <div class="vocab-header">
-            <div id="vocab"></div>
-            <div id="btn-pronounce" class="icon card-icon">
-                <svg viewBox="0 0 24 24">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                </svg>
-            </div>
-            <div id="btn-ai" class="icon card-icon">
-                <svg viewBox="0 0 44 44">
-                    <path d="m43.607 16.7-4.6-3.8V5.5a1 1 0 0 0-.6-.9l-9.9-4.5h-.4l-.6.2-5.5 3.6-5.5-3.7-.6-.2h-.4l-9.9 4.6a1 1 0 0 0-.6.9v7.4l-4.6 3.8a.8.8 0 0 0-.4.8v9a.8.8 0 0 0 .4.8l4.6 3.8v7.4a1 1 0 0 0 .6.9l9.9 4.5h.4l.6-.2 5.5-3.6 5.5 3.7.6.2h.4l9.9-4.5a1 1 0 0 0 .6-.9v-7.5l4.6-3.8a.8.8 0 0 0 .4-.7v-9.2a.8.8 0 0 0-.4-.7m-5.1 6.8h1.5v1.6l-3.5 2.8-.4.3-.4-.2a1.4 1.4 0 0 0-2 .7 1.5 1.5 0 0 0 .6 2l.7.3v5.4l-6.6 3.1-4.2-2.8-.7-.5V23.5h1.5a1.5 1.5 0 0 0 0-3h-1.5V7.7l.7-.5 4.2-2.8 6.6 3.1v5.4l-.7.3a1.5 1.5 0 0 0-.6 2 1.4 1.4 0 0 0 1.3.9l.7-.2.4-.2.4.3 3.5 2.9v1.6h-1.5a1.5 1.5 0 0 0 0 3m-19.5 0h1.5v12.8l-.7.5-4.2 2.8-6.6-3.1v-5.4l.7-.3a1.5 1.5 0 0 0 .6-2 1.4 1.4 0 0 0-2-.7l-.4.2-.4-.3-3.5-2.9v-1.6h1.5a1.5 1.5 0 0 0 0-3h-1.5v-1.6l3.5-2.8.4-.3.4.2.7.2a1.4 1.4 0 0 0 1.3-.9 1.5 1.5 0 0 0-.6-2l-.7-.3V7.5l6.6-3.1 4.2 2.8.7.5v12.8h-1.5a1.5 1.5 0 0 0 0 3"/>
-                    <path d="M11.907 7.9a1.8 1.8 0 0 0 0 2.2l2.6 2.5v2.8l-4 4v5.2l4 4v2.8l-2.6 2.5a1.8 1.8 0 0 0 0 2.2 1.5 1.5 0 0 0 1.1.4 1.5 1.5 0 0 0 1.1-.4l3.4-3.5v-5.2l-4-4v-2.8l4-4v-5.2l-3.4-3.5a1.8 1.8 0 0 0-2.2 0m17.6 4.7 2.6-2.5a1.8 1.8 0 0 0 0-2.2 1.8 1.8 0 0 0-2.2 0l-3.4 3.5v5.2l4 4v2.8l-4 4v5.2l3.4 3.5a1.7 1.7 0 0 0 2.2 0 1.8 1.8 0 0 0 0-2.2l-2.6-2.5v-2.8l4-4v-5.2l-4-4z"/>
-                </svg>
-            </div>
-            <div id="card-edit-btn" class="icon card-icon">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 20h9"></path>
-                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                </svg>
-            </div>
-        </div>
-        <div class="vocab-header mt10px">
-            <div id="level" class="tag word-level"></div>
-            <div id="tags" class="tag word-tag"></div>
-        </div>
-        <div id="ipa"></div>
-        <div id="meaning"></div>
-        <div id="note"></div>
-        <div id="linked-words"></div>
+<div class="search-container">
+    ${cmp.inputSource("id-searchInput", "", "Input word to search")}
+    <div id="card-searchResult" class="search-dropdown display-none">
     </div>
-    ${_ss}
 </div>
 
-<div id="card-edit" class="card">
+<div id="card-content">
+    <div id="card-display" class="card">
 
-    <div id="new-word-form" class='bs-panel-plain'>
-        <div class="vocab-header w100pct">
-            ${cmp.inputSource("id-new-vocab", "", "word", true)}
-            ${cmp.dropdownSource("id-new-level", null, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 0)}
+        <div id="id-body" class="mt10px">
+            <div class="vocab-header">
+                <div id="vocab"></div>
+                <div id="btn-pronounce" class="icon card-icon">
+                    <svg viewBox="0 0 24 24">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </div>
+                <div id="btn-ai" class="icon card-icon">
+                    <svg viewBox="0 0 44 44">
+                        <path d="m43.607 16.7-4.6-3.8V5.5a1 1 0 0 0-.6-.9l-9.9-4.5h-.4l-.6.2-5.5 3.6-5.5-3.7-.6-.2h-.4l-9.9 4.6a1 1 0 0 0-.6.9v7.4l-4.6 3.8a.8.8 0 0 0-.4.8v9a.8.8 0 0 0 .4.8l4.6 3.8v7.4a1 1 0 0 0 .6.9l9.9 4.5h.4l.6-.2 5.5-3.6 5.5 3.7.6.2h.4l9.9-4.5a1 1 0 0 0 .6-.9v-7.5l4.6-3.8a.8.8 0 0 0 .4-.7v-9.2a.8.8 0 0 0-.4-.7m-5.1 6.8h1.5v1.6l-3.5 2.8-.4.3-.4-.2a1.4 1.4 0 0 0-2 .7 1.5 1.5 0 0 0 .6 2l.7.3v5.4l-6.6 3.1-4.2-2.8-.7-.5V23.5h1.5a1.5 1.5 0 0 0 0-3h-1.5V7.7l.7-.5 4.2-2.8 6.6 3.1v5.4l-.7.3a1.5 1.5 0 0 0-.6 2 1.4 1.4 0 0 0 1.3.9l.7-.2.4-.2.4.3 3.5 2.9v1.6h-1.5a1.5 1.5 0 0 0 0 3m-19.5 0h1.5v12.8l-.7.5-4.2 2.8-6.6-3.1v-5.4l.7-.3a1.5 1.5 0 0 0 .6-2 1.4 1.4 0 0 0-2-.7l-.4.2-.4-.3-3.5-2.9v-1.6h1.5a1.5 1.5 0 0 0 0-3h-1.5v-1.6l3.5-2.8.4-.3.4.2.7.2a1.4 1.4 0 0 0 1.3-.9 1.5 1.5 0 0 0-.6-2l-.7-.3V7.5l6.6-3.1 4.2 2.8.7.5v12.8h-1.5a1.5 1.5 0 0 0 0 3"/>
+                        <path d="M11.907 7.9a1.8 1.8 0 0 0 0 2.2l2.6 2.5v2.8l-4 4v5.2l4 4v2.8l-2.6 2.5a1.8 1.8 0 0 0 0 2.2 1.5 1.5 0 0 0 1.1.4 1.5 1.5 0 0 0 1.1-.4l3.4-3.5v-5.2l-4-4v-2.8l4-4v-5.2l-3.4-3.5a1.8 1.8 0 0 0-2.2 0m17.6 4.7 2.6-2.5a1.8 1.8 0 0 0 0-2.2 1.8 1.8 0 0 0-2.2 0l-3.4 3.5v5.2l4 4v2.8l-4 4v5.2l3.4 3.5a1.7 1.7 0 0 0 2.2 0 1.8 1.8 0 0 0 0-2.2l-2.6-2.5v-2.8l4-4v-5.2l-4-4z"/>
+                    </svg>
+                </div>
+                <div id="card-edit-btn" class="icon card-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="vocab-header mt10px">
+                <div id="level" class="tag word-level"></div>
+                <div id="tags" class="tag word-tag"></div>
+            </div>
+            <div id="ipa"></div>
+            <div id="meaning"></div>
+            <div id="note"></div>
+            <div id="linked-words"></div>
         </div>
-        ${cmp.inputSource("id-new-ipa", "", "Phonetic (IPA)", false)}
-        ${cmp.inputSource("id-new-meaning", "", "Meaning", false)}
-        ${cmp.textareaSource("id-new-note", "", "h150px", "Note ...", false)}
-        ${cmp.inputSource("id-new-links", "", "Related Words (Comma Separated)", false)}
-        ${cmp.clickableBlockSource("id-new-tags", "Tags")}
+        ${_ss}
     </div>
 
-    <div class="bs-right-align mt20px">
-        ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
+    <div id="card-edit" class="card">
+
+        <div id="new-word-form" class='bs-panel-plain'>
+            <div class="vocab-header w100pct">
+                ${cmp.inputSource("id-new-vocab", "", "word", true)}
+                ${cmp.dropdownSource("id-new-level", null, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 0)}
+            </div>
+            ${cmp.inputSource("id-new-ipa", "", "Phonetic (IPA)", false)}
+            ${cmp.inputSource("id-new-meaning", "", "Meaning", false)}
+            ${cmp.textareaSource("id-new-note", "", "h150px", "Note ...", false)}
+            ${cmp.inputSource("id-new-links", "", "Related Words (Comma Separated)", false)}
+            ${cmp.clickableBlockSource("id-new-tags", "Tags")}
+        </div>
+
+        <div class="bs-right-align mt20px">
+            ${cmp.buttonGroupSource('id-actions', ['Cancel', 'Fill (AI)', 'Save', 'Delete'], ['', '', '', ''])}
+        </div>
     </div>
 </div>`;
 
@@ -71,8 +79,12 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     ele_root.className = "fixed";
     ele_root.className = "bs-panel";
     ele_root.className = "cls-card";
-    const ele_card_display = ele_root.querySelector("#card-display");
-    const ele_card_edit = ele_root.querySelector("#card-edit");
+    const ele_searchInput = ele_root.querySelector('#id-searchInput input');
+    const ele_searchResult = ele_root.querySelector('#card-searchResult');
+
+    const ele_card_content = ele_root.querySelector('#card-content');
+    const ele_card_display = ele_card_content.querySelector("#card-display");
+    const ele_card_edit = ele_card_content.querySelector("#card-edit");
     ele_card_edit.remove();
     const editBtnCard = ele_root.querySelector("#card-edit-btn");
     const ele_body = ele_root.querySelector("#id-body");
@@ -103,6 +115,93 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
     const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
+
+    function _handleSearchInputStyle(word) {
+        if (word.length <= 0 || dictionary.hasWord(word)) {
+            ele_searchInput.classList.remove("color-red");
+        } else {
+            ele_searchInput.classList.add("color-red");
+        }
+    }
+    ele_searchInput.addEventListener('input', (e) => {
+        const word = ele_searchInput.value;
+        _handleSearchInputStyle(word);
+        _updateWordList(word);
+    });
+    ele_searchInput.addEventListener('focus', () => {
+        ele_searchResult.classList.remove("display-none");
+    });
+    ele_searchInput.addEventListener('blur', () => {
+        ele_searchResult.classList.add("display-none");
+    });
+    ele_searchInput.addEventListener('keydown', (event) => {
+        if (event.key === "Enter") {
+            const _w = ele_searchInput.value;
+            if (dictionary.hasWord(_w)) {
+                renderCard(_w);
+            }
+            if (event.ctrlKey) {
+                _renderEditPanel(_w);
+                _enterEditMode();
+            }
+
+
+            ele_searchInput.blur();
+        } else if (event.key === "Escape") {
+            ele_searchInput.blur();
+        }
+        event.stopImmediatePropagation()
+    });
+    function keyEvent(event) {
+        if (event.key === 'Enter') {
+            ele_searchInput.focus();
+            if (event.ctrlKey) {
+                ele_searchInput.value = "";
+                _handleSearchInputStyle('');
+                _updateWordList('');
+            }
+        } else if (event.key === "Escape") {
+            if (_currentMode == MODE_EDIT) {
+                _enterReadMode();
+            }
+        }
+    }
+
+    function _selectTargetElement(elem) {
+        while (elem) {
+            if (elem.classList.contains("search-result")) {
+                return elem;
+            }
+            elem = elem.parentElement;
+        }
+        return null;
+    }
+    function _updateWordList(word) {
+        let htmlBuffer = '';
+        const _words = word.length < 2 ? [] : Object.entries(dictionary.getWords(word, 'ALL', 'ALL'));
+        for (let i = 0; i < _words.length; ++i) {
+            [_word, _detail] = _words[i];
+            htmlBuffer += `<div class="search-result" data-word="${_word}">
+    <span class="word-name">${_word}</span>
+    <span class="word-meaning">${_detail.meaning}</span>
+</div>`;
+        }
+
+        ele_searchResult.innerHTML = htmlBuffer;
+    }
+
+    ele_searchResult.addEventListener("mousedown", (e) => {
+        const _targetElem = _selectTargetElement(e.target);
+        if (!_targetElem) return;
+        const _w = _targetElem.dataset.word;
+        ele_searchInput.value = _w;
+        if (_w.length <= 0 || dictionary.hasWord(_w)) {
+            ele_searchInput.classList.remove("color-red");
+        } else {
+            ele_searchInput.classList.add("color-red");
+        }
+        renderCard(_w);
+    })
 
     if (isMobile()) {
         ele_actionAA.addEventListener("click", e => {
@@ -180,14 +279,16 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     function _enterEditMode() {
         if (_currentMode === MODE_EDIT) return;
         _currentMode = MODE_EDIT;
-        ele_root.replaceChildren(ele_card_edit);
+        ele_card_content.replaceChildren(ele_card_edit);
+        ele_searchInput.classList.add('hide');
         __this__.dispatchEvent(new CustomEvent(EVT_MODE_EDIT, { detail: {} }));
     }
 
     function _enterReadMode() {
         if (_currentMode === MODE_READ) return;
         _currentMode = MODE_READ;
-        ele_root.replaceChildren(ele_card_display);
+        ele_searchInput.classList.remove('hide');
+        ele_card_content.replaceChildren(ele_card_display);
         __this__.dispatchEvent(new CustomEvent(EVT_MODE_READ, { detail: {} }));
     }
 
@@ -333,18 +434,16 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         }
     }
 
-    function getShownWord() { return currentWord; }
-
     _updateTagList([]);
     renderCard('');
-    //_recordOriginalValues();
 
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         ele_root,
         update,
         renderCard,
-        getShownWord,
+        keyEvent,
+
         EVT_MODE_EDIT,
         EVT_MODE_READ,
         EVT_WORD,

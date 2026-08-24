@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _currentSection.active();
     }
 
-    _navigator = initNavigator(document.body, components, dictionary, _switchToSection, () => { });
+    _navigator = initNavigator(document.body, components, dictionary);
     section_card = initCardSection(_ai, dictionary, components, pronunciation);
     section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation);
     section_article = initArticleSection(_ai, dictionary, components, section_card, pronunciation);
@@ -146,11 +146,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_setting = initSectionImport(_ai, dictionary, components);
 
     document.addEventListener("keydown", (event) => {
-        // logger.debug(event.key);
-        if (_navigator.keyEvent(event)) {
-            _currentSection?.keyEvent(event)
-        }
-        event.stopImmediatePropagation()
+        // logger.debug(event.key)
+        if (isEditing()) return;
+        section_card?.keyEvent(event);
+        _currentSection?.keyEvent(event);
     });
 
     (function () {
@@ -192,6 +191,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
             "Got It, Close", () => { },
         );
     }
+
+    _navigator.addEventListener(_navigator.EVT_SECTION, (e) => {
+        _switchToSection(e.detail.id);
+    });
 
     dictionary.addEventListener(dictionary.EVT_DICT, e => {
         if (e.detail.action === "imported") {

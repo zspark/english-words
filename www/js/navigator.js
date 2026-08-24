@@ -1,4 +1,4 @@
-function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackFn) {
+function initNavigator(bodyElem, cmp, dictionary) {
     const _source = `
 <div id="top-bar-left" class="horizon">
     <div id="sec-dictionary" class="sec-btn"><span>WORDS</span></div>
@@ -13,8 +13,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     </div>
 </div>
 
-<div id="top-bar-right" class="horizon">
-    ${cmp.searchSource("id-searchInput", "Search word while inputting")}
+<div id="top-bar-right" class="horizon content-right">
 </div>`;
 
     const ele_root = document.createElement('div');
@@ -26,38 +25,8 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     const ele_sec_article = ele_left.querySelector("#sec-read");
     const ele_sec_test = ele_left.querySelector("#sec-test");
     const ele_sec_result = ele_left.querySelector("#sec-result");
-    const ele_sec_setting = ele_left.querySelector("#sec-setting")
-
     const ele_right = ele_root.querySelector("#top-bar-right");
-    const searchInput = ele_right.querySelector('#id-searchInput input');
-    const searchBtn = ele_right.querySelector('#id-searchInput button');
-
-    searchInput.addEventListener('input', (e) => {
-        const word = searchInput.value;
-        if (word.length <= 0 || dictionary.hasWord(word)) {
-            searchInput.classList.remove("color-red");
-        } else {
-            searchInput.classList.add("color-red");
-        }
-
-        _delaySaver.save();
-    });
-    searchBtn.addEventListener('click', resetFilter);
-
-    function resetFilter() {
-        searchInput.value = "";
-        searchInput.classList.remove("color-red");
-        __this__.dispatchEvent(new CustomEvent(EVT_FILTER, { detail: { word: "" } }));
-    }
-    function isFocused() {
-        return document.activeElement === searchInput;
-    }
-    function setFocus() {
-        searchInput.focus();
-    }
-    function setBlur() {
-        searchInput.blur();
-    }
+    const ele_sec_setting = ele_right.querySelector("#sec-setting")
 
     let _currentSectionElemBtn = null;
 
@@ -93,35 +62,13 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
     }
 
     ele_left.addEventListener('click', (e) => {
-        leftCallbackFn(e.target.id);
+        __this__.dispatchEvent(new CustomEvent(EVT_SECTION, { detail: { id: e.target.id } }));
     })
     ele_right.addEventListener('click', (e) => {
-        rightCallbackFn(e.target.id);
+        // __this__.dispatchEvent(new CustomEvent(EVT_SECTION, { detail: { id: e.target.id } }));
     })
 
     bodyElem.prepend(ele_root);
-
-    function keyEvent(event) {
-        if (isFocused()) {
-            if (event.key === "Enter") {
-                if (event.ctrlKey) {
-                } else {
-                    setBlur();
-                }
-            } else if (event.key === "Escape") {
-                resetFilter();
-            }
-            return false;
-        } else {
-            if (!isEditing()) {
-                if (event.key === "Enter") {
-                    setFocus();
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 
     const _delaySaver = (function () {
         let _timer = null;
@@ -138,7 +85,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         }
     })();
 
-    const EVT_FILTER = "evt_filter";
+    const EVT_SECTION = "evt_section";
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         activeWord,
@@ -147,9 +94,7 @@ function initNavigator(bodyElem, cmp, dictionary, leftCallbackFn, rightCallbackF
         activeResult,
         activeSetting,
 
-        keyEvent,
-
-        EVT_FILTER,
+        EVT_SECTION,
     });
     return __this__;
 }
