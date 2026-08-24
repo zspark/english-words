@@ -1151,8 +1151,8 @@ svg {
 .bs-input {
     width: 100%;
     resize: vertical;
-    padding: 8px 8px;
-    font-size: 0.95rem;
+    padding: 10px 10px;
+    font-size: 1.05rem;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     outline: none;
