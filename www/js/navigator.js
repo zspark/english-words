@@ -21,45 +21,26 @@ function initNavigator(bodyElem, cmp, dictionary) {
     ele_root.innerHTML = _source;
 
     const ele_left = ele_root.querySelector("#top-bar-left");
-    const ele_sec_words = ele_left.querySelector("#sec-dictionary");
-    const ele_sec_article = ele_left.querySelector("#sec-read");
-    const ele_sec_test = ele_left.querySelector("#sec-test");
-    const ele_sec_result = ele_left.querySelector("#sec-result");
     const ele_right = ele_root.querySelector("#top-bar-right");
-    const ele_sec_setting = ele_right.querySelector("#sec-setting")
+    
+    const ele_sec_words = ele_root.querySelector("#sec-dictionary");
+    const ele_sec_article = ele_root.querySelector("#sec-read");
+    const ele_sec_test = ele_root.querySelector("#sec-test");
+    const ele_sec_result = ele_root.querySelector("#sec-result");
+    const ele_sec_setting = ele_root.querySelector("#sec-setting")
 
     let _currentSectionElemBtn = null;
-
-    function activeWord() {
-        if (_currentSectionElemBtn == ele_sec_words) return;
+    function _highlightSection(elem) {
+        if (_currentSectionElemBtn == elem) return;
         _currentSectionElemBtn?.removeAttribute("active");
-        ele_sec_words.setAttribute("active", "");
-        _currentSectionElemBtn = ele_sec_words;
+        elem.setAttribute("active", "");
+        _currentSectionElemBtn = elem;
     }
-    function activeArticle() {
-        if (_currentSectionElemBtn == ele_sec_article) return;
-        _currentSectionElemBtn?.removeAttribute("active");
-        ele_sec_article.setAttribute("active", "");
-        _currentSectionElemBtn = ele_sec_article;
-    }
-    function activeTest() {
-        if (_currentSectionElemBtn == ele_sec_test) return;
-        _currentSectionElemBtn?.removeAttribute("active");
-        ele_sec_test.setAttribute("active", "");
-        _currentSectionElemBtn = ele_sec_test;
-    }
-    function activeResult() {
-        if (_currentSectionElemBtn == ele_sec_result) return;
-        _currentSectionElemBtn?.removeAttribute("active");
-        ele_sec_result.setAttribute("active", "");
-        _currentSectionElemBtn = ele_sec_result;
-    }
-    function activeSetting() {
-        if (_currentSectionElemBtn == ele_sec_setting) return;
-        _currentSectionElemBtn?.removeAttribute("active");
-        ele_sec_setting.setAttribute("active", "");
-        _currentSectionElemBtn = ele_sec_setting;
-    }
+    const activeWord = _highlightSection.bind(null, ele_sec_words);
+    const activeArticle = _highlightSection.bind(null, ele_sec_article);
+    const activeTest = _highlightSection.bind(null, ele_sec_test);
+    const activeResult = _highlightSection.bind(null, ele_sec_result);
+    const activeSetting = _highlightSection.bind(null, ele_sec_setting);
 
     ele_left.addEventListener('click', (e) => {
         __this__.dispatchEvent(new CustomEvent(EVT_SECTION, { detail: { id: e.target.id } }));
@@ -69,21 +50,6 @@ function initNavigator(bodyElem, cmp, dictionary) {
     })
 
     bodyElem.prepend(ele_root);
-
-    const _delaySaver = (function () {
-        let _timer = null;
-        function save() {
-            if (!_timer) {
-                _timer = setTimeout((e) => {
-                    dictionary.saveLocalData();
-                    _timer = null;
-                }, 1000);
-            }
-        }
-        return {
-            save,
-        }
-    })();
 
     const EVT_SECTION = "evt_section";
     const __this__ = new EventTarget()
