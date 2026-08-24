@@ -101,6 +101,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_linkedWords = ele_card_display.querySelector("#linked-words");
 
     const ele_new_voc = ele_card_edit.querySelector("#id-new-vocab input");
+    ele_new_voc.disabled = true;
     const ele_new_ipa = ele_card_edit.querySelector("#id-new-ipa input");
     const ele_new_meaning = ele_card_edit.querySelector("#id-new-meaning input");
     const ele_new_level = ele_card_edit.querySelector("#id-new-level select");
@@ -336,11 +337,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         const _q = ai.getQuestionAboutWord(word);
         window.open(`https://chatgpt.com/?q=${_q}`, "_blank");
     });
-    ele_new_voc.addEventListener("input", (event) => {
-        const _word = ele_new_voc.value.trim().toLowerCase();
-        _renderEditPanel(_word);
-        _enterEditMode();
-    });
 
     ele_action.addEventListener("click", async e => {
 
@@ -384,14 +380,14 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             const tags = [...ele_selected.querySelectorAll(".tag")].map(span => span.textContent.trim()).join(", ");
             dictionary.updateWord(word, ipa, meaning, level, note, links, tags)
 
-            renderCard(currentWord);
+            renderCard(word);
             _enterReadMode();
         } else if (e.target.dataset.index === "3") {
             //delete;
             const word = ele_new_voc.value.trim();
             dictionary.deleteWord(word);
 
-            renderCard(currentWord);
+            renderCard(word);
             _enterReadMode();
         } else if (e.target.dataset.index === "4") {
         } else if (e.target.dataset.index === "5") {
@@ -433,6 +429,12 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             ele_container.replaceChildren(ele_root)
         }
     }
+
+    dictionary.addEventListener(dictionary.EVT_WORD, e => {
+        // logger.log(e);
+        const word = ele_searchInput.value;
+        _handleSearchInputStyle(word);
+    });
 
     _updateTagList([]);
     renderCard('');
