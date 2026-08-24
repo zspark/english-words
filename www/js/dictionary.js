@@ -65,7 +65,7 @@ function initDictionary() {
                 preset: "memory",
                 tokenize: "full",
                 resolution: 5,
-                minlength: 1
+                minlength: 2
             });
         }
 

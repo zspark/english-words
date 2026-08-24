@@ -1533,7 +1533,7 @@ svg {
     border: 1px solid #ccc;
     border-top: none;
 
-    max-height: 300px;
+    max-height: 500px;
     overflow-y: auto;
 
     z-index: 1000;
