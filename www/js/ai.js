@@ -68,17 +68,16 @@ json格式如下：
         "level": "A1~C2",
         "meaning": "adj. 一般的；普通的",
         "links": "generically,genericity",
-        "note": "This is a generic example."
+        "note": "This is a generic solution that can be applied to many different problems. 这是一个通用的解决方案，可以应用于许多不同的问题。\n"
     }
 }
 
 要求：
-1. 只有meaning使用中文，其他全部使用英文；
 2. 以上json内容中的generic单词只是示例；
 3. 所有单词作为JSON键时全部小写；
 4. links去重，英文逗号分隔；
-5. 必须是正确的JSON格式；
-6. 严格使用提供的json字段，不多也不少，所有的value都是字符串`;
+6. 严格使用提供的json字段，不多也不少，所有的value都是字符串，且是正确格式的JSON；
+7. note字段提供至少2个使用不同意思的例句，意思多的单词可以提供3个例句，附带汉语翻译。例句之间用'\n'分开`;
 
         logger.log(_question);
         return _question;
