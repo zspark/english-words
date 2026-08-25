@@ -144,29 +144,34 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
                 _enterEditMode();
             }
 
-
             ele_searchInput.blur();
         } else if (event.key === "Escape") {
             ele_searchInput.blur();
         }
         event.stopImmediatePropagation()
     });
-    function keyEvent(event) {
-        if (event.key === 'Enter') {
-            ele_searchInput.focus();
-            if (event.ctrlKey) {
-                ele_searchInput.value = "";
-                _handleSearchInputStyle('');
-                _updateWordList('');
-            }
-        } else if (event.key === "t") {
-            if (_currentMode == MODE_READ) {
+    async function keyEvent(event) {
+        const c = ele_root.isConnected;
+        if (!c) return;
+
+        if (_currentMode == MODE_READ) {
+            if (event.key === 'Enter') {
+                ele_searchInput.focus();
+            } else if (event.key === "t") {
                 _renderEditPanel(currentWord);
                 _enterEditMode();
             }
-        } else if (event.key === "Escape") {
-            if (_currentMode == MODE_EDIT) {
+        } else if (_currentMode == MODE_EDIT) {
+            if (event.key === "Escape") {
                 _enterReadMode();
+            } else if (event.key === 'Enter') {
+
+                if (event.altKey) {
+                    await _fillByAI()
+                }
+                if (event.ctrlKey) {
+                    _save();
+                }
             }
         }
     }
@@ -347,44 +352,14 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
         if (e.target.dataset.index === "1") {
             //fill by ai
-            const word = ele_new_voc.value.trim();
-            if (word.length <= 0) {
-                ele_new_voc.focus();
-                const _s = `Word input is essential, this is the key to database`;
-                logger.error(_s);
-                alert(_s);
-                return;
-            }
-
-            const resultText = await ai.genMeaning(word);
-            // logger.debug(`AI content: ${resultText}`);
-            if (!resultText) return;
-            try {
-                const _detail = JSON.parse(resultText)[word];
-                _updateCardContentInEditMode(word, _detail);
-                ele_btnSave.classList.add('bs-bg-twinkle');
-            } catch (e) {
-                logger.error(`parse error: ${e}`);
-                return;
-            }
-
+            await _fillByAI();
         } else if (e.target.dataset.index === "0") {
             //canel
             renderCard(currentWord);
             _enterReadMode();
         } else if (e.target.dataset.index === "2") {
             //save
-            const word = ele_new_voc.value.trim();
-            const ipa = ele_new_ipa.value.trim();
-            const meaning = ele_new_meaning.value.trim();
-            const level = ele_new_level.value.trim();
-            const note = ele_new_note.value.trim();
-            const links = ele_new_linkedWords.value.trim();
-            const tags = [...ele_selected.querySelectorAll(".tag")].map(span => span.textContent.trim()).join(", ");
-            dictionary.updateWord(word, ipa, meaning, level, note, links, tags)
-
-            renderCard(word);
-            _enterReadMode();
+            _save();
         } else if (e.target.dataset.index === "3") {
             //delete;
             const word = ele_new_voc.value.trim();
@@ -396,6 +371,35 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
         } else if (e.target.dataset.index === "5") {
         }
     })
+
+    async function _fillByAI() {
+        const word = ele_new_voc.value.trim();
+        const resultText = await ai.genMeaning(word);
+        // logger.debug(`AI content: ${resultText}`);
+        if (!resultText) return;
+        try {
+            const _detail = JSON.parse(resultText)[word];
+            _updateCardContentInEditMode(word, _detail);
+            ele_btnSave.classList.add('bs-bg-twinkle');
+        } catch (e) {
+            logger.error(`parse error: ${e}`);
+            return;
+        }
+    }
+
+    function _save() {
+        const word = ele_new_voc.value.trim();
+        const ipa = ele_new_ipa.value.trim();
+        const meaning = ele_new_meaning.value.trim();
+        const level = ele_new_level.value.trim();
+        const note = ele_new_note.value.trim();
+        const links = ele_new_linkedWords.value.trim();
+        const tags = [...ele_selected.querySelectorAll(".tag")].map(span => span.textContent.trim()).join(", ");
+        dictionary.updateWord(word, ipa, meaning, level, note, links, tags)
+
+        renderCard(word);
+        _enterReadMode();
+    }
 
     editBtnCard.addEventListener("click", e => {
         _renderEditPanel(currentWord);

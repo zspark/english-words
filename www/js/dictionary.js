@@ -349,7 +349,7 @@ function initDictionary() {
         });
 
         _wordsProxy.remove(word, true);
-        _searchAPI.remove(word);
+        _searchAPI.removeWord(word);
         if (dispatch) _dispWordEvt(word, "delete");
         _needToUpload = true;
     }
