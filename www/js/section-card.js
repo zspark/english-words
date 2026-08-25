@@ -323,7 +323,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             let _s = '';
             notes.forEach(s => { _s += `<p>${s}</p>`; })
             return _s;
-        })(_detail?.note?.split('\n').map(line => line.trim()).filter(line => line.length > 0) || []);
+        })(_detail?.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0) || []);
         ele_linkedWords.innerHTML = ((links) => {
             let _s = '';
             links.forEach(w => { _s += `<a>${w}</a>`; });

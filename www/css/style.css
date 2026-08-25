@@ -304,6 +304,10 @@ body {
     margin: 0 0 0 -20px;
 }
 
+#note p {
+    margin-top: 5px;
+}
+
 .tag {
     font-size: 0.9rem;
     font-weight: 700;
