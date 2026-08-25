@@ -279,7 +279,7 @@ function initDictionary() {
             _detail = {};
             _action = "add";
         }
-        _fillDetailInfosIfMissing(_detail, Date.now());
+        _fillDetailInfosIfMissing(_detail, /*Date.now()*/);
         const oldLinks = _detail.links;
         _detail.ipa = ipa || '';
         _detail.meaning = meaning || '';
