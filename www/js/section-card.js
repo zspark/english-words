@@ -159,6 +159,11 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
                 _handleSearchInputStyle('');
                 _updateWordList('');
             }
+        } else if (event.key === "t") {
+            if (_currentMode == MODE_READ) {
+                _renderEditPanel(currentWord);
+                _enterEditMode();
+            }
         } else if (event.key === "Escape") {
             if (_currentMode == MODE_EDIT) {
                 _enterReadMode();
