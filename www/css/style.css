@@ -149,13 +149,15 @@ body {
     display: none;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .sec-btn {
     padding: 0.5rem 0.5rem;
     font-weight: 700;
-    /* background-color: var(--btn-bg-color-normal); */
     color: var(--btn-font-color-normal);
     border-radius: 6px;
-    cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     user-select: none;
@@ -1102,11 +1104,7 @@ details[open] summary::after {
 svg {
     width: 16px;
     height: 16px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    fill: currentColor;
     pointer-events: none;
 }
 
@@ -1553,6 +1551,22 @@ svg {
 .search-result[active],
 .search-result:hover {
     background: #f0f0f0;
+}
+
+.cls-breathing {
+    animation: _red-breath 3s ease-in-out infinite;
+}
+
+@keyframes _red-breath {
+
+    0%,
+    100% {
+        fill: rgb(255, 0, 0);
+    }
+
+    50% {
+        fill: rgb(111, 254, 15);
+    }
 }
 
 @media (max-width: 768px) {

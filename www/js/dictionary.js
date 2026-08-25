@@ -113,7 +113,6 @@ function initDictionary() {
                 return;
             }
 
-            // _dispDictEvt(`begin:${data.requestType}`);
             logger.log(`C -> S request type: ${data.requestType}`);
             _dispDictEvt(`begin:sync`);
             data.userID = userID;
@@ -150,7 +149,6 @@ function initDictionary() {
                 logger.vital(`To server: ${err}`);
                 _dispDictEvt(`end:sync`, err);
             }
-            // _dispDictEvt(`end:${data.requestType}`);
         }
 
         async function loadData() {

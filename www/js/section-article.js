@@ -46,6 +46,51 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
         }
     });
 
+    const easyWords = new Set(`
+a an the and or but if then else
+of to in on at by for from with
+is am are was were be been being
+do does did have has had
+i you he she it we they
+me him her us them
+my your his its our their
+this that these those
+who what which when where why how
+can could will would shall should
+may might must
+not no yes
+very more most some any all
+one two three first last
+as so than too also
+up down out over under
+here there
+get got make made take took
+go went come came see saw
+say said know knew think thought
+want need use used
+good bad big small new old
+easy hard long short high low
+`.trim().split(/\s+/));
+
+    function _getWordUnderCursor(e) {
+        const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+        if (!range || range.startContainer.nodeType !== Node.TEXT_NODE)
+            return null;
+
+        const text = range.startContainer.textContent;
+        const pos = range.startOffset;
+        const before = text.slice(0, pos);
+        const after = text.slice(pos);
+        const left = before.match(/[\w'-]+$/)?.[0] ?? "";
+        const right = after.match(/^[\w'-]+/)?.[0] ?? "";
+        const word = (left + right).toLowerCase();
+
+        if (!word || easyWords.has(word)) {
+            // logger.debug(`ignored word: ${word}`);
+            return null;
+        }
+        return word;
+    }
 
     let ele_actived_word = null;
     ele_article.addEventListener("click", (e) => {
@@ -56,6 +101,14 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             ele_clicked.setAttribute("active", '');
 
             card.renderCard(ele_clicked.outerText)
+            return;
+        }
+
+        if (e.ctrlKey) {
+            const _w = _getWordUnderCursor(e)
+            if (_w) {
+                card.renderCard(_w)
+            }
         }
     });
 
@@ -79,8 +132,11 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
     }
 
     function keyEvent(event) {
+        if (event.key === "Delete") {
+            if (event.ctrlKey) {
+            }
+        }
     }
-
 
     dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
         // logger.debug("[article]");

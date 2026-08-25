@@ -76,8 +76,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     const ele_root = document.createElement('div');
     ele_root.innerHTML = source;
-    ele_root.className = "fixed";
-    ele_root.className = "bs-panel";
     ele_root.className = "cls-card";
     const ele_searchInput = ele_root.querySelector('#id-searchInput input');
     const ele_searchResult = ele_root.querySelector('#card-searchResult');

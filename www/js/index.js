@@ -202,19 +202,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
 <p>Succefully Imported Data to Dictionary.</p>`,
                 "Got It", () => { },
             );
+        } else if (e.detail.action === "exported") {
+            components.showMask(`
+<p>Succefully Exported Data to Local File.</p>`,
+                "Got It", () => { },
+            );
         } else if (e.detail.action === "delete") {
             components.showMask(`
 <p>Succefully Clear the Dictionary.</p>`,
-                "Got It", () => { },
-            );
-        } else if (e.detail.action === "end:sync") {
-            components.showMask(`
-<p>${e.detail.message}</p>`,
-                "Got It", () => { },
-            );
-        } else if (e.detail.action === "sync") {
-            components.showMask(`
-<p>${e.detail.message}</p>`,
                 "Got It", () => { },
             );
         }
