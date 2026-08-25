@@ -410,6 +410,7 @@ function initDictionary() {
         const _tagArr = _metaProxy.get('tags', []);
         _tagArr.length = 0;
         _tagArr.push(...tags);
+        _metaProxy.saveToLocal()
         _needToUpload = true;
     }
 
