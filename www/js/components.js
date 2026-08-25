@@ -35,7 +35,7 @@ function initComponents() {
         let _titleElem = title ? `<label class="bs-title">${title}</label>` : ``;
         let _s = `<div id="${id}">
     ${_titleElem}
-    <select class="bs-component">
+    <select class="bs-select">
         ${dropdownOptionSource(list, selectedIndex)}
     </select>
 </div>`;

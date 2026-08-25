@@ -1156,6 +1156,7 @@ svg {
     color: #333;
 }
 
+.bs-select,
 .bs-component,
 .bs-input {
     width: 100%;
@@ -1166,10 +1167,12 @@ svg {
     border-radius: 8px;
     outline: none;
     transition: .2s;
-    color: var(--input-bg-color-focus);
     background-color: var(--color-background);
 }
 
+.bs-select {
+    color: var(--btn-font-color-normal);
+}
 
 .bs-input:focus {
     border-color: rgb(var(--input-border-color-focus));
@@ -1403,18 +1406,6 @@ svg {
     color: #222;
     user-select: none;
     pointer-events: none;
-}
-
-.clr-blue {
-    background: #2d7ef7;
-    border-color: #2d7ef7;
-    color: white;
-}
-
-.clr-red {
-    background: #cc1224;
-    border-color: #b51121;
-    color: white;
 }
 
 .color-red {
