@@ -1557,14 +1557,44 @@ svg {
 }
 
 @keyframes _red-breath {
-
-    0%,
-    100% {
+    0% {
         fill: rgb(255, 0, 0);
     }
 
     50% {
         fill: rgb(111, 254, 15);
+    }
+
+    100% {
+        fill: rgb(255, 0, 0);
+    }
+}
+
+.cls-rotating {
+    animation: _rotate 3s linear infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+@keyframes _rotate {
+    0% {
+        fill: rgb(255, 0, 0);
+    }
+
+    50% {
+        fill: rgb(111, 254, 15);
+    }
+
+    100% {
+        fill: rgb(255, 0, 0);
+    }
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
     }
 }
 
