@@ -73,15 +73,19 @@ function readOnly(obj) {
     });
 }
 
-function isEditing() {
+function isEditing(event) {
     const el = document.activeElement;
 
-    return (
+    const _r = (
         el instanceof HTMLInputElement ||
         el instanceof HTMLTextAreaElement ||
         el instanceof HTMLSelectElement ||
         el.isContentEditable
     );
+    if (_r && event.key === "Escape") {
+        el.blur();
+    }
+    return _r;
 }
 
 const ele_container = document.getElementById("middle");
@@ -147,7 +151,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key)
-        if (isEditing()) return;
+        if (isEditing(event)) return;
         section_card?.keyEvent(event);
         _currentSection?.keyEvent(event);
     });

@@ -145,10 +145,8 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
             }
 
             ele_searchInput.blur();
-        } else if (event.key === "Escape") {
-            ele_searchInput.blur();
+            event.stopImmediatePropagation()
         }
-        event.stopImmediatePropagation()
     });
     async function keyEvent(event) {
         const c = ele_root.isConnected;
