@@ -296,6 +296,14 @@ body {
     margin-bottom: 16px;
 }
 
+#note {
+    line-height: 1.6;
+}
+
+#note ul {
+    margin: 0 0 0 -20px;
+}
+
 .tag {
     font-size: 0.9rem;
     font-weight: 700;
@@ -325,11 +333,6 @@ body {
 .word-tag:empty,
 .word-level:empty {
     display: none;
-}
-
-#note {
-    line-height: 1.6;
-    font-style: italic;
 }
 
 details {
