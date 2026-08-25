@@ -18,6 +18,7 @@ function initNavigator(bodyElem, cmp, dictionary) {
 
     const ele_root = document.createElement('div');
     ele_root.id = "navigator";
+    ele_root.className = "hTop";
     ele_root.innerHTML = _source;
 
     const ele_left = ele_root.querySelector("#top-bar-left");

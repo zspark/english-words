@@ -1,4 +1,5 @@
 :root {
+    --height-top: 44px;
     --color-background: #f8fafc;
     --card-bg: white;
     --border-color: rgba(226, 232, 240, 0.8);
@@ -79,6 +80,10 @@ body {
 
 .w100pct {
     width: 100%;
+}
+
+.hTop {
+    height: var(--height-top);
 }
 
 .h300px {
@@ -1063,7 +1068,7 @@ details[open] summary::after {
 
 .cls-card {
     position: sticky;
-    top: 40px;
+    top: var(--height-top);
     box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
     padding: 20px;
     background: var(--card-bg);
