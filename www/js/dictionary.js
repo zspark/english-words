@@ -4,62 +4,16 @@
 
 const __VERSION__ = "0.2.0"
 
-function initDictionary() {
+function initDictionary(logger, cacherCreator, serverProxy) {
 
     let _needToUpload = false;
-    function createStorageProxy(key) {
-        let _tmp = JSON.parse(localStorage.getItem(key));
-        let _obj = _tmp || {};
 
-        function isEmpty() {
-            return !_tmp;
-        }
-        function data() {
-            return _obj;
-        }
-        function append(data, save = false) {
-            Object.assign(_obj, data);
-            if (save) saveToLocal();
-        }
-        function saveToLocal() {
-            try {
-                localStorage.setItem(key, JSON.stringify(_obj));
-            } catch (e) {
-                logger.vital(e);
-            }
-        }
-        function set(key, value, save = false) {
-            _obj[key] = value;
-            if (save) saveToLocal();
-        }
-        function get(key, defaultValue = null) {
-            let _v = _obj[key];
-            if (!_v) {
-                _v = defaultValue;
-                if (defaultValue) _obj[key] = defaultValue;
-            }
-            return _v;
-        }
-        function has(key) {
-            return !!_obj[key];
-        }
-        function remove(key, save = false) {
-            delete _obj[key];
-            if (save) saveToLocal();
-        }
-        function clear() {
-            localStorage.removeItem(key);
-            _tmp = null;
-            _obj = {};
-        }
-        return { saveToLocal, get, set, clear, isEmpty, has, remove, data, append }
-    }
-    const _localProxy = createStorageProxy('__localCache__');
-    const _metaProxy = createStorageProxy('__metaCache__');
-    const _recordsProxy = createStorageProxy('__recordCache__');
-    const _wordsProxy = createStorageProxy('__wordCache__');
+    const _localProxy = cacherCreator.create('__localCache__');
+    const _metaProxy = cacherCreator.create('__metaCache__');
+    const _recordsProxy = cacherCreator.create('__recordCache__');
+    const _wordsProxy = cacherCreator.create('__wordCache__');
 
-    const _searchAPI = (function () {
+    const _searchAPI = (function() {
         function _create() {
             return new FlexSearch.Index({
                 preset: "memory",
@@ -103,71 +57,6 @@ function initDictionary() {
         }
     })()
     _searchAPI.addWords(_wordsProxy.data())
-
-    const _serverProxy = (function () {
-        async function _toServer(data) {
-            logger.log(`C -> S request type: ${data.requestType}`);
-            _dispDictEvt(`begin:sync`);
-
-            const _accessToken = getLocalData("sec_setting")['userID'] || "";
-            if (_accessToken && (_accessToken.length > 0)) {
-                data.accessToken = _accessToken;
-            }
-
-            const _response = await fetch("../api/data", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data, null, 4),
-            });
-
-            try {
-                if (_response.status === 200) {
-                    const _responseData = await _response.json();
-                    if (_responseData.success) {
-                        if (_responseData.code === 200) {
-                            getLocalData("sec_setting")["syncTime"] = _responseData.syncTime;
-                            saveLocalData();
-                        }
-                        if (_responseData.content) {
-                            importDictionaryByContent(_responseData.content);
-                            logger.debug(`${_responseData.content}`);
-                        }
-                        logger.log(`S -> C ${_responseData.info}`);
-                    } else {
-                        logger.error(`S -> C ${_responseData.info}`);
-                    }
-                    _dispDictEvt(`end:sync`, _responseData.info);
-                } else {
-                    logger.error(`S -> C ${_response.status}`);
-                    _dispDictEvt(`end:sync`, `Vital Error: ${_response.status}`);
-                }
-            } catch (err) {
-                logger.vital(`To server: ${err}`);
-                _dispDictEvt(`end:sync`, err);
-            }
-        }
-
-        async function loadData() {
-            await _toServer({
-                requestType: "get",
-                syncTime: getLocalData("sec_setting")['syncTime'] || 1,
-            })
-        }
-
-        async function saveData() {
-            await _toServer({
-                requestType: "save",
-                content: _assemblePermenentData(),
-            })
-        }
-
-        return {
-            loadData,
-            saveData,
-        }
-    })()
 
     function _assemblePermenentData() {
         return {
@@ -227,7 +116,7 @@ function initDictionary() {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = function(e) {
             try {
                 const imported = JSON.parse(e.target.result);
                 if (typeof imported !== "object") {
@@ -243,7 +132,7 @@ function initDictionary() {
 
     function clearDictionary() {
         getLocalData("sec_setting")["syncTime"] = 1;
-        _localProxy.saveToLocal();
+        _localProxy.save();
         _metaProxy.clear();
         _recordsProxy.clear();
         _wordsProxy.clear();
@@ -322,7 +211,7 @@ function initDictionary() {
                 _detail.links += linkedWord;
             }
         }
-        _wordsProxy.saveToLocal();
+        _wordsProxy.save();
     }
 
     function _removeLink(word, linkedWord) {
@@ -331,7 +220,7 @@ function initDictionary() {
 
         const regex = new RegExp(`,*\s*\\b${linkedWord}\\b`, "gi");
         _detail.links.replace(regex, "");
-        _wordsProxy.saveToLocal();
+        _wordsProxy.save();
     }
 
     function deleteWord(word, dispatch = true) {
@@ -409,7 +298,7 @@ function initDictionary() {
         const _tagArr = _metaProxy.get('tags', []);
         _tagArr.length = 0;
         _tagArr.push(...tags);
-        _metaProxy.saveToLocal()
+        _metaProxy.save()
         _needToUpload = true;
     }
 
@@ -438,7 +327,7 @@ function initDictionary() {
             }
             _recordsProxy.set(_w, _out);
         });
-        _recordsProxy.saveToLocal();
+        _recordsProxy.save();
         _needToUpload = true;
         _dispRecordEvt("new");
     }
@@ -460,7 +349,7 @@ function initDictionary() {
     }
 
     function saveLocalData() {
-        _localProxy.saveToLocal();
+        _localProxy.save();
     }
 
     function getSyncInterval() {
@@ -470,18 +359,18 @@ function initDictionary() {
     function setSyncInterval(second) {
         second = second > 0 ? second : getSyncInterval();
         getLocalData("sec_setting")['syncInterval'] = second;
-        _localProxy.saveToLocal();
+        _localProxy.save();
         _timer(second);
     }
 
-    const _timer = (function () {
+    const _timer = (function() {
         let _syncTimer;
 
-        const _fn = function (second) {
+        const _fn = function(second) {
             clearInterval(_syncTimer);
             _syncTimer = setInterval(() => {
                 if (_needToUpload) {
-                    _serverProxy.saveData();
+                    serverProxy.saveData();
                     _needToUpload = false;
                 }
             }, second * 1000);
@@ -517,14 +406,33 @@ function initDictionary() {
         return _out;
     }
 
+    serverProxy.addEventListener(serverProxy.EVT_DOWNLOAD, (e) => {
+        const _data = e.detail.data;
+        if (_data) importDictionaryByContent(_data);
+    });
+    serverProxy.addEventListener(serverProxy.EVT_UPLOAD, (e) => {
+    });
+
+    async function saveDictionary() {
+        _dispDictEvt(`begin:sync`);
+        await serverProxy.saveData(_assemblePermenentData());
+        _dispDictEvt(`end:sync`);
+    }
+
+    async function loadDictionary() {
+        _dispDictEvt(`begin:sync`);
+        await serverProxy.loadData();
+        _dispDictEvt(`end:sync`);
+    }
+
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         EVT_RECORD: "EVT_RECORD",
         EVT_WORD: "EVT_WORD",
         EVT_DICT: "EVT_DICT",
 
-        loadData: _serverProxy.loadData,
-        saveData: _serverProxy.saveData,
+        loadDictionary,
+        saveDictionary,
 
         isDatabaseEmpty,
         exportDatabase,

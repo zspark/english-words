@@ -22,7 +22,7 @@ const _PLF_MACOS_ = "macOS";
 const _PLF_LINUX_ = "Linux";
 const _PLF_ANDROID_ = "Android";
 
-const _PLATFORM_ = (function () {
+const _PLATFORM_ = (function() {
     const ua = navigator.userAgent;
 
     if (/Android/i.test(ua)) return _PLF_ANDROID_;
@@ -102,10 +102,12 @@ let _currentSection = null;
 let _currentSectionElemBtn = null;
 
 document.addEventListener("DOMContentLoaded", (e) => {
-    const dictionary = initDictionary();
-    const components = initComponents();
-    const _ai = initAI(dictionary);
-    const pronunciation = initPronunciation(dictionary);
+    const _cacherCreator = initCacher(logger);
+    const _serverProxy = initServerProxy(logger, _cacherCreator);
+    const _dictionary = initDictionary(logger, _cacherCreator, _serverProxy);
+    const _components = initComponents();
+    const _ai = initAI(_dictionary);
+    const _pronunciation = initPronunciation(_dictionary);
 
     function _switchToSection(id) {
         let _nextSection;
@@ -134,20 +136,20 @@ document.addEventListener("DOMContentLoaded", (e) => {
             return;
         }
         _rts.sectionID = id;
-        dictionary.saveLocalData();
+        _dictionary.saveLocalData();
         _currentSection?.deactive();
         _currentSection = _nextSection;
         ele_container.replaceChildren(_currentSection.ele_root)
         _currentSection.active();
     }
 
-    _navigator = initNavigator(document.body, components, dictionary);
-    section_card = initCardSection(_ai, dictionary, components, pronunciation);
-    section_words = initDictionarySection(_ai, dictionary, components, section_card, pronunciation);
-    section_article = initArticleSection(_ai, dictionary, components, section_card, pronunciation);
-    section_test = initTestSection(_ai, dictionary, components, section_words, pronunciation);
-    section_result = initResultSection(dictionary, components, section_card, pronunciation);
-    section_setting = initSectionImport(_ai, dictionary, components);
+    _navigator = initNavigator(document.body, _components, _dictionary);
+    section_card = initCardSection(_ai, _dictionary, _components, _pronunciation);
+    section_words = initDictionarySection(_ai, _dictionary, _components, section_card, _pronunciation);
+    section_article = initArticleSection(_ai, _dictionary, _components, section_card, _pronunciation);
+    section_test = initTestSection(_ai, _dictionary, _components, section_words, _pronunciation);
+    section_result = initResultSection(_dictionary, _components, section_card, _pronunciation);
+    section_setting = initSectionImport(_ai, _dictionary, _components);
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key)
@@ -156,8 +158,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _currentSection?.keyEvent(event);
     });
 
-    (function () {
-        const _localData = dictionary.getLocalData("sec_setting");
+    (function() {
+        const _localData = _dictionary.getLocalData("sec_setting");
         const _darkTheme = _localData['theme'];
         if (_darkTheme) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -166,7 +168,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         }
     })();
 
-    const _rts = dictionary.getLocalData('homepage');
+    const _rts = _dictionary.getLocalData('homepage');
     logger.log(`current section id: ${_rts.sectionID}`);
     _switchToSection(_rts.sectionID || "sec-dictionary");
 
@@ -174,23 +176,23 @@ document.addEventListener("DOMContentLoaded", (e) => {
         //logger.debug(window.scrollY);
         ele_button.style.display = window.scrollY > 200 ? 'block' : 'none';
         _currentSection.setSync(window.scrollY);
-        dictionary.saveLocalData();
+        _dictionary.saveLocalData();
     });
 
     ele_button.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
+    // _dictionary.addEventListener(_dictionary.EVT_DICT, (e) => {
     //     if (e.detail.action === "begin:sync") {
-    //         const _mask = components.showMask(`<p>Dictionary is Sync ...</p>`);
+    //         const _mask = _components.showMask(`<p>Dictionary is Sync ...</p>`);
     //     } else if (e.detail.action === "end:sync") {
     //         logger.log("syncd");
     //     }
     // });
 
-    if (dictionary.isDatabaseEmpty()) {
-        components.showMask(`
+    if (_dictionary.isDatabaseEmpty()) {
+        _components.showMask(`
 <p>This website is still under developing, more patience and tolerance would be much appriciated.</p>`,
             "Got It, Close", () => { },
         );
@@ -200,25 +202,25 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _switchToSection(e.detail.id);
     });
 
-    dictionary.addEventListener(dictionary.EVT_DICT, e => {
+    _dictionary.addEventListener(_dictionary.EVT_DICT, e => {
         if (e.detail.action === "imported") {
-            components.showMask(`
+            _components.showMask(`
 <p>Succefully Imported Data to Dictionary.</p>`,
                 "Got It", () => { },
             );
         } else if (e.detail.action === "exported") {
-            components.showMask(`
+            _components.showMask(`
 <p>Succefully Exported Data to Local File.</p>`,
                 "Got It", () => { },
             );
         } else if (e.detail.action === "delete") {
-            components.showMask(`
+            _components.showMask(`
 <p>Succefully Clear the Dictionary.</p>`,
                 "Got It", () => { },
             );
         }
     });
 
-    dictionary.loadData();
+    _dictionary.loadDictionary();
 });
 
