@@ -46,6 +46,7 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
         }
     });
 
+    /*
     const easyWords = new Set(`
 a an the and or but if then else
 of to in on at by for from with
@@ -71,6 +72,7 @@ want need use used
 good bad big small new old
 easy hard long short high low
 `.trim().split(/\s+/));
+*/
 
     function _getWordUnderCursor(e) {
         const range = document.caretRangeFromPoint(e.clientX, e.clientY);
@@ -85,10 +87,12 @@ easy hard long short high low
         const right = after.match(/^[\w'-]+/)?.[0] ?? "";
         const word = (left + right).toLowerCase();
 
+        /*
         if (!word || easyWords.has(word)) {
             // logger.debug(`ignored word: ${word}`);
             return null;
         }
+        */
         return word;
     }
 
@@ -109,6 +113,12 @@ easy hard long short high low
             if (_w) {
                 card.renderCard(_w)
             }
+        }
+    });
+    ele_article.addEventListener("dblclick", (e) => {
+        const _w = _getWordUnderCursor(e)
+        if (_w) {
+            card.renderCard(_w)
         }
     });
 
