@@ -12,7 +12,7 @@ function initServerProxy(logger, cacherCreator) {
             data.accessToken = _accessToken;
         }
 
-        const _response = await fetch("../api/data", {
+        const _response = await fetch("../api", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
