@@ -108,36 +108,36 @@ export async function getRNZNews(request, env) {
         // 5. Return JSON
         // --------------------------------------------------
 
-        return new Response(
-            JSON.stringify({
+        return Response.json({
+            success: true,
+            code: 200,
+            info: "Succeed.",
+            data: {
                 title,
                 link,
                 pub_date: pubDate,
                 description,
                 content: paragraphs
-            }, null, 2),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                }
             }
-        );
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            }
+        });
 
     } catch (error) {
 
-        return new Response(
-            JSON.stringify({
-                error: error.message
-            }),
-            {
-                status: 500,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                }
+        return Response.json({
+            success: false,
+            info: error.message,
+        }, {
+            status: 500,
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             }
-        );
+        });
     }
 };
 
