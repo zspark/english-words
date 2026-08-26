@@ -242,7 +242,8 @@ function initDictionary() {
     }
 
     function clearDictionary() {
-        //_localProxy.clear();
+        getLocalData("sec_setting")["syncTime"] = 1;
+        _localProxy.saveToLocal();
         _metaProxy.clear();
         _recordsProxy.clear();
         _wordsProxy.clear();
