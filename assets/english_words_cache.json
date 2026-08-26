@@ -30222,6 +30222,15 @@
             "links": "urchin-like, sea urchin",
             "time": 1787674666703,
             "tags": "ANIMAL, FOOD"
+        },
+        "sandbar": {
+            "ipa": "/ˈsændbɑːr/",
+            "meaning": "n. 沙洲；沙坝",
+            "level": "B2",
+            "note": "The boat ran aground on a hidden sandbar near the mouth of the river. 船在河口附近一个隐蔽的沙洲上搁浅了。\n\nSandbars shift constantly with the tides, making navigation dangerous for large vessels. 沙洲随潮汐不断移动，使得大型船只的航行变得危险。",
+            "links": "sandbank,shoal",
+            "time": 1787705810266,
+            "tags": ""
         }
     }
 }

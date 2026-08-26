@@ -48,6 +48,8 @@ function initDictionary(logger, cacherCreator, serverProxy) {
             _flexSearch = _create();
         }
 
+        addWords(_wordsProxy.data())
+
         return {
             search,
             addWord,
@@ -56,7 +58,6 @@ function initDictionary(logger, cacherCreator, serverProxy) {
             clear,
         }
     })()
-    _searchAPI.addWords(_wordsProxy.data())
 
     function _assemblePermenentData() {
         return {
