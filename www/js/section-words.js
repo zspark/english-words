@@ -82,8 +82,8 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         const _ITEMS_EACH_SIDE = 4;
         const _SORT_FN_MAP_ = {
             "0": {
-                "N": (r) => { r.sort((a, b) => { return a[1].time > b[1].time }); },
-                "R": (r) => { r.sort((a, b) => { return a[1].time < b[1].time }); },
+                "N": (r) => { r.sort((a, b) => { return a[1].time < b[1].time }); },
+                "R": (r) => { r.sort((a, b) => { return a[1].time > b[1].time }); },
             },
             "1": {
                 "N": (r) => { r.sort((a, b) => { return a[0] > b[0] }); },
