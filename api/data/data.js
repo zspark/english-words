@@ -88,10 +88,10 @@ export async function getData(request) {
                     content: JSON.parse(result.content)
                 });
             }
-        } catch {
+        } catch (e) {
             return Response.json({
                 success: false,
-                info: "Content parsing error, consult administrator."
+                info: `internal error: ${e} .`
             });
         }
     }
