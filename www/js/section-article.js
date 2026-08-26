@@ -9,8 +9,18 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
 
     const articleSource = `
 <div class="bs-panel lh2p4">
-    ${cmp.buttonGroupSource('id-action', ['Generate'])}
-    <div id="article-content"></div>
+    <div class="word-header">
+        <div class="controls">
+            ${cmp.buttonGroupSource('id-action-2', ['Read', 'Edit'])}
+        </div>
+        <div class="controls">
+            ${cmp.buttonGroupSource('id-action', ['Generate'])}
+        </div>
+    </div>
+    <div id="article-container">
+        <div id="article-content"></div>
+        ${cmp.textareaSource("article-input", null, 'h300px', "Paste article to read.")}
+    </div>
 </div>
 
 <div id="id-cardContainer"> </div>
@@ -20,8 +30,33 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
     ele_root.className = "container";
     ele_root.innerHTML = articleSource;
     const ele_action_gen = ele_root.querySelector("#id-action");
+    const ele_container = ele_root.querySelector("#article-container");
     const ele_article = ele_root.querySelector("#article-content");
+    const ele_input = ele_root.querySelector("#article-input");
+    ele_input.remove();
+    const ele_inputArea = ele_input.querySelector("textarea");
     const ele_card = ele_root.querySelector("#id-cardContainer");
+
+    const ele_action = ele_root.querySelector("#id-action-2");
+    let _currentSortBtn = [...ele_action.querySelectorAll("button")][0];
+    ele_action.addEventListener('click', (e) => {
+        e.target.classList.add("active");
+        if (e.target != _currentSortBtn) {
+            _currentSortBtn?.classList.remove('active');
+            _currentSortBtn = e.target;
+        }
+        if (e.target.dataset.index === "0") {
+            const _text = ele_inputArea.value.trim();
+            dictionary.setArticle(_text, true);
+            _renderArticle(_text);
+            ele_container.replaceChildren(ele_article);
+        } else if (e.target.dataset.index === "1") {
+            const _paragraphs = dictionary.getArticle() ?? "";
+            ele_inputArea.value = _paragraphs;
+            ele_container.replaceChildren(ele_input);
+        }
+    });
+    _currentSortBtn.classList.add("active");
 
     ele_action_gen.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {
@@ -42,7 +77,6 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             _renderArticle();
 
             ele_action_gen.disabled = false;
-
         }
     });
 
@@ -137,25 +171,16 @@ easy hard long short high low
     }
     function active() {
         window.scrollTo(0, _rts.scrollY);
-        _renderArticle();
         ele_card.replaceChildren(card.ele_root)
     }
 
-    function keyEvent(event) {
-        if (event.key === "Delete") {
-            if (event.ctrlKey) {
-            }
-        }
-    }
+    function keyEvent(event) { }
 
     dictionary.addEventListener(dictionary.EVT_DICT, (e) => {
         // logger.debug("[article]");
-        if (e.detail.action === "exported") return;
-        _getRTS();
-        if (ele_root.isConnected) {
-            _renderArticle();
-        }
     });
+
+    _renderArticle();
 
     return {
         ele_root,
