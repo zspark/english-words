@@ -22,7 +22,7 @@ const _PLF_MACOS_ = "macOS";
 const _PLF_LINUX_ = "Linux";
 const _PLF_ANDROID_ = "Android";
 
-const _PLATFORM_ = (function () {
+const _PLATFORM_ = (function() {
     const ua = navigator.userAgent;
 
     if (/Android/i.test(ua)) return _PLF_ANDROID_;
@@ -102,7 +102,8 @@ let _currentSection = null;
 let _currentSectionElemBtn = null;
 
 document.addEventListener("DOMContentLoaded", (e) => {
-    const dictionary = initDictionary();
+    const _cacherCreator = initCacher(logger);
+    const dictionary = initDictionary(_cacherCreator);
     const components = initComponents();
     const _ai = initAI(dictionary);
     const pronunciation = initPronunciation(dictionary);
@@ -156,7 +157,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _currentSection?.keyEvent(event);
     });
 
-    (function () {
+    (function() {
         const _localData = dictionary.getLocalData("sec_setting");
         const _darkTheme = _localData['theme'];
         if (_darkTheme) {
