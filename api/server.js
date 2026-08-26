@@ -36,7 +36,7 @@ export default {
         // =========================
         // Only POST
         // =========================
-        getData(request);
+        return getData(request);
 
     }
 };
