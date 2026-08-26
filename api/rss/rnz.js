@@ -1,4 +1,4 @@
-export async function getRNZNews() {
+export async function getRNZNews(request, env) {
 
     const RSS_URL = "https://www.rnz.co.nz/rss/national.xml";
 

@@ -4,7 +4,7 @@ function initServerProxy(logger, cacherCreator) {
     const _localProxy = cacherCreator.create('__localCache__');
     const _data = _localProxy.get("sec_setting", {});
 
-    async function _toServer(data) {
+    async function _toServer(url, data) {
         logger.log(`C -> S request type: ${data.requestType}`);
 
         const _accessToken = _data["userID"] || "";
@@ -12,7 +12,7 @@ function initServerProxy(logger, cacherCreator) {
             data.accessToken = _accessToken;
         }
 
-        const _response = await fetch("../api", {
+        const _response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -45,7 +45,7 @@ function initServerProxy(logger, cacherCreator) {
     }
 
     async function saveData(data) {
-        await _toServer({
+        await _toServer("../api/data", {
             requestType: "save",
             content: data,
         })
@@ -57,20 +57,30 @@ function initServerProxy(logger, cacherCreator) {
      * { wordA: {ipa:"", meaning:""} }
      */
     async function loadData() {
-        const data = await _toServer({
+        const data = await _toServer("../api/data", {
             requestType: "get",
             syncTime: _data['syncTime'] || 1,
         })
         __this__.dispatchEvent(new CustomEvent(__this__.EVT_DOWNLOAD, { detail: { data } }));
     }
 
+    async function getNews() {
+        const data = await _toServer("../api/rss", {
+            requestType: "get-news",
+            syncTime: _data['syncTime'] || 1,
+        })
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_NEWS, { detail: { data } }));
+    }
+
     const __this__ = new EventTarget()
     Object.assign(__this__, {
+        EVT_NEWS: "EVT_NEWS",
         EVT_DOWNLOAD: "EVT_DOWNLOAD",
         EVT_UPLOAD: "EVT_UPLOAD",
 
         loadData,
         saveData,
+        getNews,
     })
     return __this__;
 }

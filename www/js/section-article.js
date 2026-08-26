@@ -1,6 +1,6 @@
 
 
-function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
+function initArticleSection(ai, dictionary, cmp, card, pronunciation, serverProxy) {
     function _getRTS() {
         _rts = dictionary.getLocalData('sec_article');
         _rts.scrollY = _rts.scrollY || 0;
@@ -46,9 +46,12 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
             _currentSortBtn = e.target;
         }
         if (e.target.dataset.index === "0") {
+            serverProxy.getNews();
+            /*
             const _text = ele_inputArea.value.trim();
             dictionary.setArticle(_text, true);
             _renderArticle(_text);
+            */
             ele_container.replaceChildren(ele_article);
         } else if (e.target.dataset.index === "1") {
             const _paragraphs = dictionary.getArticle() ?? "";
@@ -57,6 +60,12 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation) {
         }
     });
     _currentSortBtn.classList.add("active");
+
+    serverProxy.addEventListener(serverProxy.EVT_NEWS, (e) => {
+        debugger;
+        logger.debug(e.detail.data);
+        //_renderArticle(_text);
+    })
 
     ele_action_gen.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {
