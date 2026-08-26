@@ -17,7 +17,7 @@ async function _checkUserExists(env, userID, pwd) {
     }
 }
 
-export async function getData(request) {
+export async function getData(request, env) {
 
     // =========================
     // Only POST
