@@ -106,16 +106,14 @@ function initDictionary() {
 
     const _serverProxy = (function () {
         async function _toServer(data) {
-            const userID = getLocalData("sec_setting")['userID'] || "";
-            if (!userID) {
-                const _s = `Need to provide user ID`;
-                logger.error(_s);
-                return;
-            }
-
             logger.log(`C -> S request type: ${data.requestType}`);
             _dispDictEvt(`begin:sync`);
-            data.userID = userID;
+
+            const _accessToken = getLocalData("sec_setting")['userID'] || "";
+            if (_accessToken && (_accessToken.length > 0)) {
+                data.accessToken = _accessToken;
+            }
+
             const _response = await fetch("../api/data", {
                 method: "POST",
                 headers: {

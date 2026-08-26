@@ -1,18 +1,16 @@
 
-async function checkUserExists(env, userID) {
+async function _checkUserExists(env, userID, pwd) {
     try {
-        // Query COUNT(1) to check if at least one row matches
         const result = await env.DB
             .prepare(`
-                SELECT COUNT(1) AS count 
-                FROM user_id 
+                SELECT password
+                FROM user_id
                 WHERE userID = ?
             `)
             .bind(userID)
             .first();
 
-        // returns true if count > 0, otherwise false
-        return result.count > 0;
+        return result?.password === pwd;
     } catch (error) {
         console.error("Database query error:", error);
         throw error;
@@ -52,36 +50,24 @@ export default {
             );
         }
 
-        const userID = data.userID;
-
-
-        // =========================
-        // Check userID
-        // =========================
-        const _exist = await checkUserExists(env, userID);
-        if (!_exist) {
-            return Response.json(
-                {
-                    success: false,
-                    info: "User Not Found"
-                }
-            );
-        }
-
-
-
+        const userID = "jerry-chaos";
         const requestType = data.requestType;
-        const syncTime = data.syncTime;
         // =========================
         // GET DATA
         // =========================
         if (requestType === "get") {
+
+            const _syncTime = data.syncTime;
             try {
-                const result = await env.DB.prepare(`
+                const result = await env.DB
+                    .prepare(`
                         SELECT updated_at, content
                         FROM user_data
                         WHERE userID = ?
-                    `).bind(userID).first();
+                    `)
+                    .bind(userID)
+                    .first();
+
                 if (!result) {
                     return Response.json({
                         success: false,
@@ -89,19 +75,17 @@ export default {
                     });
                 }
 
-                if (syncTime >= result.updated_at) {
+                if (_syncTime >= result.updated_at) {
                     return Response.json({
                         success: true,
                         code: 400,
-                        info: "Your dictionary is already up to date.",
-                        userID: userID
+                        info: "Your dictionary is already up to date."
                     });
                 } else {
                     return Response.json({
                         success: true,
                         code: 200,
                         info: "Successfully Synced.",
-                        userID: userID,
                         syncTime: result.updated_at,
                         content: JSON.parse(result.content)
                     });
@@ -109,28 +93,36 @@ export default {
             } catch {
                 return Response.json({
                     success: false,
-                    info: "Content parsing error, consult administrator!"
+                    info: "Content parsing error, consult administrator."
                 });
             }
         }
 
+
+
         // =========================
         // SAVE DATA
         // =========================
-
         if (requestType === "save") {
-
-            const content = data.content;
-
-            if (content === undefined) {
+            const _token = data.accessToken;
+            const _canPass = await _checkUserExists(env, userID, _token);
+            if (!_canPass) {
                 return Response.json({
                     success: false,
-                    info: "Content is required"
+                    info: "Wrong token."
+                });
+            }
+
+            const _content = data.content;
+            if (_content === undefined) {
+                return Response.json({
+                    success: false,
+                    info: "Content is required."
                 });
             }
 
             const updatedAt = Date.now();
-            const contentJSON = JSON.stringify(content);
+            const contentJSON = JSON.stringify(_content);
 
             await env.DB
                 .prepare(`
@@ -153,7 +145,6 @@ export default {
             return Response.json({
                 success: true,
                 code: 200,
-                userID: userID,
                 info: "Successfully saved.",
                 syncTime: updatedAt
             });
