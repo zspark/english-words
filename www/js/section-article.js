@@ -62,10 +62,32 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation, serverProx
     _currentSortBtn.classList.add("active");
 
     serverProxy.addEventListener(serverProxy.EVT_NEWS, (e) => {
-        debugger;
         logger.debug(e.detail.data);
-        //_renderArticle(_text);
+        _renderRNZNews(e.detail.data);
     })
+
+    function _renderRNZNews(content) {
+        let _str = '';
+        content.content.forEach(str => {
+            _str += `<p>${str}<\p>`;
+        });
+        ele_article.innerHTML = `<article class="news-article">
+    <h1>${content.title}</h1>
+
+    <div class="news-meta">
+        <time>${content.pub_date}</time>
+    </div>
+
+    <p id="news-description" class="news-description">${content.description}</p>
+
+    <div id="news-content" class="news-content">${_str}</div>
+
+    <a id="news-link" class="news-source" target="_blank" rel="noopener noreferrer">
+        ${content.link}
+    </a>
+</article>`;
+
+    }
 
     ele_action_gen.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {

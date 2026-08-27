@@ -102,7 +102,7 @@ export async function getRNZNews(data, request, env) {
             link,
             pub_date: pubDate,
             description,
-            content: paragraphs.map((str) => str.length > 0)
+            content: paragraphs.filter((str) => str.length > 0)
         }
     });
 }
