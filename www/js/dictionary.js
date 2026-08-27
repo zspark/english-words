@@ -369,9 +369,9 @@ function initDictionary(logger, cacherCreator, serverProxy) {
 
         const _fn = function(second) {
             clearInterval(_syncTimer);
-            _syncTimer = setInterval(() => {
+            _syncTimer = setInterval(async () => {
                 if (_needToUpload) {
-                    serverProxy.saveData();
+                    await saveDictionary();
                     _needToUpload = false;
                 }
             }, second * 1000);
