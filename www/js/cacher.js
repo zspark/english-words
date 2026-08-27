@@ -1,13 +1,13 @@
 
 function initCacher(logger) {
 
-    function create(name, delaySave = 1000) {
+    function _create(name, delayMS = 1000) {
         let _timer = null;
         let _tmp = JSON.parse(localStorage.getItem(name));
         let _obj = _tmp || {};
 
-        function _delaySave() {
-            if (delaySave <= 0) {
+        function delaySave() {
+            if (delayMS <= 0) {
                 save();
                 return;
             }
@@ -15,7 +15,7 @@ function initCacher(logger) {
                 _timer = setTimeout(() => {
                     save();
                     _timer = null;
-                }, delaySave)
+                }, delayMS)
             }
         }
 
@@ -27,7 +27,7 @@ function initCacher(logger) {
         }
         function append(data) {
             Object.assign(_obj, data);
-            _delaySave();
+            delaySave();
         }
         function save() {
             try {
@@ -38,13 +38,15 @@ function initCacher(logger) {
         }
         function set(key, value) {
             _obj[key] = value;
-            _delaySave();
+            delaySave();
         }
         function get(key, defaultValue = null) {
             let _v = _obj[key];
             if (!_v) {
                 _v = defaultValue;
-                if (defaultValue) _obj[key] = defaultValue;
+                if (defaultValue) {
+                    set(key, defaultValue);
+                }
             }
             return _v;
         }
@@ -53,17 +55,25 @@ function initCacher(logger) {
         }
         function remove(key) {
             delete _obj[key];
-            _delaySave();
+            delaySave();
         }
         function clear() {
             localStorage.removeItem(name);
             _tmp = null;
             _obj = {};
         }
-        return { save, get, set, clear, isEmpty, has, remove, data, append }
+        return { delaySave, save, get, set, clear, isEmpty, has, remove, data, append }
     }
 
+    const localProxy = _create('__localCache__');
+    const metaProxy = _create('__metaCache__');
+    const recordsProxy = _create('__recordCache__');
+    const wordsProxy = _create('__wordCache__');
+
     return {
-        create,
+        localProxy,
+        metaProxy,
+        recordsProxy,
+        wordsProxy,
     }
 }

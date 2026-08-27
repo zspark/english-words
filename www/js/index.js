@@ -102,12 +102,38 @@ let _currentSection = null;
 let _currentSectionElemBtn = null;
 
 document.addEventListener("DOMContentLoaded", (e) => {
-    const _cacherCreator = initCacher(logger);
-    const _serverProxy = initServerProxy(logger, _cacherCreator);
-    const _dictionary = initDictionary(logger, _cacherCreator, _serverProxy);
+    const _cacher = initCacher(logger);
+    const _lemmatizer = initLemmatizer(logger, _cacher);
+    const _serverProxy = initServerProxy(logger, _cacher);
+    const _dictionary = initDictionary(logger, _cacher, _serverProxy);
     const _components = initComponents();
     const _ai = initAI(_dictionary);
     const _pronunciation = initPronunciation(_dictionary);
+
+    _navigator = initNavigator(document.body, _components, _dictionary);
+    section_card = initCardSection(_ai, _dictionary, _components, _pronunciation);
+    section_words = initDictionarySection(_ai, _dictionary, _components, section_card, _pronunciation);
+    section_article = initArticleSection(_ai, _dictionary, _components, section_card, _pronunciation, _serverProxy, _lemmatizer);
+    section_test = initTestSection(_ai, _dictionary, _components, section_words, _pronunciation);
+    section_result = initResultSection(_dictionary, _components, section_card, _pronunciation);
+    section_setting = initSectionImport(_ai, _dictionary, _components, _cacher);
+
+    document.addEventListener("keydown", (event) => {
+        // logger.debug(event.key)
+        if (isEditing(event)) return;
+        section_card?.keyEvent(event);
+        _currentSection?.keyEvent(event);
+    });
+
+    (function() {
+        const _localData = _cacher.localProxy.get("sec_setting", {});
+        const _darkTheme = _localData['theme'];
+        if (_darkTheme) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    })();
 
     function _switchToSection(id) {
         let _nextSection;
@@ -143,32 +169,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _currentSection.active();
     }
 
-    _navigator = initNavigator(document.body, _components, _dictionary);
-    section_card = initCardSection(_ai, _dictionary, _components, _pronunciation);
-    section_words = initDictionarySection(_ai, _dictionary, _components, section_card, _pronunciation);
-    section_article = initArticleSection(_ai, _dictionary, _components, section_card, _pronunciation, _serverProxy);
-    section_test = initTestSection(_ai, _dictionary, _components, section_words, _pronunciation);
-    section_result = initResultSection(_dictionary, _components, section_card, _pronunciation);
-    section_setting = initSectionImport(_ai, _dictionary, _components);
 
-    document.addEventListener("keydown", (event) => {
-        // logger.debug(event.key)
-        if (isEditing(event)) return;
-        section_card?.keyEvent(event);
-        _currentSection?.keyEvent(event);
-    });
-
-    (function() {
-        const _localData = _dictionary.getLocalData("sec_setting");
-        const _darkTheme = _localData['theme'];
-        if (_darkTheme) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-        }
-    })();
-
-    const _rts = _dictionary.getLocalData('homepage');
+    const _rts = _cacher.localProxy.get("homepage", {});
     logger.log(`current section id: ${_rts.sectionID}`);
     _switchToSection(_rts.sectionID || "sec-dictionary");
 

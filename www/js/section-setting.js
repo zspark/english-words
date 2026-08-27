@@ -1,7 +1,15 @@
 
+function initSectionImport(ai, dictionary, cmp, cacher) {
+
+    const _metaProxy = cacher.metaProxy;
+    const _localProxy = cacher.localProxy;
+    const _localData = _localProxy.get('sec_setting', {});
+
+    function _getTags() {
+        return _metaProxy.get('tags', []);
+    }
 
 
-function initSectionImport(ai, dictionary, cmp) {
     const _jsonSource = `
 ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
 <div class="bs-right-align mt20px">
@@ -49,6 +57,11 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     ${cmp.buttonGroupSource('btn-ai-submit', ['Generate'])}
 </div>`;
 
+    const _lemmatizer = `
+${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")}
+<div class="bs-right-align mt20px">
+    ${cmp.buttonGroupSource('btn-lemmatizer-submit', ['Save'])}
+</div>`;
 
     const source = `
 <div id="id-form" class='bs-panel bs-panel-middle'>
@@ -56,6 +69,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     <div class="tab-header">
         <button class="tab-btn active" data-tab="json-tab">Pure JSON Text</button>
         <button class="tab-btn" data-tab="ai-tab">AI Support</button>
+        <button class="tab-btn" data-tab="lemmatizer-tab">Lemmatizer</button>
         <button class="tab-btn" data-tab="file-tab">Local File</button>
         <button class="tab-btn" data-tab="config-tab">Config</button>
     </div>
@@ -63,6 +77,7 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     <div id="id-tab-body">
         <div id="json-tab" class="tab-content active"> ${_jsonSource} </div>
         <div id="ai-tab" class="tab-content"> ${_aiAssist} </div>
+        <div id="lemmatizer-tab" class="tab-content"> ${_lemmatizer} </div>
         <div id="file-tab" class="tab-content"> ${_fileSource} </div>
         <div id="config-tab" class="tab-content"> ${_configSource} </div>
     </div>
@@ -146,15 +161,20 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     btnConfig.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {//save
             const _tags = elem_tags.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            dictionary.setTags(_tags);
-            dictionary.setSyncInterval(Number(elem_syncInerval.value));
+            const _tagArr = _getTags();
+            _tagArr.length = 0;
+            _tagArr.push(..._tags);
+            _metaProxy.delaySave()
 
-            const _localData = dictionary.getLocalData("sec_setting");
+            const _sec = _localData['syncInterval'] = Number(elem_syncInerval.value) || 10;
             _localData['ai_key'] = elem_key.value;
             _localData['ai_provider'] = elem_provider.value;
             _localData['userID'] = elem_user.value;
             _localData['theme'] = elem_theme.checked;
-            dictionary.saveLocalData();
+            _localProxy.delaySave();
+
+            dictionary.setSyncInterval(_sec);
+            dictionary.markUpload();
 
             if (elem_theme.checked) {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -175,6 +195,23 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
 
             const _question = ai.getAIMeaningQuestion(_rawData);
             _copyText(_question);
+        }
+    });
+
+    const _ele_lemmaArea = ele_root.querySelector("#id-tab-body #id-lemmatizer textarea");
+    const _btnLemma = ele_root.querySelector("#btn-lemmatizer-submit");
+    _btnLemma.addEventListener("click", async (e) => {
+        if (e.target.dataset.index === "0") {// save
+            const _obj = _metaProxy.get('lemmatizer', {});
+            for (const key in _obj) {
+                delete _obj[key];
+            }
+            const _value = _ele_lemmaArea.value.split(',').map(s => s.trim()).filter(s => !!s);
+            _value.forEach(pair => {
+                let _v = pair.split(":");
+                _obj[_v[0]] = _v[1];
+            });
+            _metaProxy.delaySave();
         }
     });
 
@@ -207,19 +244,36 @@ ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna im
     }
 
     function active() {
-        elem_tags.value = dictionary.getTags().join(',');
-        elem_syncInerval.value = dictionary.getSyncInterval();
-
-        const _localData = dictionary.getLocalData("sec_setting");
-        elem_key.value = _localData['ai_key'] || "";
-        elem_provider.value = _localData['ai_provider'] || "";
-        elem_user.value = _localData['userID'] || "";
-        elem_theme.checked = !!_localData['theme'];
     }
 
     function keyEvent() { }
 
     function setSync(scrollY) { }
+
+
+    (function() {
+        //init;
+        const _tmp = _metaProxy.get('lemmatizer', {});
+        const _obj = Object.entries(_tmp);
+        let _str = '';
+        for (const [a, b] of _obj) {
+            _str += `${a}:${b},`;
+        }
+        _ele_lemmaArea.value = _str;
+
+
+        elem_tags.value = _getTags().join(',')
+
+
+        elem_syncInerval.value = _localData['syncInterval'] || 10;
+        elem_key.value = _localData['ai_key'] || "";
+        elem_provider.value = _localData['ai_provider'] || "";
+        elem_user.value = _localData['userID'] || "";
+        elem_theme.checked = !!_localData['theme'];
+
+    })()
+
+
     return {
         ele_root,
         active,

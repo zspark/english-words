@@ -1,6 +1,6 @@
 
 
-function initArticleSection(ai, dictionary, cmp, card, pronunciation, serverProxy) {
+function initArticleSection(ai, dictionary, cmp, card, pronunciation, serverProxy, lemmatizer) {
     function _getRTS() {
         _rts = dictionary.getLocalData('sec_article');
         _rts.scrollY = _rts.scrollY || 0;
@@ -186,14 +186,14 @@ easy hard long short high low
         }
 
         if (e.ctrlKey) {
-            const _w = _getWordUnderCursor(e)
+            const _w = lemmatizer.lemmatize(_getWordUnderCursor(e))
             if (_w) {
                 card.renderCard(_w)
             }
         }
     });
     ele_article.addEventListener("dblclick", (e) => {
-        const _w = _getWordUnderCursor(e)
+        const _w = lemmatizer.lemmatize(_getWordUnderCursor(e))
         if (_w) {
             card.renderCard(_w)
         }

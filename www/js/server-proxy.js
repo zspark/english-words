@@ -45,9 +45,9 @@ const Response = {
 };
  *
  */
-function initServerProxy(logger, cacherCreator) {
+function initServerProxy(logger, cacher) {
 
-    const _localProxy = cacherCreator.create('__localCache__');
+    const _localProxy = cacher.localProxy;
     const _data = _localProxy.get("sec_setting", {});
 
     async function _toServer(url, data) {

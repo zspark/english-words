@@ -4,14 +4,14 @@
 
 const __VERSION__ = "0.2.0"
 
-function initDictionary(logger, cacherCreator, serverProxy) {
+function initDictionary(logger, cacher, serverProxy) {
 
     let _needToUpload = false;
 
-    const _localProxy = cacherCreator.create('__localCache__');
-    const _metaProxy = cacherCreator.create('__metaCache__');
-    const _recordsProxy = cacherCreator.create('__recordCache__');
-    const _wordsProxy = cacherCreator.create('__wordCache__');
+    const _localProxy = cacher.localProxy;
+    const _metaProxy = cacher.metaProxy;
+    const _recordsProxy = cacher.recordsProxy;
+    const _wordsProxy = cacher.wordsProxy;
 
     const _searchAPI = (function() {
         function _create() {
@@ -295,14 +295,6 @@ function initDictionary(logger, cacherCreator, serverProxy) {
         return readOnly(_metaProxy.get('tags', []));
     }
 
-    function setTags(tags) {
-        const _tagArr = _metaProxy.get('tags', []);
-        _tagArr.length = 0;
-        _tagArr.push(...tags);
-        _metaProxy.save()
-        _needToUpload = true;
-    }
-
     function getNRandomWords(n, out = []) {
         const N = n + out.length;
         const _tmp = Object.keys(_wordsProxy.data());
@@ -353,14 +345,7 @@ function initDictionary(logger, cacherCreator, serverProxy) {
         _localProxy.save();
     }
 
-    function getSyncInterval() {
-        return getLocalData("sec_setting")['syncInterval'] || 10;
-    }
-
     function setSyncInterval(second) {
-        second = second > 0 ? second : getSyncInterval();
-        getLocalData("sec_setting")['syncInterval'] = second;
-        _localProxy.save();
         _timer(second);
     }
 
@@ -377,7 +362,8 @@ function initDictionary(logger, cacherCreator, serverProxy) {
             }, second * 1000);
         }
 
-        _fn(getSyncInterval());
+        const _localData = _localProxy.get('sec_setting', {});
+        _fn(_localData['syncInterval'] || 10);
         return _fn;
     })()
 
@@ -446,8 +432,6 @@ function initDictionary(logger, cacherCreator, serverProxy) {
         hasWord,
         updateWord,
         deleteWord,
-        getTags,
-        setTags,
         getNRandomWords,
         setTestingResult,
 
@@ -459,13 +443,17 @@ function initDictionary(logger, cacherCreator, serverProxy) {
         getLocalData,
         saveLocalData,
 
+        getTags,
         getAIKey,
         getAIProvider,
-        getSyncInterval,
         setSyncInterval,
 
         getMissingPronunciationWords,
         getMissingWords,
+
+        markUpload: () => {
+            _needToUpload = true;
+        }
 
     })
     return __this__;
