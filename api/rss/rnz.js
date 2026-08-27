@@ -78,15 +78,17 @@ export async function getRNZNews(data, request, env) {
     // 4. Extract article paragraphs
     // --------------------------------------------------
 
+    const _handler = {
+        text(text) {
+            paragraphs.push(text.text);
+        }
+    }
     const paragraphs = [];
     const transformed = new HTMLRewriter()
-        .on("article p", {
-            text(text) {
-                paragraphs.push(text.text);
-            }
-        })
+        .on("article p", _handler)
+        .on("article h2", _handler)
+        .on("article h3", _handler)
         .transform(articleResponse);
-
     await transformed.arrayBuffer();
 
     // --------------------------------------------------
@@ -100,7 +102,7 @@ export async function getRNZNews(data, request, env) {
             link,
             pub_date: pubDate,
             description,
-            content: paragraphs
+            content: paragraphs.map((str) => str.length > 0)
         }
     });
 }
