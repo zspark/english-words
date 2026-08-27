@@ -1,144 +1,118 @@
-export async function getRNZNews(request, env) {
+import { getJSONResponse } from "../server-utils.js";
+
+export async function getRNZNews(data, request, env) {
 
     const RSS_URL = "https://www.rnz.co.nz/rss/national.xml";
 
-    try {
-        // --------------------------------------------------
-        // 1. Get RSS
-        // --------------------------------------------------
+    // --------------------------------------------------
+    // 1. Get RSS
+    // --------------------------------------------------
 
-        const rssResponse = await fetch(RSS_URL, {
-            headers: {
-                "User-Agent": "Mozilla/5.0"
-            }
-        });
-
-        if (!rssResponse.ok) {
-            throw new Error(
-                `RSS request failed: ${rssResponse.status}`
-            );
+    const rssResponse = await fetch(RSS_URL, {
+        headers: {
+            "User-Agent": "Mozilla/5.0"
         }
+    });
 
-        const rssText = await rssResponse.text();
+    if (!rssResponse.ok) {
+        throw new Error(`RSS request failed: ${rssResponse.status}`);
+    }
 
-        // --------------------------------------------------
-        // 2. Parse RSS
-        // --------------------------------------------------
+    const rssText = await rssResponse.text();
 
-        const itemMatch = rssText.match(
-            /<item\b[^>]*>([\s\S]*?)<\/item>/i
+    // --------------------------------------------------
+    // 2. Parse RSS
+    // --------------------------------------------------
+
+    const itemMatch = rssText.match(
+        /<item\b[^>]*>([\s\S]*?)<\/item>/i
+    );
+
+    if (!itemMatch) {
+        throw new Error("No RSS article found");
+    }
+
+    const item = itemMatch[1];
+
+    function getTag(tag) {
+        const regex = new RegExp(
+            `<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`,
+            "i"
         );
 
-        if (!itemMatch) {
-            throw new Error("No RSS article found");
+        const match = item.match(regex);
+
+        if (!match) {
+            return null;
         }
 
-        const item = itemMatch[1];
-
-        function getTag(tag) {
-            const regex = new RegExp(
-                `<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`,
-                "i"
-            );
-
-            const match = item.match(regex);
-
-            if (!match) {
-                return null;
-            }
-
-            return decodeHtmlEntities(
-                stripCdata(match[1].trim())
-            );
-        }
-
-        const title = getTag("title");
-        const link = getTag("link");
-        const pubDate = getTag("pubDate");
-        const description = getTag("description");
-
-        if (!link) {
-            throw new Error("RSS item has no link");
-        }
-
-        // --------------------------------------------------
-        // 3. Get actual article
-        // --------------------------------------------------
-
-        const articleResponse = await fetch(link, {
-            headers: {
-                "User-Agent": "Mozilla/5.0"
-            }
-        });
-
-        if (!articleResponse.ok) {
-            throw new Error(
-                `Article request failed: ${articleResponse.status}`
-            );
-        }
-
-        // --------------------------------------------------
-        // 4. Extract article paragraphs
-        // --------------------------------------------------
-
-        const paragraphs = [];
-
-        const rewriter = new HTMLRewriter()
-            .on("article p", {
-                text(text) {
-                    // HTMLRewriter can deliver text in chunks.
-                    if (!text.lastInTextNode) {
-                        return;
-                    }
-
-                    const value = cleanText(text.text);
-
-                    if (value.length >= 30) {
-                        paragraphs.push(value);
-                    }
-                }
-            });
-
-        const transformed = rewriter.transform(articleResponse);
-
-        // We need to consume the transformed response.
-        await transformed.arrayBuffer();
-
-        // --------------------------------------------------
-        // 5. Return JSON
-        // --------------------------------------------------
-
-        return Response.json({
-            success: true,
-            code: 200,
-            info: "Succeed.",
-            data: {
-                title,
-                link,
-                pub_date: pubDate,
-                description,
-                content: paragraphs
-            }
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            }
-        });
-
-    } catch (error) {
-
-        return Response.json({
-            success: false,
-            info: error.message,
-        }, {
-            status: 500,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            }
-        });
+        return decodeHtmlEntities(
+            stripCdata(match[1].trim())
+        );
     }
+
+    const title = getTag("title");
+    const link = getTag("link");
+    const pubDate = getTag("pubDate");
+    const description = getTag("description");
+
+    if (!link) { throw new Error("RSS item has no link"); }
+
+    // --------------------------------------------------
+    // 3. Get actual article
+    // --------------------------------------------------
+
+    const articleResponse = await fetch(link, {
+        headers: {
+            "User-Agent": "Mozilla/5.0"
+        }
+    });
+
+    if (!articleResponse.ok) {
+        throw new Error(`Article request failed: ${articleResponse.status}`);
+    }
+
+    // --------------------------------------------------
+    // 4. Extract article paragraphs
+    // --------------------------------------------------
+
+    const paragraphs = [];
+
+    const rewriter = new HTMLRewriter().on("article p", {
+        text(text) {
+            // HTMLRewriter can deliver text in chunks.
+            if (!text.lastInTextNode) {
+                return;
+            }
+
+            const value = cleanText(text.text);
+
+            if (value.length >= 30) {
+                paragraphs.push(value);
+            }
+        }
+    });
+
+    const transformed = rewriter.transform(articleResponse);
+
+    // We need to consume the transformed response.
+    await transformed.arrayBuffer();
+
+    // --------------------------------------------------
+    // 5. Return JSON
+    // --------------------------------------------------
+
+    return getJSONResponse({
+        info: "Succeed.",
+        content: {
+            title,
+            link,
+            pub_date: pubDate,
+            description,
+            content: paragraphs
+        }
+    });
+
 };
 
 

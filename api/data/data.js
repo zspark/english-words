@@ -1,3 +1,4 @@
+import { getJSONResponse } from "../server-utils.js";
 
 async function _checkUserExists(env, userID, pwd) {
     try {
@@ -24,12 +25,9 @@ export async function getData(request, env) {
     // =========================
 
     if (request.method !== "POST") {
-        return Response.json(
-            {
-                success: false,
-                info: "Only POST is allowed"
-            }
-        );
+        return getJSONResponse({
+            info: "Only POST is allowed"
+        }, 400);
     }
 
     // =========================
@@ -40,12 +38,9 @@ export async function getData(request, env) {
     try {
         data = await request.json();
     } catch {
-        return Response.json(
-            {
-                success: false,
-                info: "Invalid JSON"
-            }
-        );
+        return getJSONResponse({
+            info: "Invalid JSON"
+        }, 400);
     }
 
     const userID = "jerry-chaos";
@@ -67,32 +62,26 @@ export async function getData(request, env) {
                 .first();
 
             if (!result) {
-                return Response.json({
-                    success: false,
+                return getJSONResponse({
                     info: "User data not found"
-                });
+                }, 400);
             }
 
             if (_syncTime >= result.updated_at) {
-                return Response.json({
-                    success: true,
-                    code: 400,
+                return getJSONResponse({
                     info: "Your dictionary is already up to date."
-                });
+                }, 200);
             } else {
-                return Response.json({
-                    success: true,
-                    code: 200,
+                return getJSONResponse({
                     info: "Successfully Synced.",
                     syncTime: result.updated_at,
                     content: JSON.parse(result.content)
                 });
             }
         } catch (e) {
-            return Response.json({
-                success: false,
+            return getJSONResponse({
                 info: `internal error: ${e} .`
-            });
+            }, 500);
         }
     }
 
@@ -105,18 +94,16 @@ export async function getData(request, env) {
         const _token = data.accessToken;
         const _canPass = await _checkUserExists(env, userID, _token);
         if (!_canPass) {
-            return Response.json({
-                success: false,
+            return getJSONResponse({
                 info: "Wrong token."
-            });
+            }, 400);
         }
 
         const _content = data.content;
         if (_content === undefined) {
-            return Response.json({
-                success: false,
+            return getJSONResponse({
                 info: "Content is required."
-            });
+            }, 400);
         }
 
         const updatedAt = Date.now();
@@ -140,9 +127,7 @@ export async function getData(request, env) {
             )
             .run();
 
-        return Response.json({
-            success: true,
-            code: 200,
+        return getJSONResponse({
             info: "Successfully saved.",
             syncTime: updatedAt
         });
@@ -152,8 +137,7 @@ export async function getData(request, env) {
     // Unknown request type
     // =========================
 
-    return Response.json({
-        success: false,
+    return getJSONResponse({
         info: "Unknown requestType"
-    });
+    }, 400);
 };

@@ -1,4 +1,50 @@
 
+/**
+ *
+response = fetch(_, {
+        method: "GET",
+        headers: new Headers(),
+        body: null,
+
+        mode: "cors",
+        credentials: "same-origin",
+        cache: "default",
+        redirect: "follow",
+        referrer: "about:client",
+        referrerPolicy: "",
+        integrity: "",
+        keepalive: false,
+
+        signal: new AbortSignal(),
+
+        // other options
+    })
+
+const Response = {
+    // Properties
+    status: 200,
+    statusText: "OK",
+    ok: true,
+    headers: new Headers(),
+    body: ReadableStream,
+    bodyUsed: false,
+
+    redirected: false,
+    type: "basic",
+    url: "https://example.com/api",
+
+    // Methods
+    json: async function () {},
+    text: async function () {},
+    blob: async function () {},
+    formData: async function () {},
+    arrayBuffer: async function () {},
+    bytes: async function () {},
+
+    clone: function () {}
+};
+ *
+ */
 function initServerProxy(logger, cacherCreator) {
 
     const _localProxy = cacherCreator.create('__localCache__');
@@ -21,21 +67,15 @@ function initServerProxy(logger, cacherCreator) {
         });
 
         try {
-            if (_response.status === 200) {
-                const _responseData = await _response.json();
-                if (_responseData.success) {
-                    if (_responseData.code === 200) {
-                        _data['syncTime'] = _responseData.syncTime;
-                        _localProxy.save();
-                    }
-                    // logger.debug(`${_responseData.content}`);
-                    logger.log(`S -> C ${_responseData.info}`);
-                    return _responseData.content ?? "";
-                } else {
-                    logger.error(`S -> C ${_responseData.info}`);
+            const _responseData = await _response.json();
+            logger.error(`S -> C ${_response.status} ${_responseData.info}`);
+            if (_response.ok) {
+                if (_responseData.syncTime) {
+                    _data['syncTime'] = _responseData.syncTime;
+                    _localProxy.save();
                 }
-            } else {
-                logger.error(`S -> C ${_response.status}`);
+                // logger.debug(`${_responseData.content}`);
+                return _responseData.content;
             }
             return null;
         } catch (err) {
@@ -67,7 +107,7 @@ function initServerProxy(logger, cacherCreator) {
     async function getNews() {
         const data = await _toServer("../api/rss", {
             requestType: "get-news",
-            syncTime: _data['syncTime'] || 1,
+            vendor: "RNZ",
         })
         __this__.dispatchEvent(new CustomEvent(__this__.EVT_NEWS, { detail: { data } }));
     }
