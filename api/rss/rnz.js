@@ -79,30 +79,14 @@ export async function getRNZNews(data, request, env) {
     // --------------------------------------------------
 
     const paragraphs = [];
-
-    const rewriter = new HTMLRewriter().on("article p", {
-
-        // Called when a text chunk is received.
-        text(text) {
-            this.buffer ??= "";
-            this.buffer += text.text;
-        },
-
-        // Called when </p> is reached.
-        end() {
-            const value = cleanText(this.buffer ?? "");
-
-            if (value.length >= 30) {
-                paragraphs.push(value);
+    const transformed = new HTMLRewriter()
+        .on("article p", {
+            text(text) {
+                paragraphs.push(text.text);
             }
+        })
+        .transform(articleResponse);
 
-            this.buffer = "";
-        }
-    });
-
-    const transformed = rewriter.transform(articleResponse);
-
-    // Consume the transformed response so HTMLRewriter runs.
     await transformed.arrayBuffer();
 
     // --------------------------------------------------
