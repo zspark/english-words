@@ -104,10 +104,10 @@ function initServerProxy(logger, cacherCreator) {
         __this__.dispatchEvent(new CustomEvent(__this__.EVT_DOWNLOAD, { detail: { data } }));
     }
 
-    async function getNews() {
+    async function getNews(vendor) {
         const data = await _toServer("../api/rss", {
             requestType: "get-news",
-            vendor: "RNZ",
+            vendor,
         })
         __this__.dispatchEvent(new CustomEvent(__this__.EVT_NEWS, { detail: { data } }));
     }
