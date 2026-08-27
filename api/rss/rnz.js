@@ -56,7 +56,9 @@ export async function getRNZNews(data, request, env) {
     const pubDate = getTag("pubDate");
     const description = getTag("description");
 
-    if (!link) { throw new Error("RSS item has no link"); }
+    if (!link) {
+        throw new Error("RSS item has no link");
+    }
 
     // --------------------------------------------------
     // 3. Get actual article
@@ -79,23 +81,28 @@ export async function getRNZNews(data, request, env) {
     const paragraphs = [];
 
     const rewriter = new HTMLRewriter().on("article p", {
-        text(text) {
-            // HTMLRewriter can deliver text in chunks.
-            if (!text.lastInTextNode) {
-                return;
-            }
 
-            const value = cleanText(text.text);
+        // Called when a text chunk is received.
+        text(text) {
+            this.buffer ??= "";
+            this.buffer += text.text;
+        },
+
+        // Called when </p> is reached.
+        end() {
+            const value = cleanText(this.buffer ?? "");
 
             if (value.length >= 30) {
                 paragraphs.push(value);
             }
+
+            this.buffer = "";
         }
     });
 
     const transformed = rewriter.transform(articleResponse);
 
-    // We need to consume the transformed response.
+    // Consume the transformed response so HTMLRewriter runs.
     await transformed.arrayBuffer();
 
     // --------------------------------------------------
@@ -112,8 +119,7 @@ export async function getRNZNews(data, request, env) {
             content: paragraphs
         }
     });
-
-};
+}
 
 
 // ============================================================
