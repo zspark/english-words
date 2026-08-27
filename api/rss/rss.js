@@ -1,4 +1,4 @@
-import { getRNZNews } from "./rss/rnz.js";
+import { getRNZNews } from "./rnz.js";
 
 export async function getNews(request, env) {
 
