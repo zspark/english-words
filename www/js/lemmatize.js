@@ -48,24 +48,13 @@ function initLemmatizer(logger, cacher) {
         if (lower.endsWith("ing") && lower.length > 5) {
 
             let stem = lower.slice(0, -3);
-
-            // running → run
-            // stopping → stop
-            // getting → get
-            if (
-                stem.length >= 3 &&
-                stem.at(-1) === stem.at(-2) &&
-                /[b-df-hj-np-tv-z]/.test(stem.at(-1))
-            ) {
-                return stem.slice(0, -1);
-            }
-
             // making → make
             // taking → take
             // writing → write
             if (stem.endsWith("k")) {
                 return stem + "e";
             }
+            return stem;
         }
 
 
@@ -84,20 +73,6 @@ function initLemmatizer(logger, cacher) {
         if (lower.endsWith("ed") && lower.length > 4) {
 
             let stem = lower.slice(0, -2);
-
-            // stopped → stop
-            // planned → plan
-            if (
-                stem.length >= 3 &&
-                stem.at(-1) === stem.at(-2) &&
-                /[b-df-hj-np-tv-z]/.test(stem.at(-1))
-            ) {
-                return stem.slice(0, -1);
-            }
-
-            // liked → like
-            // loved → love
-            // used → use
             if (stem.endsWith("lik") ||
                 stem.endsWith("lov") ||
                 stem.endsWith("us") ||
@@ -106,6 +81,8 @@ function initLemmatizer(logger, cacher) {
             ) {
                 return stem + "e";
             }
+
+            return stem;
         }
 
         return lower;

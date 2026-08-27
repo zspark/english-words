@@ -186,14 +186,20 @@ easy hard long short high low
         }
 
         if (e.ctrlKey) {
-            const _w = lemmatizer.lemmatize(_getWordUnderCursor(e))
+            let _w = _getWordUnderCursor(e);
+            if (!dictionary.hasWord(_w)) {
+                _w = lemmatizer.lemmatize(_w)
+            }
             if (_w) {
                 card.renderCard(_w)
             }
         }
     });
     ele_article.addEventListener("dblclick", (e) => {
-        const _w = lemmatizer.lemmatize(_getWordUnderCursor(e))
+        let _w = _getWordUnderCursor(e);
+        if (!dictionary.hasWord(_w)) {
+            _w = lemmatizer.lemmatize(_w)
+        }
         if (_w) {
             card.renderCard(_w)
         }

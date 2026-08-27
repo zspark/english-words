@@ -342,7 +342,7 @@ function initDictionary(logger, cacher, serverProxy) {
     }
 
     function saveLocalData() {
-        _localProxy.save();
+        _localProxy.delaySave();
     }
 
     function setSyncInterval(second) {
