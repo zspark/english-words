@@ -86,8 +86,6 @@ export async function getRNZNews(data, request, env) {
     const paragraphs = [];
     const transformed = new HTMLRewriter()
         .on("article p", _handler)
-        .on("article h2", _handler)
-        .on("article h3", _handler)
         .transform(articleResponse);
     await transformed.arrayBuffer();
 

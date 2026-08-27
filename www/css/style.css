@@ -1602,6 +1602,32 @@ svg {
     }
 }
 
+
+.news-article {
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.news-article h1 {
+    margin-bottom: 0.5rem;
+}
+
+.news-meta {
+    color: #777;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.news-content p {
+    line-height: 1.7;
+    margin: 0 0 1.25rem;
+}
+
+.news-source {
+    display: inline-block;
+    margin-top: 1rem;
+}
+
 @media (max-width: 768px) {
     .container {
         gap: 0px;

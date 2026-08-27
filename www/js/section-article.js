@@ -71,14 +71,14 @@ function initArticleSection(ai, dictionary, cmp, card, pronunciation, serverProx
         content.content.forEach(str => {
             _str += `<p>${str}<\p>`;
         });
+
+        //<p id="news-description" class="news-description">${content.description}</p>
         ele_article.innerHTML = `<article class="news-article">
-    <h1>${content.title}</h1>
+    <h1 id="news-title">${content.title}</h1>
 
     <div class="news-meta">
-        <time>${content.pub_date}</time>
+        <time id="news-date">${content.pub_date}</time>
     </div>
-
-    <p id="news-description" class="news-description">${content.description}</p>
 
     <div id="news-content" class="news-content">${_str}</div>
 
