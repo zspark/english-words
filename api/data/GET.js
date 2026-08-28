@@ -1,28 +1,35 @@
 import { getJSONResponse, getEmptyRes, getParseFailureRes, getInternalErrorRes } from "../server-utils.js";
 
-async function _getDetails(str, env) {
-    // if not exist, would return {}
+async function _getDetails(list, env) {
+
+    if (!list?.length) return {};
+
+    const placeholders = list.map(() => "?").join(",");
+
     const result = await env.DB
         .prepare(`
-SELECT json_group_object(
-    word,
-    json_object(
-        'ipa', ipa,
-        'meaning', meaning,
-        'level', level,
-        'note', note,
-        'links', links,
-        'time_create', time_create,
-        'time_modify', time_modify,
-        'tags', tags
-    )
-) AS json
-FROM dictionary
-WHERE word IN (?)`)
-        .bind(str)
+            SELECT json_group_object(
+                word,
+                json_object(
+                    'ipa', ipa,
+                    'meaning', meaning,
+                    'level', level,
+                    'note', note,
+                    'links', links,
+                    'time_create', time_create,
+                    'time_modify', time_modify,
+                    'tags', tags
+                )
+            ) AS json
+            FROM dictionary
+            WHERE word IN (${placeholders})
+        `)
+        .bind(...list)
+        .first();
 
-    if (result.success) return result.results;
-    else return {};
+    if (!result?.json) return {};
+
+    return JSON.parse(result.json);
 }
 
 async function getDetail(request, data, env) {
@@ -114,14 +121,13 @@ async function sync(request, data, env) {
         }
         _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
 
-        const _combined = new Set([..._addWords, ..._modWords]);
-        const _outJSON = await _getDetails([..._combined].join(","), env);
+        const _outJSON = await _getDetails([..._addWords, ..._modWords], env);
 
         return getJSONResponse({
             info: "Succeeded.",
             syncTime: _newestSyncTime,
             content: {
-                _combined: [..._combined].join(','),
+                _combined: [..._addWords, ..._modWords],
                 add: _outJSON,
                 del: [..._delWords],
             }
