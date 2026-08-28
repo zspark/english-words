@@ -1,4 +1,4 @@
-import { getJSONResponse } from "../server-utils.js";
+import { getJSONResponse } from "./server-utils.js";
 
 async function _checkUserExists(env, userID, pwd) {
     try {
@@ -100,12 +100,5 @@ export default {
             info: "Successfully created!!!.",
         });
 
-        // =========================
-        // Unknown request type
-        // =========================
-
-        return getJSONResponse({
-            info: "Unknown requestType"
-        }, 400);
     }
 }
