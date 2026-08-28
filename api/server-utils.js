@@ -24,8 +24,8 @@ export function getInternalErrorRes(msg) {
     }, 500);
 }
 
-export function getEmptyRes() {
-    return getJSONResponse({ info: "Empty Response." }, 200);
+export function getEmptyRes(msg) {
+    return getJSONResponse({ info: msg }, 200);
 }
 
 export async function parseJSONString(request) {

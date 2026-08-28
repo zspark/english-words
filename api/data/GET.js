@@ -87,6 +87,7 @@ async function sync(request, data, env) {
         const _addWords = new Set()
         const _delWords = new Set()
         const _modWords = new Set()
+        return getEmptyRes(`${result.results.length}`);
 
         for (let i = 0, N = result.results.length; i < N; ++i) {
             let _rcd = result.results[i];
@@ -135,7 +136,7 @@ export async function respond_GET(request, data, env) {
     if (data.requestType === "sync") {
         return sync(request, data, env);
     }
-    return getEmptyRes();
+    return getEmptyRes("GET");
 }
 
 

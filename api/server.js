@@ -78,6 +78,6 @@ export default {
                 return respond_GET(request, _data, env);
             }
         }
-        return getEmptyRes();
+        return getEmptyRes('ROOT');
     }
 };
