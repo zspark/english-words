@@ -1,6 +1,6 @@
 import { getJSONResponse, getEmptyRes, getParseFailureRes, getInternalErrorRes } from "../server-utils.js";
 
-async function _getDetails(str) {
+async function _getDetails(str, env) {
     // if not exist, would return {}
     const result = await env.DB
         .prepare(`
@@ -34,7 +34,7 @@ async function getDetail(request, data, env) {
     }
     */
 
-    const result = _getDetails(data.content.words);
+    const result = _getDetails(data.content.words, env);
 
     return getJSONResponse({
         info: "Succeeded.",
@@ -115,7 +115,7 @@ async function sync(request, data, env) {
         _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
 
         const _combined = new Set([..._addWords, ..._modWords]);
-        const _outJSON = await _getDetails([..._combined].join(","));
+        const _outJSON = await _getDetails([..._combined].join(","), env);
 
         return getJSONResponse({
             info: "Succeeded.",
