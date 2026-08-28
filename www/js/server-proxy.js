@@ -59,7 +59,7 @@ function initServerProxy(logger, cacher) {
         }
 
         const _response = await fetch(url, {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -74,7 +74,7 @@ function initServerProxy(logger, cacher) {
                     _data['syncTime'] = _responseData.syncTime;
                     _localProxy.save();
                 }
-                // logger.debug(`${_responseData.content}`);
+                logger.debug(`${_responseData}`);
                 return _responseData.content;
             }
             return null;
@@ -98,10 +98,10 @@ function initServerProxy(logger, cacher) {
      */
     async function loadData() {
         const data = await _toServer("../api/data", {
-            requestType: "get",
-            syncTime: _data['syncTime'] || 1,
+            requestType: "sync",
+            syncTime: 1787844254762,//_data['syncTime'] || 1,
         })
-        __this__.dispatchEvent(new CustomEvent(__this__.EVT_DOWNLOAD, { detail: { data } }));
+        //__this__.dispatchEvent(new CustomEvent(__this__.EVT_DOWNLOAD, { detail: { data } }));
     }
 
     async function getNews(vendor) {

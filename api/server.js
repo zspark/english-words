@@ -1,6 +1,7 @@
 
+import { getParseFailureRes, getEmptyRes, parseJSONString } from "./server-utils.js";
+import { respond_GET } from "./data/GET.js";
 import { getNews } from "./rss/rss.js";
-import { getData } from "./data/data.js";
 
 export default {
     /**
@@ -64,13 +65,19 @@ export default {
     };
      */
     async fetch(request, env) {
+        const _data = parseJSONString(request);
+        if (!_data) {
+            return getParseFailureRes();
+        }
 
         const url = new URL(request.url);
         if (url.pathname === "/api/rss") {
-            return getNews(request, env);
+            return getNews(request, _data, env);
         } else if (url.pathname === "/api/data") {
-            return getData(request, env);
+            if (request.method === "GET") {
+                return respond_GET(request, _data, env);
+            }
         }
-
+        return getEmptyRes();
     }
 };
