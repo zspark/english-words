@@ -96,9 +96,11 @@ function initServerProxy(logger, cacher) {
      */
     async function loadData() {
     }
-    async function sync() {
+    async function sync(content) {
+        debugger;
         const data = await _toServer("../api/data", {
             requestType: "sync",
+            content,
         })
         __this__.dispatchEvent(new CustomEvent(__this__.EVT_SYNC, { detail: { data } }));
     }

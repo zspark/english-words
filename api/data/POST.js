@@ -1,5 +1,18 @@
 import { getJSONResponse, getEmptyRes, getParseFailureRes, getInternalErrorRes } from "../server-utils.js";
 
+async function _getTimeModify(list, env) {
+    if (!list?.length) return {};
+    const placeholders = list.map(() => "?").join(",");
+    const result = await env.DB
+        .prepare(`
+            SELECT word, time_modify
+            FROM dictionary
+            WHERE word IN (${placeholders})
+        `)
+        .bind(...list)
+        .all()
+    return result;
+}
 async function _getDetails(list, env) {
 
     if (!list?.length) return {};
@@ -23,8 +36,7 @@ async function _getDetails(list, env) {
         `)
         .bind(...list)
         .all()
-
-    return _toObj(result);
+    return result;
 }
 
 function _toObj(result) {
@@ -57,7 +69,8 @@ async function getDetail(request, data, env) {
     }
     */
 
-    const _obj = await _getDetails(data.content.words, env);
+    const _o = await _getDetails(data.content.words, env);
+    const _obj = _toObj(_o);
     return getJSONResponse({
         info: "Succeeded.",
         content: _obj,
@@ -66,12 +79,7 @@ async function getDetail(request, data, env) {
 
 async function syncAll(request, data, env) {
 
-    const _time = await env.DB
-        .prepare(`
-        SELECT MAX(time_sync) AS max_time_sync
-        FROM synchronizer
-    `).first();
-
+    const _time_sync = await _getLatestTime();
     const result = await env.DB
         .prepare(`
 SELECT
@@ -91,12 +99,171 @@ FROM dictionary`)
     return getJSONResponse({
         info: "Succeeded.",
         content: _obj,
-        syncTime: _time.max_time_sync,
+        syncTime: _time_sync,
     });
 };
 
-async function sync(request, data, env) {
+function _genMarkSQL(time, str, action, env) {
+    return env.DB.prepare(`
+                INSERT INTO synchronizer (
+                    timer_sync,
+                    words,
+                    action,
+                )
+                VALUES (?,?,?)`
+    ).bind(time, str, action)
+}
+
+function _genDeleteSQL(word, env) {
+    return env.DB.prepare(`
+            DELETE FROM dictionary
+            WHERE word = ?`
+    ).bind(word);
+}
+
+function _genInsertSQL(word, detail, env) {
+    return env.DB.prepare(`
+                    INSERT OR REPLACE INTO dictionary (
+                        word,
+                        ipa,
+                        meaning,
+                        level,
+                        note,
+                        links,
+                        time_create,
+                        time_modify,
+                        tags
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+        word,
+        detail.ipa ?? "",
+        detail.meaning ?? "",
+        detail.level ?? "",
+        detail.note ?? "",
+        detail.links ?? "",
+        detail.time_create ?? Date.now(),
+        detail.time_modify ?? Date.now(),
+        detail.tags ?? ""
+    );
+}
+
+async function _CToS_add(cmd, syncTime, obj, env) {
+    const _addObj = Object.keys(obj);
+    if (_addObj.length > 0) {
+        const _a = [];
+        const _r = await _getTimeModify(_addObj, env);
+        _r.results.forEach(v => {
+            delete obj[v.word];
+        });
+        Object.entries(obj).forEach(([word, detail]) => {
+            cmd.push(_genInsertSQL(word, detail, env));
+            _a.push(word);
+        });
+        if (_a.length > 0) {
+            cmd.push(_genMarkSQL(Date.now(), _a.join(','), 1, env))
+        }
+    }
+}
+
+async function _CToS_del(cmd, syncTime, arr, env) {
+    if (arr.length > 0) {
+        const _a = [];
+        const _r = await _getTimeModify(arr, env);
+        _r.results.forEach(v => {
+            if (v.time_modify < syncTime) {
+                cmd.push(_genDeleteSQL(v.word, env));
+                _a.push(v.word);
+            }
+        });
+        if (_a.length > 0) {
+            cmd.push(_genMarkSQL(Date.now() + 1, _a.join(','), 2, env))
+        }
+    }
+}
+
+async function _CToS_modify(cmd, syncTime, obj, env) {
+    const _addObj = Object.keys(obj);
+    if (_addObj.length > 0) {
+        const _a = [];
+        const _r = await _getTimeModify(_addObj, env);
+        _r.results.forEach(v => {
+            if (v.time_modify < syncTime) {
+                cmd.push(_genInsertSQL(v.word, _modObj[v.word], env));
+                _a.push(v.word);
+            }
+        });
+        if (_a.length > 0) {
+            cmd.push(_genMarkSQL(Date.now() + 2, _a.join(','), 3, env))
+        }
+    }
+}
+
+async function _clientToServer(data, env) {
     const _syncTime = data.syncTime;
+    const _cmd = [];
+
+    // data.content:{ wordsObj_add, wordsArr_del, wordsObj_mod}
+    await _CToS_add(_cmd, _syncTime, data.content.wordsObj_add, env);
+    await _CToS_del(_cmd, _syncTime, data.content.wordsArr_del, env);
+    await _CToS_modify(_cmd, _syncTime, data.content.wordsObj_mod, env);
+
+    if (_cmd.length > 0) {
+        await env.DB.batch(_cmd);
+    }
+}
+
+const _SYMBOLIC_LOGIC_ = Object.freeze({
+    // add:1 delete:2 modify:3
+    '21': '3',// first 'delete' then 'add' -> it is a 'modify' operation.
+    '22': '-1',// doesn't logic, delete then delete?
+    '23': '-1',
+    '11': '-1',
+    '12': '',// ignore
+    '13': '1',
+    '31': '-1',
+    '32': '2',
+    '33': '3',
+});
+
+function _getSyncData(arr) {
+    const _logicObj = {};
+    arr.forEach(({ wordsStr, action }) => {
+        wordsStr
+            .split(',')
+            .filter(w => w.trim().length > 0)
+            .forEach(w => {
+                if (!_logicObj[w]) _logicObj[w] = action + "";
+                else {
+                    let _l = _SYMBOLIC_LOGIC_[_logicObj[w] + action];
+                    if (_l === '-1') {
+                        logger.vital(`Logic error about word (${w}) action: ${_logicObj[w] + action}`);
+                    } else {
+                        _logicObj[w] = _l
+                    }
+                }
+            });
+    });
+
+    let wordsObj_add = [];
+    let wordsObj_del = [];
+    let wordsObj_mod = [];
+    Object.entries(_logicObj).forEach(([w, action]) => {
+        if (action === '1') {
+            wordsObj_add.push(w);
+        } else if (action === '2') {
+            wordsObj_del.push(w);
+        } else if (action === '3') {
+            wordsObj_mod.push(w);
+        }
+    });
+    return {
+        wordsObj_add, wordsObj_del, wordsObj_mod,
+    }
+}
+
+async function sync(request, data, env) {
+    await _clientToServer(data, env);
 
     const result = await env.DB
         .prepare(`
@@ -105,49 +272,20 @@ async function sync(request, data, env) {
         WHERE time_sync > ?
         ORDER BY time_sync ASC
     `)
-        .bind(_syncTime)
+        .bind(data.syncTime)
         .all();
 
     if (result.success) {
-        let _newestSyncTime = 0;
-        const _addWords = new Set()
-        const _delWords = new Set()
-        const _modWords = new Set()
-
-        const _tmp = result.results;
-        for (let i = 0, N = _tmp.length; i < N; ++i) {
-            let _rcd = _tmp[i];
-            if (_rcd.action == 1) {
-                let _wl = _rcd.words.split(',').map(w => w.trim());
-                _wl.forEach(w => {
-                    if (_delWords.has(w)) _delWords.delete(w);
-                    _addWords.add(w);
-                });
-            } else if (_rcd.action == 2) {
-                let _wl = _rcd.words.split(',').map(w => w.trim());
-                _wl.forEach(w => {
-                    if (_addWords.has(w)) _addWords.delete(w);
-                    else _delWords.add(w);
-
-                    if (_modWords.has(w)) _modWords.delete(w);
-                });
-            } else if (_rcd.action == 3) {
-                let _wl = _rcd.words.split(',').map(w => w.trim());
-                _wl.forEach(w => {
-                    _modWords.add(w);
-                });
-            }
-        }
-        _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
-        const _combined = new Set([..._addWords, ..._modWords]);
-        const _outputObj = await _getDetails([..._combined], env);
+        const _obj = _getSyncData(result.results);
+        const _o = await _getDetails([..._obj.wordsObj_add, ..._obj.wordsObj_mod], env);
+        const _outputObj = _toObj(_o);
 
         return getJSONResponse({
             info: "Succeeded.",
             syncTime: _newestSyncTime,
             content: {
                 add: _outputObj,
-                del: [..._delWords],
+                del: _obj.wordsObj_del
             }
         });
     } else {
@@ -155,6 +293,31 @@ async function sync(request, data, env) {
             info: "sync failed.",
         });
     }
+}
+
+async function _getLatestTime() {
+    const _time = await env.DB
+        .prepare(`
+        SELECT MAX(time_sync) AS max_time_sync
+        FROM synchronizer
+    `).first();
+    return _time.max_time_sync;
+}
+
+async function _mark(wordsStr, action) {
+    const _newSyncTime = Date.now();
+    await env.DB
+        .prepare(`
+INSERT INTO synchronizer (
+    timer_sync,
+    words,
+    action,
+)
+VALUES (?,?,?)`
+        )
+        .bind(_newSyncTime, wordsStr, action)
+        .run()
+    return _newSyncTime;
 }
 
 export async function respond_POST(request, data, env) {

@@ -164,12 +164,14 @@ function initDictionary(logger, cacher, serverProxy) {
         if (_detail) {
             _detail.time_modify = Date.now();
             _action = "modify";
+            _handler.push(word, '3');
         } else {
             _detail = {
                 time_create: Date.now(),
                 time_modify: Date.now(),
             };
             _action = "add";
+            _handler.push(word, '1');
         }
         _fillDetailInfosIfMissing(_detail);
         const oldLinks = _detail.links;
@@ -243,6 +245,7 @@ function initDictionary(logger, cacher, serverProxy) {
         _wordsProxy.remove(word, true);
         _searchAPI.removeWord(word);
         if (dispatch) _dispWordEvt(word, "delete");
+        _handler.push(word, '2');
         _needToUpload = true;
     }
 
@@ -352,6 +355,66 @@ function initDictionary(logger, cacher, serverProxy) {
         _timer(second);
     }
 
+    const _handler = (function() {
+        const _SYMBOLIC_LOGIC_ = Object.freeze({
+            // add:1 delete:2 modify:3
+            '21': '3',// first 'delete' then 'add' -> it is a 'modify' operation.
+            '22': '-1',// doesn't logic, delete then delete?
+            '23': '-1',
+            '11': '-1',
+            '12': '',// ignore
+            '13': '1',
+            '31': '-1',
+            '32': '2',
+            '33': '3',
+        });
+        const _arr = [];
+
+        function push(wordsStr, action) {
+            _arr.push({ wordsStr, action });
+        }
+        function getSyncData() {
+            const _logicObj = {};
+            _arr.forEach(({ wordsStr, action }) => {
+                wordsStr
+                    .split(',')
+                    .filter(w => w.trim().length > 0)
+                    .forEach(w => {
+                        if (!_logicObj[w]) _logicObj[w] = action;
+                        else {
+                            let _l = _SYMBOLIC_LOGIC_[_logicObj[w] + action];
+                            if (_l === '-1') {
+                                logger.vital(`Logic error about word (${w}) action: ${_logicObj[w] + action}`);
+                            } else {
+                                _logicObj[w] = _l
+                            }
+                        }
+                    });
+            });
+            _arr.length = 0;
+
+            let wordsObj_add = {};
+            let wordsArr_del = [];
+            let wordsObj_mod = {};
+            Object.entries(_logicObj).forEach(([w, action]) => {
+                if (action === '1') {
+                    wordsObj_add[w] = getWord(w);
+                } else if (action === '2') {
+                    wordsArr_del.push(w);
+                } else if (action === '3') {
+                    wordsObj_mod[w] = getWord(w);
+                }
+            });
+            return {
+                wordsObj_add, wordsArr_del, wordsObj_mod,
+            }
+        }
+        return {
+            push,
+            getSyncData,
+        }
+    })();
+
     const _timer = (function() {
         let _syncTimer;
 
@@ -359,7 +422,7 @@ function initDictionary(logger, cacher, serverProxy) {
             clearInterval(_syncTimer);
             _syncTimer = setInterval(async () => {
                 if (_needToUpload) {
-                    await saveDictionary();
+                    await serverProxy.sync(_handler.getSyncData());
                     _needToUpload = false;
                 }
             }, second * 1000);
@@ -415,7 +478,7 @@ function initDictionary(logger, cacher, serverProxy) {
 
     async function saveDictionary() {
         _dispDictEvt(`begin:sync`);
-        await serverProxy.saveData(_assemblePermenentData());
+        //await serverProxy.saveData(_assemblePermenentData());
         _dispDictEvt(`end:sync`);
     }
 
@@ -426,7 +489,8 @@ function initDictionary(logger, cacher, serverProxy) {
     }
     async function sync() {
         _dispDictEvt(`begin:sync`);
-        await serverProxy.sync();
+        await serverProxy.sync(_handler.getSyncData());
+        _needToUpload = false;
         _dispDictEvt(`end:sync`);
     }
 

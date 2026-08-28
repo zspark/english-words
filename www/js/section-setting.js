@@ -219,7 +219,7 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
     const btnSync = ele_root.querySelector("#btn-modal-sync");
     btnSync.addEventListener("click", async (e) => {
         if (e.target.dataset.index == "0") {
-            dictionary.saveDictionary();
+            dictionary.sync();
         } else if (e.target.dataset.index == "1") {
             dictionary.syncAll();
         }
