@@ -8,28 +8,44 @@ async function _getDetails(list, env) {
 
     const result = await env.DB
         .prepare(`
-            SELECT json_group_object(
+            SELECT
                 word,
-                json_object(
-                    'ipa', ipa,
-                    'meaning', meaning,
-                    'level', level,
-                    'note', note,
-                    'links', links,
-                    'time_create', time_create,
-                    'time_modify', time_modify,
-                    'tags', tags
-                )
-            ) AS json
+                ipa,
+                meaning,
+                level,
+                note,
+                links,
+                time_create,
+                time_modify,
+                tags
             FROM dictionary
             WHERE word IN (${placeholders})
         `)
         .bind(...list)
         .first();
 
-    if (!result?.json) return {};
+    return _toObj(result);
+}
 
-    return JSON.parse(result.json);
+function _toObj(result) {
+    if (result.success) {
+        const _obj = {};
+        const _tmp = result.results;
+        for (let i = 0, N = _tmp.length; i < N; ++i) {
+            let _v = _tmp[i];
+            _obj[_v.word] = {
+                ipa: _v.ipa,
+                meaning: _v.meaning,
+                level: _v.level,
+                note: _v.note,
+                links: _v.links,
+                time_create: _v.time_create,
+                time_modify: _v.time_modify,
+                tags: _v.tags,
+            }
+        }
+        return _obj;
+    } else return {};
 }
 
 async function getDetail(request, data, env) {
@@ -41,11 +57,10 @@ async function getDetail(request, data, env) {
     }
     */
 
-    const result = _getDetails(data.content.words, env);
-
+    const _obj = await _getDetails(data.content.words, env);
     return getJSONResponse({
         info: "Succeeded.",
-        content: result,
+        content: _obj,
     });
 };
 
@@ -59,25 +74,23 @@ async function syncAll(request, data, env) {
 
     const result = await env.DB
         .prepare(`
-SELECT json_group_object(
+SELECT
     word,
-    json_object(
-        'ipa', ipa,
-        'meaning', meaning,
-        'level', level,
-        'note', note,
-        'links', links,
-        'time_create', time_create,
-        'time_modify', time_modify,
-        'tags', tags
-    )
-) AS json
+    ipa,
+    meaning,
+    level,
+    note,
+    links,
+    time_create,
+    time_modify,
+    tags
 FROM dictionary`)
         .first();
 
+    const _obj = _toObj(result);
     return getJSONResponse({
         info: "Succeeded.",
-        content: JSON.parse(result.json),
+        content: _obj,
         syncTime: _time.max_time_sync,
     });
 };
@@ -127,14 +140,13 @@ async function sync(request, data, env) {
         }
         _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
         const _combined = new Set([..._addWords, ..._modWords]);
-
-        const _outJSON = await _getDetails([..._combined], env);
+        const _outputObj = await _getDetails([..._combined], env);
 
         return getJSONResponse({
             info: "Succeeded.",
             syncTime: _newestSyncTime,
             content: {
-                add: _outJSON,
+                add: _outputObj,
                 del: [..._delWords],
             }
         });

@@ -146,14 +146,13 @@ function initDictionary(logger, cacher, serverProxy) {
         _needToUpload = true;
     };
 
-    function _fillDetailInfosIfMissing(detail, newTime = null) {
+    function _fillDetailInfosIfMissing(detail) {
         if (!detail) return;
         detail.ipa = detail.ipa || '';
         detail.meaning = detail.meaning || '';
         detail.level = detail.level || '';
         detail.note = detail.note || '';
         detail.links = detail.links || '';
-        detail.time = newTime || detail.time || Date.now();
         detail.tags = detail.tags || '';
     }
 
@@ -163,12 +162,16 @@ function initDictionary(logger, cacher, serverProxy) {
         let _action = "";
         let _detail = _wordsProxy.get(word);
         if (_detail) {
+            _detail.time_modify = Date.now();
             _action = "modify";
         } else {
-            _detail = {};
+            _detail = {
+                time_create: Date.now(),
+                time_modify: Date.now(),
+            };
             _action = "add";
         }
-        _fillDetailInfosIfMissing(_detail, /*Date.now()*/);
+        _fillDetailInfosIfMissing(_detail);
         const oldLinks = _detail.links;
         _detail.ipa = ipa || '';
         _detail.meaning = meaning || '';
