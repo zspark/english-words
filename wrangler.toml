@@ -2,7 +2,7 @@
 
 name = "english-words"
 
-main = "./api/server.js"
+main = "./api/tmp_server_create.js"
 
 compatibility_date = "2026-07-26"
 
