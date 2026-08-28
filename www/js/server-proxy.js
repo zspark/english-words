@@ -68,7 +68,7 @@ function initServerProxy(logger, cacher) {
 
         try {
             const _responseData = await _response.json();
-            logger.error(`S -> C ${_response.status} ${_responseData.info}`);
+            logger.log(`S -> C ${_response.status} ${_responseData.info}`);
             if (_response.ok) {
                 if (_responseData.syncTime) {
                     _data['syncTime'] = _responseData.syncTime;

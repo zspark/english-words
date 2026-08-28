@@ -115,12 +115,13 @@ async function sync(request, data, env) {
         _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
 
         const _combined = new Set([..._addWords, ..._modWords]);
-        const _outJSON = _getDetails([..._combined].join(","));
+        const _outJSON = await _getDetails([..._combined].join(","));
 
         return getJSONResponse({
             info: "Succeeded.",
             syncTime: _newestSyncTime,
             content: {
+                _combined: [..._combined].join(','),
                 add: _outJSON,
                 del: [..._delWords],
             }
