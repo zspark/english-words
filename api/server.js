@@ -1,6 +1,7 @@
 
 import { getParseFailureRes, getEmptyRes, parseJSONString } from "./server-utils.js";
 import { respond_GET } from "./data/GET.js";
+import { respond_POST } from "./data/POST.js";
 import { getNews } from "./rss/rss.js";
 
 export default {
@@ -75,7 +76,7 @@ export default {
             return getNews(request, _data, env);
         } else if (url.pathname === "/api/data") {
             if (request.method === "POST") {
-                return respond_GET(request, _data, env);
+                return respond_POST(request, _data, env);
             }
         }
         return getEmptyRes('ROOT');
