@@ -6,6 +6,15 @@ export default {
         if (request.method !== "POST") {
             return getJSONResponse({
                 info: "Only POST is allowed"
+            }, 405); // 405 Method Not Allowed is more standard here
+        }
+
+        let data;
+        try {
+            data = await request.json();
+        } catch {
+            return getJSONResponse({
+                info: "Invalid JSON"
             }, 400);
         }
 
@@ -13,44 +22,44 @@ export default {
         // SAVE DATA
         // =========================
         try {
-            let data = await request.json();
             const _content = data.content;
-            if (_content === undefined) {
+            if (!_content || !_content.dict) {
                 return getJSONResponse({
-                    info: "Content is required."
+                    info: "Content and content.dict are required."
                 }, 400);
             }
 
             const entries = Object.entries(_content.dict);
             const BATCH_SIZE = 500;
+            
             for (let i = 0; i < entries.length; i += BATCH_SIZE) {
-
                 const batch = entries
                     .slice(i, i + BATCH_SIZE)
-                    .map(([word, data]) => {
+                    .map(([word, itemData]) => {
+                        // FIXED: Added the 9th placeholder (?) to match the 9 columns
                         return env.DB.prepare(`
-INSERT INTO dictionary (
-    word,
-    ipa,
-    meaning,
-    level,
-    note,
-    links,
-    time_create,
-    time_modify,
-    tags
-)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-                        ).bind(
+                            INSERT INTO dictionary (
+                                word,
+                                ipa,
+                                meaning,
+                                level,
+                                note,
+                                links,
+                                time_create,
+                                time_modify,
+                                tags
+                            )
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
                             word,
-                            data.ipa ?? "",
-                            data.meaning ?? "",
-                            data.level ?? "",
-                            data.note ?? "",
-                            data.links ?? "",
-                            data.time ?? Date.now(),
-                            data.time ?? Date.now(),
-                            data.tags ?? ""
+                            itemData.ipa ?? "",
+                            itemData.meaning ?? "",
+                            itemData.level ?? "",
+                            itemData.note ?? "",
+                            itemData.links ?? "",
+                            itemData.time ?? Date.now(),
+                            itemData.time ?? Date.now(),
+                            itemData.tags ?? ""
                         );
                     });
 
@@ -61,18 +70,16 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
                 );
             }
 
-
-
-
             return getJSONResponse({
-                info: "Successfully created!!!.",
+                info: "Successfully created!!!",
             });
 
-        } catch {
+        } catch (err) {
+            console.error("Database error:", err);
             return getJSONResponse({
-                info: "Invalid JSON"
-            }, 400);
+                info: "Database operation failed",
+                error: err.message
+            }, 500);
         }
-
     }
 }
