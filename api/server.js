@@ -65,7 +65,7 @@ export default {
     };
      */
     async fetch(request, env) {
-        const _data = parseJSONString(request);
+        const _data = await parseJSONString(request);
         if (!_data) {
             return getParseFailureRes();
         }
