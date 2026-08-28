@@ -87,10 +87,10 @@ async function sync(request, data, env) {
         const _addWords = new Set()
         const _delWords = new Set()
         const _modWords = new Set()
-        return getJSONResponse(result)
 
-        for (let i = 0, N = result.results.length; i < N; ++i) {
-            let _rcd = result.results[i];
+        const _tmp = result.results;
+        for (let i = 0, N = _tmp.length; i < N; ++i) {
+            let _rcd = _tmp[i];
             if (_rcd.action == 1) {
                 let _wl = _rcd.words.split(',').map(w => w.trim());
                 _wl.forEach(w => {
@@ -112,7 +112,7 @@ async function sync(request, data, env) {
                 });
             }
         }
-        _newestSyncTime = result.results[result.results.length - 1].time_sync;
+        _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
 
         const _combined = new Set([..._addWords, ..._modWords]);
         const _outJSON = _getDetails([..._combined].join(","));
@@ -136,7 +136,6 @@ export async function respond_GET(request, data, env) {
     if (data.requestType === "sync") {
         return sync(request, data, env);
     }
-    return getJSONResponse(data)
     return getEmptyRes('GET');
 }
 
