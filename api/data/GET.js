@@ -77,7 +77,7 @@ FROM dictionary`)
 
     return getJSONResponse({
         info: "Succeeded.",
-        content: JSON.parse(result.content),
+        content: JSON.parse(result.json),
         syncTime: _time.max_time_sync,
     });
 };
