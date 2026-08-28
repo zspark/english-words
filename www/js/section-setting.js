@@ -221,7 +221,7 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
         if (e.target.dataset.index == "0") {
             dictionary.saveDictionary();
         } else if (e.target.dataset.index == "1") {
-            dictionary.loadDictionary();
+            dictionary.syncAll();
         }
     });
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");

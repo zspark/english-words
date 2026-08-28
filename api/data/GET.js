@@ -45,11 +45,17 @@ async function getDetail(request, data, env) {
 
     return getJSONResponse({
         info: "Succeeded.",
-        content: JSON.parse(result.content)
+        content: result,
     });
 };
 
-async function getDictionary(request, data, env) {
+async function syncAll(request, data, env) {
+
+    const _time = await env.DB
+        .prepare(`
+        SELECT MAX(time_sync) AS max_time_sync
+        FROM synchronizer
+    `).first();
 
     const result = await env.DB
         .prepare(`
@@ -67,12 +73,12 @@ SELECT json_group_object(
     )
 ) AS json
 FROM dictionary`)
-        .bind(userID)
         .first();
 
     return getJSONResponse({
         info: "Succeeded.",
-        content: JSON.parse(result.content)
+        content: JSON.parse(result.content),
+        syncTime: _time.max_time_sync,
     });
 };
 
@@ -120,14 +126,14 @@ async function sync(request, data, env) {
             }
         }
         _newestSyncTime = _tmp[_tmp.length - 1].time_sync;
+        const _combined = new Set([..._addWords, ..._modWords]);
 
-        const _outJSON = await _getDetails([..._addWords, ..._modWords], env);
+        const _outJSON = await _getDetails([..._combined], env);
 
         return getJSONResponse({
             info: "Succeeded.",
             syncTime: _newestSyncTime,
             content: {
-                _combined: [..._addWords, ..._modWords],
                 add: _outJSON,
                 del: [..._delWords],
             }
@@ -142,6 +148,8 @@ async function sync(request, data, env) {
 export async function respond_GET(request, data, env) {
     if (data.requestType === "sync") {
         return sync(request, data, env);
+    } else if (data.requestType === "sync-all") {
+        return syncAll(request, data, env);
     }
     return getEmptyRes('GET');
 }

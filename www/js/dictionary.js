@@ -393,9 +393,19 @@ function initDictionary(logger, cacher, serverProxy) {
         return _out;
     }
 
-    serverProxy.addEventListener(serverProxy.EVT_DOWNLOAD, (e) => {
+    serverProxy.addEventListener(serverProxy.EVT_SYNC_ALL, (e) => {
         const _data = e.detail.data;
-        if (_data) importDictionaryByContent(_data);
+        if (_data) {
+            _wordsProxy.clear();
+            importDictionaryByContent(_data);
+        }
+    });
+    serverProxy.addEventListener(serverProxy.EVT_SYNC, (e) => {
+        const _data = e.detail.data;
+        if (_data) {
+            importDictionaryByContent(_data.add);
+            _data.del.forEach(w => deleteWord(w, false));
+        }
     });
     serverProxy.addEventListener(serverProxy.EVT_UPLOAD, (e) => {
     });
@@ -411,6 +421,17 @@ function initDictionary(logger, cacher, serverProxy) {
         await serverProxy.loadData();
         _dispDictEvt(`end:sync`);
     }
+    async function sync() {
+        _dispDictEvt(`begin:sync`);
+        await serverProxy.sync();
+        _dispDictEvt(`end:sync`);
+    }
+
+    async function syncAll() {
+        _dispDictEvt(`begin:sync`);
+        await serverProxy.syncAll();
+        _dispDictEvt(`end:sync`);
+    }
 
     const __this__ = new EventTarget()
     Object.assign(__this__, {
@@ -418,6 +439,8 @@ function initDictionary(logger, cacher, serverProxy) {
         EVT_WORD: "EVT_WORD",
         EVT_DICT: "EVT_DICT",
 
+        syncAll,
+        sync,
         loadDictionary,
         saveDictionary,
 

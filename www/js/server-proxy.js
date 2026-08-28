@@ -53,10 +53,8 @@ function initServerProxy(logger, cacher) {
     async function _toServer(url, data) {
         logger.log(`C -> S request type: ${data.requestType}`);
 
-        const _accessToken = _data["userID"] || "";
-        if (_accessToken && (_accessToken.length > 0)) {
-            data.accessToken = _accessToken;
-        }
+        data.accessToken = _data["userID"] || "";
+        data.syncTime = _data['syncTime'] || 1;
 
         const _response = await fetch(url, {
             method: "POST",
@@ -74,7 +72,7 @@ function initServerProxy(logger, cacher) {
                     _data['syncTime'] = _responseData.syncTime;
                     _localProxy.save();
                 }
-                logger.debug(`${_responseData}`);
+                // logger.debug(`${_responseData}`);
                 return _responseData.content;
             }
             return null;
@@ -97,11 +95,19 @@ function initServerProxy(logger, cacher) {
      * { wordA: {ipa:"", meaning:""} }
      */
     async function loadData() {
+    }
+    async function sync() {
         const data = await _toServer("../api/data", {
             requestType: "sync",
-            syncTime: 1787844254762,//_data['syncTime'] || 1,
         })
-        //__this__.dispatchEvent(new CustomEvent(__this__.EVT_DOWNLOAD, { detail: { data } }));
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_SYNC, { detail: { data } }));
+    }
+
+    async function syncAll() {
+        const data = await _toServer("../api/data", {
+            requestType: "sync-all",
+        })
+        __this__.dispatchEvent(new CustomEvent(__this__.EVT_SYNC_ALL, { detail: { data } }));
     }
 
     async function getNews(vendor) {
@@ -115,12 +121,15 @@ function initServerProxy(logger, cacher) {
     const __this__ = new EventTarget()
     Object.assign(__this__, {
         EVT_NEWS: "EVT_NEWS",
-        EVT_DOWNLOAD: "EVT_DOWNLOAD",
+        EVT_SYNC_ALL: "EVT_SYNC_ALL",
+        EVT_SYNC: "EVT_SYNC",
         EVT_UPLOAD: "EVT_UPLOAD",
 
         loadData,
         saveData,
         getNews,
+        syncAll,
+        sync,
     })
     return __this__;
 }
