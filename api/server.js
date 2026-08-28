@@ -74,7 +74,7 @@ export default {
         if (url.pathname === "/api/rss") {
             return getNews(request, _data, env);
         } else if (url.pathname === "/api/data") {
-            if (request.method === "GET") {
+            if (request.method === "POST") {
                 return respond_GET(request, _data, env);
             }
         }

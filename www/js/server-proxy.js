@@ -59,7 +59,7 @@ function initServerProxy(logger, cacher) {
         }
 
         const _response = await fetch(url, {
-            method: "GET",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
