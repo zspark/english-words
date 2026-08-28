@@ -22,7 +22,7 @@ async function _getDetails(list, env) {
             WHERE word IN (${placeholders})
         `)
         .bind(...list)
-        .first();
+        .all()
 
     return _toObj(result);
 }
@@ -85,7 +85,7 @@ SELECT
     time_modify,
     tags
 FROM dictionary`)
-        .first();
+        .all()
 
     const _obj = _toObj(result);
     return getJSONResponse({
