@@ -1,9 +1,9 @@
+import { getJSONResponse } from "../server-utils.js";
 import { getRNZNews } from "./rnz.js";
 
-export async function getNews(request, env) {
+export async function getNews(request, _data, env) {
 
     try {
-        const _data = await request.json();
         if (_data.vendor === "RNZ") {
             return getRNZNews(_data, request, env);
         } else if (_data.vendor === "xxxxx???sfsf") {
