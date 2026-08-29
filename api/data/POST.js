@@ -14,7 +14,7 @@ async function _getTimeModify(list, env) {
             .all()
         return result;
     } catch (e) {
-        throw new Error(`_getTimeModify failed: ${e.msg}`);
+        throw new Error(`_getTimeModify failed: ${e.message}`);
     }
 }
 async function _getDetails(list, env) {
@@ -302,7 +302,7 @@ async function sync(request, data, env) {
         */
         return getEmptyRes('sync');
     } catch (e) {
-        return getEmptyRes(`sync failed: ${e.msg}`);
+        return getEmptyRes(`sync failed: ${e.message}`);
     }
 }
 
