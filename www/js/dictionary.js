@@ -68,10 +68,6 @@ function initDictionary(logger, cacher, serverProxy) {
         };
     }
 
-    function isDatabaseEmpty() {
-        return _metaProxy.isEmpty() && _recordsProxy.isEmpty() && _wordsProxy.isEmpty();
-    }
-
     function exportDatabase() {
         const json = JSON.stringify(_assemblePermenentData(), null, 4);
         const blob = new Blob(
@@ -92,26 +88,29 @@ function initDictionary(logger, cacher, serverProxy) {
     };
 
 
-    // Import JSON
-    function importDictionaryByContent(data) {
+    function _addToDic(data) {
+        let _dict = data;
         if (data.__VERSION__) {
-            for (const detail of Object.values(data.meta)) {
-                _fillDetailInfosIfMissing(detail);
-            }
             _metaProxy.append(data.meta, true);
             _recordsProxy.append(data.record, true);
-            _wordsProxy.append(data.dict, true);
-            _searchAPI.addWords(data.dict)
-        } else {
-            for (const detail of Object.values(data)) {
-                _fillDetailInfosIfMissing(detail);
-            }
-            _wordsProxy.append(data, true);
-            _searchAPI.addWords(data)
+            _dict = data.dict;
         }
-
+        for (const detail of Object.values(_dict)) {
+            _fillDetailInfosIfMissing(detail);
+        }
+        _wordsProxy.append(_dict, true);
+        _searchAPI.addWords(_dict)
+    };
+    // Import JSON
+    function importDictionaryByContent(data) {
+        _addToDic(data);
         _dispDictEvt("imported");
     };
+
+    function assignWords(dict) {
+        _addToDic(dict);
+        _dispDictEvt("add");
+    }
 
     function importDictionaryByFile(file) {
         if (!file) return;
@@ -138,12 +137,7 @@ function initDictionary(logger, cacher, serverProxy) {
         _recordsProxy.clear();
         _wordsProxy.clear();
         _searchAPI.clear();
-        _dispDictEvt("delete");
-    };
-
-    function clearRecords() {
-        _recordsProxy.clear();
-        _needToUpload = true;
+        _dispDictEvt("clear");
     };
 
     function _fillDetailInfosIfMissing(detail) {
@@ -353,6 +347,7 @@ function initDictionary(logger, cacher, serverProxy) {
 
     function setSyncInterval(second) {
         _timer(second);
+        _needToUpload = true;
     }
 
     const _handler = (function() {
@@ -426,10 +421,13 @@ function initDictionary(logger, cacher, serverProxy) {
 
         const _fn = function(second) {
             clearInterval(_syncTimer);
+            if (second <= 0) {
+                return;
+            }
             _syncTimer = setInterval(async () => {
                 if (_needToUpload) {
-                    await serverProxy.sync(_handler.getSyncData());
                     _needToUpload = false;
+                    await sync();
                 }
             }, second * 1000);
         }
@@ -438,14 +436,6 @@ function initDictionary(logger, cacher, serverProxy) {
         _fn(_localData['syncInterval'] || 10);
         return _fn;
     })()
-
-    function getAIKey() {
-        return getLocalData("sec_setting")['ai_key'] || "";
-    }
-
-    function getAIProvider() {
-        return getLocalData("sec_setting")['ai_provider'] || "";
-    }
 
     function getMissingPronunciationWords(existingAudios) {
         const missingWords = Object.keys(_wordsProxy.data())
@@ -475,28 +465,16 @@ function initDictionary(logger, cacher, serverProxy) {
     serverProxy.addEventListener(serverProxy.EVT_SYNC, (e) => {
         const _data = e.detail.data;
         if (_data) {
-            importDictionaryByContent(_data.add);
-            _data.del.forEach(w => deleteWord(w, false));
+            assignWords(_data.dict);
+            _data.lists.dellist.forEach(w => deleteWord(w, false));
+            _dispDictEvt("delete");
         }
     });
-    serverProxy.addEventListener(serverProxy.EVT_UPLOAD, (e) => {
-    });
 
-    async function saveDictionary() {
-        _dispDictEvt(`begin:sync`);
-        //await serverProxy.saveData(_assemblePermenentData());
-        _dispDictEvt(`end:sync`);
-    }
-
-    async function loadDictionary() {
-        _dispDictEvt(`begin:sync`);
-        await serverProxy.loadData();
-        _dispDictEvt(`end:sync`);
-    }
     async function sync() {
         _dispDictEvt(`begin:sync`);
-        await serverProxy.sync(_handler.getSyncData());
         _needToUpload = false;
+        await serverProxy.sync(_handler.getSyncData());
         _dispDictEvt(`end:sync`);
     }
 
@@ -514,10 +492,7 @@ function initDictionary(logger, cacher, serverProxy) {
 
         syncAll,
         sync,
-        loadDictionary,
-        saveDictionary,
 
-        isDatabaseEmpty,
         exportDatabase,
         importDictionaryByContent,
         importDictionaryByFile,
@@ -532,7 +507,7 @@ function initDictionary(logger, cacher, serverProxy) {
         setTestingResult,
 
         getRecords,
-        clearRecords,
+
         setArticle,
         getArticle,
 
@@ -540,8 +515,6 @@ function initDictionary(logger, cacher, serverProxy) {
         saveLocalData,
 
         getTags,
-        getAIKey,
-        getAIProvider,
         setSyncInterval,
 
         getMissingPronunciationWords,

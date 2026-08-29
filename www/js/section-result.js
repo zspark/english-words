@@ -1,6 +1,6 @@
 
 
-function initResultSection(dictionary, cmp, card, pronunciation) {
+function initResultSection(logger, cacher, dictionary, cmp, card, pronunciation) {
 
     const _rts = dictionary.getLocalData('sec_record');
     _rts.scrollY = _rts.scrollY || 0;
@@ -24,7 +24,8 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
     const ele_action = ele_root.querySelector("#id-action");
     ele_action.addEventListener("click", async e => {
         if (e.target.dataset.index === "0") {
-            dictionary.clearRecords();
+            cacher.recordsProxy.clear();
+            dictionary.markUpload();
             listElem.innerHTML = '';
         }
     })
@@ -122,7 +123,7 @@ function initResultSection(dictionary, cmp, card, pronunciation) {
         // logger.log(e);
         _renderResult();
         if (e.detail.action === "imported") {
-        } else if (e.detail.action === "delete") {
+        } else if (e.detail.action === "clear") {
         }
     });
 

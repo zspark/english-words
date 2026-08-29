@@ -1,10 +1,19 @@
 
-function initAI(dictionary) {
+function initAI(logger, cacher) {
     const _chatGPT = initChatGPT();
     const _deepseek = initDeepSeek();
+    const _localProxy = cacher.localProxy;
+
+    function _getAIKey() {
+        return _localProxy.get("sec_setting", {})['ai_key'] || "";
+    }
+
+    function _getAIProvider() {
+        return _localProxy.get("sec_setting", {})['ai_provider'] || "";
+    }
 
     function _getAI() {
-        const _apiKey = dictionary.getAIKey();
+        const _apiKey = _getAIKey();
         if (_apiKey == "") {
             const _s = `You do not config ChatGPT API KEY.`;
             alert(_s);
@@ -12,7 +21,7 @@ function initAI(dictionary) {
             return null;
         }
 
-        const _provider = dictionary.getAIProvider().toLowerCase();
+        const _provider = _getAIProvider().toLowerCase();
         switch (_provider) {
             case "chatgpt":
                 return { api: _apiKey, provider: _chatGPT };

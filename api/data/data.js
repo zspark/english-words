@@ -1,4 +1,4 @@
-import { getJSONResponse, getEmptyRes, getParseFailureRes, getInternalErrorRes } from "../server-utils.js";
+import { getSyncData, checkAuthority, getJSONResponse, getEmptyRes, getInternalErrorRes } from "../server-utils.js";
 
 async function _getTimeModify(list, env) {
     try {
@@ -18,11 +18,8 @@ async function _getTimeModify(list, env) {
     }
 }
 async function _getDetails(list, env) {
-
     if (!list?.length) return {};
-
     const placeholders = list.map(() => "?").join(",");
-
     const result = await env.DB
         .prepare(`
             SELECT
@@ -64,27 +61,9 @@ function _toObj(result) {
     } else return {};
 }
 
-async function getDetail(request, data, env) {
-
-    /*
-    try {
-    } catch (e) {
-        return getInternalErrorRes(`Internal Error: ${e} .`);
-    }
-    */
-
-    const _o = await _getDetails(data.content.words, env);
-    const _obj = _toObj(_o);
-    return getJSONResponse({
-        info: "Succeeded.",
-        content: _obj,
-    });
-};
-
 async function syncAll(request, data, env) {
-
     try {
-        const _time_sync = await _getLatestTime(env);
+        const _timeSync = await _getLatestTime(env);
         const result = await env.DB
             .prepare(`
             SELECT
@@ -105,10 +84,10 @@ async function syncAll(request, data, env) {
         return getJSONResponse({
             info: "Succeeded.",
             content: _obj,
-            syncTime: _time_sync,
+            syncTime: _timeSync,
         });
     } catch (e) {
-        return getInternalErrorRes(e.message);
+        return getInternalErrorRes(`Internal Error: ${e.message} .`);
     }
 };
 
@@ -220,58 +199,12 @@ async function _clientToServer(data, env) {
     }
 }
 
-const _SYMBOLIC_LOGIC_ = Object.freeze({
-    // add:1 delete:2 modify:3
-    '21': '3',// first 'delete' then 'add' -> it is a 'modify' operation.
-    '22': '-1',// doesn't logic, delete then delete?
-    '23': '-1',
-    '11': '-1',
-    '12': '',// ignore
-    '13': '1',
-    '31': '-1',
-    '32': '2',
-    '33': '3',
-});
-
-function _getSyncData(arr) {
-    const _logicObj = {};
-    arr.forEach(({ wordsStr, action }) => {
-        wordsStr
-            .split(',')
-            .filter(w => w.trim().length > 0)
-            .forEach(w => {
-                if (!_logicObj[w]) _logicObj[w] = action + "";
-                else {
-                    let _l = _SYMBOLIC_LOGIC_[_logicObj[w] + action];
-                    if (_l === '-1') {
-                        logger.vital(`Logic error about word (${w}) action: ${_logicObj[w] + action}`);
-                    } else {
-                        _logicObj[w] = _l
-                    }
-                }
-            });
-    });
-
-    let wordsObj_add = [];
-    let wordsObj_del = [];
-    let wordsObj_mod = [];
-    Object.entries(_logicObj).forEach(([w, action]) => {
-        if (action === '1') {
-            wordsObj_add.push(w);
-        } else if (action === '2') {
-            wordsObj_del.push(w);
-        } else if (action === '3') {
-            wordsObj_mod.push(w);
-        }
-    });
-    return {
-        wordsObj_add, wordsObj_del, wordsObj_mod,
-    }
-}
-
 async function sync(request, data, env) {
     try {
-        await _clientToServer(data, env);
+        const _r = await checkAuthority('jerry-chaos', data.accessToken, env);
+        if (_r) {
+            await _clientToServer(data, env);
+        }
 
         const result = await env.DB
             .prepare(`
@@ -284,17 +217,17 @@ async function sync(request, data, env) {
             .all();
 
         if (result.success) {
-            const _obj = _getSyncData(result.results);
-            const _o = await _getDetails([..._obj.wordsObj_add, ..._obj.wordsObj_mod], env);
-            const _outputObj = _toObj(_o);
+            const lists = getSyncData(result.results);
+            const _o = await _getDetails([...lists.addlist, ...lists.modlist], env);
+            const dict = _toObj(_o);
 
-            const _time_sync = await _getLatestTime(env);
+            const _timeSync = await _getLatestTime(env);
             return getJSONResponse({
                 info: "Succeeded.",
-                syncTime: _time_sync,
+                syncTime: _timeSync,
                 content: {
-                    add: _outputObj,
-                    del: _obj.wordsObj_del
+                    lists,
+                    dict,
                 }
             });
         } else {
@@ -303,7 +236,7 @@ async function sync(request, data, env) {
             });
         }
     } catch (e) {
-        return getEmptyRes(`sync failed: ${e.message}`);
+        return getInternalErrorRes(`Internal Error: sync failed, ${e.message} .`);
     }
 }
 

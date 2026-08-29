@@ -82,31 +82,7 @@ function initServerProxy(logger, cacher) {
         }
     }
 
-    async function saveData(data) {
-        await _toServer("../api/data", {
-            requestType: "save",
-            content: data,
-        })
-        __this__.dispatchEvent(new CustomEvent(__this__.EVT_UPLOAD));
-    }
-
-    /**
-     * format:
-     * { wordA: {ipa:"", meaning:""} }
-     */
-    async function loadData() { }
-
-    /*
-        {
-            lists: {
-                addlist, dellist, modlist,
-            },
-            dict,
-        }
-    */
     async function sync(content) {
-
-        debugger;
         const data = await _toServer("../api/data", {
             requestType: "sync",
             content,
@@ -134,10 +110,7 @@ function initServerProxy(logger, cacher) {
         EVT_NEWS: "EVT_NEWS",
         EVT_SYNC_ALL: "EVT_SYNC_ALL",
         EVT_SYNC: "EVT_SYNC",
-        EVT_UPLOAD: "EVT_UPLOAD",
 
-        loadData,
-        saveData,
         getNews,
         syncAll,
         sync,

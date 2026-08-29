@@ -411,7 +411,7 @@ function initDictionarySection(ai, dictionary, cmp, card, pronunciation) {
         _wordsHandler.sortWordList();
         _wordsHandler.renderWords(true);
         if (e.detail.action === "imported") {
-        } else if (e.detail.action === "delete") {
+        } else if (e.detail.action === "clear") {
         }
     });
     dictionary.addEventListener(dictionary.EVT_WORD, e => {

@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const _serverProxy = initServerProxy(logger, _cacher);
     const _dictionary = initDictionary(logger, _cacher, _serverProxy);
     const _components = initComponents();
-    const _ai = initAI(_dictionary);
+    const _ai = initAI(logger, _cacher);
     const _pronunciation = initPronunciation(_dictionary);
 
     _navigator = initNavigator(document.body, _components, _dictionary);
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_words = initDictionarySection(_ai, _dictionary, _components, section_card, _pronunciation);
     section_article = initArticleSection(_ai, _dictionary, _components, section_card, _pronunciation, _serverProxy, _lemmatizer);
     section_test = initTestSection(_ai, _dictionary, _components, section_words, _pronunciation);
-    section_result = initResultSection(_dictionary, _components, section_card, _pronunciation);
+    section_result = initResultSection(logger, _cacher, _dictionary, _components, section_card, _pronunciation);
     section_setting = initSectionImport(_ai, _dictionary, _components, _cacher);
 
     document.addEventListener("keydown", (event) => {
@@ -193,7 +193,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
     //     }
     // });
 
-    if (_dictionary.isDatabaseEmpty()) {
+
+    if (_cacher.wordsProxy.isEmpty()) {
         _components.showMask(`
 <p>This website is still under developing, more patience and tolerance would be much appriciated.</p>`,
             "Got It, Close", () => { },
@@ -215,7 +216,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 <p>Succefully Exported Data to Local File.</p>`,
                 "Got It", () => { },
             );
-        } else if (e.detail.action === "delete") {
+        } else if (e.detail.action === "clear") {
             _components.showMask(`
 <p>Succefully Clear the Dictionary.</p>`,
                 "Got It", () => { },

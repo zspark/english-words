@@ -33,7 +33,7 @@ ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database co
     const _configSource = `
 ${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
 ${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
-${cmp.inputSource("id-syncInterval", "Sync Interval", "how many seconds?.", false)}
+${cmp.inputSource("id-syncInterval", "Sync Interval (seconds)", "<= 0 means stop auto sync.", false)}
 <div class="form-row">
     ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
     ${cmp.dropdownSource("id-provider", null, ["ChatGPT", "DeepSeek"], 0)}
@@ -174,7 +174,6 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
             _localProxy.delaySave();
 
             dictionary.setSyncInterval(_sec);
-            dictionary.markUpload();
 
             if (elem_theme.checked) {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -233,7 +232,6 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
     });
     const btnExport = ele_root.querySelector("#btn-file-submit");
     btnExport.addEventListener("click", async (e) => {
-        return;
         if (e.target.dataset.index == "0") {
             dictionary.exportDatabase();
         } else if (e.target.dataset.index === "1") {
