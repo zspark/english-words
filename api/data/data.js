@@ -63,29 +63,34 @@ function _toObj(result) {
 
 async function syncAll(request, data, env) {
     try {
-        const _timeSync = await getLatestTime(env);
-        const result = await env.DB
-            .prepare(`
-            SELECT
-                word,
-                ipa,
-                meaning,
-                level,
-                note,
-                links,
-                time_create,
-                time_modify,
-                tags
-            FROM dictionary`
-            )
-            .all()
+        const _readToken = await getValue("readToken", env);
+        if (_readToken === data.accessToken) {
+            const _timeSync = await getLatestTime(env);
 
-        const _obj = _toObj(result);
-        return getJSONResponse({
-            info: "Succeeded.",
-            content: _obj,
-            syncTime: _timeSync,
-        });
+            const result = await env.DB
+                .prepare(`
+                    SELECT
+                        word,
+                        ipa,
+                        meaning,
+                        level,
+                        note,
+                        links,
+                        time_create,
+                        time_modify,
+                        tags
+                    FROM dictionary`
+                )
+                .all()
+
+            const _obj = _toObj(result);
+            return getJSONResponse({
+                info: "Succeeded.",
+                content: _obj,
+                syncTime: _timeSync,
+            });
+        }
+        return getEmptyRes("server need a token to process.");
     } catch (e) {
         return getInternalErrorRes(`Internal Error: ${e.message} .`);
     }
@@ -251,15 +256,13 @@ async function _serverToClient(data, env) {
 
 async function sync(request, data, env) {
     try {
-        const _editToken = await getValue("editToken", env);
-        if (_editToken === data.accessToken) {
-            await _clientToServer(data, env);
-            return await _serverToClient(data, env);
-        } else {
-            const _readToken = await getValue("readToken", env);
-            if (_readToken === data.accessToken) {
-                return await _serverToClient(data, env);
+        const _readToken = await getValue("readToken", env);
+        if (_readToken === data.accessToken) {
+            const _editToken = await getValue("editToken", env);
+            if (_editToken === data.accessToken) {
+                await _clientToServer(data, env);
             }
+            return await _serverToClient(data, env);
         }
         return getEmptyRes("server need token to process.");
     } catch (e) {
