@@ -347,7 +347,6 @@ function initDictionary(logger, cacher, serverProxy) {
 
     function setSyncInterval(second) {
         _timer(second);
-        _needToUpload = true;
     }
 
     const _handler = (function() {

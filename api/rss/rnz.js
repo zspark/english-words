@@ -1,6 +1,14 @@
 import { getJSONResponse } from "../server-utils.js";
 
 export async function getRNZNews(data, request, env) {
+    const _credit = await getValue(data.accessToken, env);
+    if (!_credit) {
+        return getEmptyRes("server need a token to process.");
+    }
+    const _tv = Number(_credit);
+    if (_tv < 1) {
+        return getEmptyRes(`Can not process. Token value is: ${_tv}.`);
+    }
 
     const RSS_URL = "https://www.rnz.co.nz/rss/national.xml";
 

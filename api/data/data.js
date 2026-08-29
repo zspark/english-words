@@ -63,8 +63,12 @@ function _toObj(result) {
 
 async function syncAll(request, data, env) {
     try {
-        const _readToken = await getValue("readToken", env);
-        if (_readToken === data.accessToken) {
+        const _credit = await getValue(data.accessToken, env);
+        if (!_credit) {
+            return getEmptyRes("server need a token to process.");
+        }
+        const _tv = Number(_credit);
+        if (_tv >= 1) {
             const _timeSync = await getLatestTime(env);
 
             const result = await env.DB
@@ -89,8 +93,9 @@ async function syncAll(request, data, env) {
                 content: _obj,
                 syncTime: _timeSync,
             });
+        } else {
+            return getEmptyRes(`Can not process. Token value is: ${_tv}.`);
         }
-        return getEmptyRes("server need a token to process.");
     } catch (e) {
         return getInternalErrorRes(`Internal Error: ${e.message} .`);
     }
@@ -256,15 +261,18 @@ async function _serverToClient(data, env) {
 
 async function sync(request, data, env) {
     try {
-        const _readToken = await getValue("readToken", env);
-        if (_readToken === data.accessToken) {
-            const _editToken = await getValue("editToken", env);
-            if (_editToken === data.accessToken) {
-                await _clientToServer(data, env);
-            }
+        const _credit = await getValue(data.accessToken, env);
+        if (!_credit) {
+            return getEmptyRes("server need a token to process.");
+        }
+        const _tv = Number(_credit);
+        if (_tv >= 2) {
+            await _clientToServer(data, env);
+            return await _serverToClient(data, env);
+        } else if (_tv >= 1) {
             return await _serverToClient(data, env);
         }
-        return getEmptyRes("server need token to process.");
+        return getEmptyRes(`Can not process. Token value is: ${_tv}.`);
     } catch (e) {
         return getInternalErrorRes(`Internal Error: sync failed, ${e.message} .`);
     }
