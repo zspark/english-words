@@ -37,28 +37,27 @@ export async function parseJSONString(request) {
     }
 }
 
-export async function checkAuthority(userID, pwd, env) {
+export async function getValue(key, env) {
     try {
         const result = await env.DB
             .prepare(`
-                SELECT password
-                FROM user_id
-                WHERE userID = ?
+                SELECT value
+                FROM keyvalue
+                WHERE key = ?
             `)
-            .bind(userID)
+            .bind(key)
             .first();
 
-        return result?.password === pwd;
-    } catch (error) {
-        console.error("Database query error:", error);
-        return false;
+        return result?.value;
+    } catch (e) {
+        throw Error(`Database query error: ${e.message}`);
     }
 }
 
 const _SYMBOLIC_LOGIC_ = Object.freeze({
     // add:1 delete:2 modify:3
     '21': '3',// first 'delete' then 'add' -> it is a 'modify' operation.
-    '22': '-1',// doesn't logic, delete then delete?
+    '22': '-1',// irrational, delete then delete?
     '23': '-1',
     '11': '-1',
     '12': '',// ignore
@@ -106,5 +105,14 @@ export function getSyncData(arr) {
     return {
         addlist, dellist, modlist,
     }
+}
+
+export async function getLatestTime(env) {
+    const _time = await env.DB
+        .prepare(`
+        SELECT MAX(time_sync) AS max_time_sync
+        FROM synchronizer
+    `).first();
+    return _time.max_time_sync;
 }
 

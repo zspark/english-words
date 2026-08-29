@@ -1,4 +1,4 @@
-import { getSyncData, checkAuthority, getJSONResponse, getEmptyRes, getInternalErrorRes } from "../server-utils.js";
+import { getSyncData, getLatestTime, getValue, getTokens, getJSONResponse, getEmptyRes, getInternalErrorRes } from "../server-utils.js";
 
 async function _getTimeModify(list, env) {
     try {
@@ -63,7 +63,7 @@ function _toObj(result) {
 
 async function syncAll(request, data, env) {
     try {
-        const _timeSync = await _getLatestTime(env);
+        const _timeSync = await getLatestTime(env);
         const result = await env.DB
             .prepare(`
             SELECT
@@ -90,6 +90,15 @@ async function syncAll(request, data, env) {
         return getInternalErrorRes(`Internal Error: ${e.message} .`);
     }
 };
+
+function _genUserInfoUpdateSQL(userID, tags, env) {
+    return env.DB
+        .prepare(`
+            UPDATE user_id
+            SET tags = ?
+            WHERE userID = ?`
+        ).bind(tags, userID)
+}
 
 function _genMarkSQL(time, wordArr, action, env) {
     return env.DB.prepare(`
@@ -189,64 +198,73 @@ async function _clientToServer(data, env) {
     const _syncTime = data.syncTime;
     const _cmd = [];
 
-    // data.content:{ wordsObj_add, wordsArr_del, wordsObj_mod}
-    await _CToS_add(_cmd, _syncTime, data.content, env);
-    await _CToS_del(_cmd, _syncTime, data.content, env);
-    await _CToS_modify(_cmd, _syncTime, data.content, env);
+    if (data.content) {
+        await _CToS_add(_cmd, _syncTime, data.content, env);
+        await _CToS_del(_cmd, _syncTime, data.content, env);
+        await _CToS_modify(_cmd, _syncTime, data.content, env);
+    }
+
+    /*
+    if (data.tags) {
+        if (_syncTime >= tagSyncTime) {
+            _cmd.push(_genUserInfoUpdateSQL('jerry-chaos', data.tags, env));
+        }
+    }
+    */
 
     if (_cmd.length > 0) {
         await env.DB.batch(_cmd);
     }
 }
 
-async function sync(request, data, env) {
-    try {
-        const _r = await checkAuthority('jerry-chaos', data.accessToken, env);
-        if (_r) {
-            await _clientToServer(data, env);
-        }
-
-        const result = await env.DB
-            .prepare(`
+async function _serverToClient(data, env) {
+    const result = await env.DB
+        .prepare(`
             SELECT *
             FROM synchronizer
             WHERE time_sync > ?
             ORDER BY time_sync ASC
         `)
-            .bind(data.syncTime)
-            .all();
+        .bind(data.syncTime)
+        .all();
 
-        if (result.success) {
-            const lists = getSyncData(result.results);
-            const _o = await _getDetails([...lists.addlist, ...lists.modlist], env);
-            const dict = _toObj(_o);
+    if (result.success) {
+        const lists = getSyncData(result.results);
+        const _o = await _getDetails([...lists.addlist, ...lists.modlist], env);
+        const dict = _toObj(_o);
 
-            const _timeSync = await _getLatestTime(env);
-            return getJSONResponse({
-                info: "Succeeded.",
-                syncTime: _timeSync,
-                content: {
-                    lists,
-                    dict,
-                }
-            });
-        } else {
-            return getJSONResponse({
-                info: "sync failed.",
-            });
-        }
-    } catch (e) {
-        return getInternalErrorRes(`Internal Error: sync failed, ${e.message} .`);
+        const _timeSync = await getLatestTime(env);
+        return getJSONResponse({
+            info: "Succeeded.",
+            syncTime: _timeSync,
+            content: {
+                lists,
+                dict,
+            }
+        });
+    } else {
+        return getJSONResponse({
+            info: "sync failed.",
+        });
     }
 }
 
-async function _getLatestTime(env) {
-    const _time = await env.DB
-        .prepare(`
-        SELECT MAX(time_sync) AS max_time_sync
-        FROM synchronizer
-    `).first();
-    return _time.max_time_sync;
+async function sync(request, data, env) {
+    try {
+        const _editToken = await getValue("editToken", env);
+        if (_editToken === data.accessToken) {
+            await _clientToServer(data, env);
+            return await _serverToClient(data, env);
+        } else {
+            const _readToken = await getValue("readToken", env);
+            if (_readToken === data.accessToken) {
+                return await _serverToClient(data, env);
+            }
+        }
+        return getEmptyRes("server need token to process.");
+    } catch (e) {
+        return getInternalErrorRes(`Internal Error: sync failed, ${e.message} .`);
+    }
 }
 
 export async function respond_POST(request, data, env) {
