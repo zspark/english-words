@@ -1,4 +1,4 @@
-import { getSyncData, getLatestTime, getValue, getTokens, getJSONResponse, getEmptyRes, getInternalErrorRes } from "../server-utils.js";
+import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "../server-utils.js";
 
 async function _getTimeModify(list, env) {
     try {
