@@ -128,12 +128,12 @@ function _genDeleteSQL(word, env) {
 
 function _genInsertSQL(word, detail, env) {
     return env.DB.prepare(`
-                    INSERT OR REPLACE INTO dictionary (
-                        word, ipa, meaning, level,
-                        note, links, tags,
-                        time_create, time_modify
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        INSERT OR REPLACE INTO dictionary (
+            word, ipa, meaning, level,
+            note, links, tags,
+            time_create, time_modify
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
         word,
         detail.ipa ?? "",
@@ -288,9 +288,10 @@ async function sync(request, data, env) {
             const _o = await _getDetails([..._obj.wordsObj_add, ..._obj.wordsObj_mod], env);
             const _outputObj = _toObj(_o);
 
+            const _time_sync = await _getLatestTime(env);
             return getJSONResponse({
                 info: "Succeeded.",
-                syncTime: _newestSyncTime,
+                syncTime: _time_sync,
                 content: {
                     add: _outputObj,
                     del: _obj.wordsObj_del
