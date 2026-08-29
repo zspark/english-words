@@ -109,7 +109,7 @@ FROM dictionary`)
 
 function _genMarkSQL(time, str, action, env) {
     return env.DB.prepare(`
-        INSERT INTO synchronizer ( timer_sync, words, action)
+        INSERT INTO synchronizer ( time_sync, words, action)
         VALUES (?,?,?)`
     ).bind(time, str, action)
 }
@@ -314,7 +314,7 @@ async function _mark(wordsStr, action) {
     await env.DB
         .prepare(`
 INSERT INTO synchronizer (
-    timer_sync,
+    time_sync,
     words,
     action,
 )
