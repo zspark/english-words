@@ -84,7 +84,7 @@ async function getDetail(request, data, env) {
 async function syncAll(request, data, env) {
 
     try {
-        const _time_sync = await _getLatestTime();
+        const _time_sync = await _getLatestTime(env);
         const result = await env.DB
             .prepare(`
             SELECT
@@ -306,7 +306,7 @@ async function sync(request, data, env) {
     }
 }
 
-async function _getLatestTime() {
+async function _getLatestTime(env) {
     const _time = await env.DB
         .prepare(`
         SELECT MAX(time_sync) AS max_time_sync
