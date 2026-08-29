@@ -83,28 +83,33 @@ async function getDetail(request, data, env) {
 
 async function syncAll(request, data, env) {
 
-    const _time_sync = await _getLatestTime();
-    const result = await env.DB
-        .prepare(`
-SELECT
-    word,
-    ipa,
-    meaning,
-    level,
-    note,
-    links,
-    time_create,
-    time_modify,
-    tags
-FROM dictionary`)
-        .all()
+    try {
+        const _time_sync = await _getLatestTime();
+        const result = await env.DB
+            .prepare(`
+            SELECT
+                word,
+                ipa,
+                meaning,
+                level,
+                note,
+                links,
+                time_create,
+                time_modify,
+                tags
+            FROM dictionary`
+            )
+            .all()
 
-    const _obj = _toObj(result);
-    return getJSONResponse({
-        info: "Succeeded.",
-        content: _obj,
-        syncTime: _time_sync,
-    });
+        const _obj = _toObj(result);
+        return getJSONResponse({
+            info: "Succeeded.",
+            content: _obj,
+            syncTime: _time_sync,
+        });
+    } catch (e) {
+        return getInternalErrorRes(e.message);
+    }
 };
 
 function _genMarkSQL(time, wordArr, action, env) {
@@ -170,7 +175,7 @@ async function _CToS_del(cmd, syncTime, content, env) {
         const _list = [];
         const _r = await _getTimeModify(_listClient, env);
         _r.results?.forEach(v => {
-            if (v.time_modify < syncTime) {
+            if (v.time_modify <= syncTime) {
                 cmd.push(_genDeleteSQL(v.word, env));
                 _list.push(v.word);
             }
@@ -189,7 +194,7 @@ async function _CToS_modify(cmd, syncTime, content, env) {
         const _list = [];
         const _r = await _getTimeModify(_listClient, env);
         _r.results?.forEach(v => {
-            if (v.time_modify < syncTime) {
+            if (v.time_modify <= syncTime) {
                 cmd.push(_genInsertSQL(v.word, _dict[v.word], env));
                 _list.push(v.word);
             }
@@ -268,7 +273,6 @@ async function sync(request, data, env) {
     try {
         await _clientToServer(data, env);
 
-        /*
         const result = await env.DB
             .prepare(`
             SELECT *
@@ -278,12 +282,12 @@ async function sync(request, data, env) {
         `)
             .bind(data.syncTime)
             .all();
-    
+
         if (result.success) {
             const _obj = _getSyncData(result.results);
             const _o = await _getDetails([..._obj.wordsObj_add, ..._obj.wordsObj_mod], env);
             const _outputObj = _toObj(_o);
-    
+
             return getJSONResponse({
                 info: "Succeeded.",
                 syncTime: _newestSyncTime,
@@ -297,8 +301,6 @@ async function sync(request, data, env) {
                 info: "sync failed.",
             });
         }
-        */
-        return getEmptyRes('sync');
     } catch (e) {
         return getEmptyRes(`sync failed: ${e.message}`);
     }
@@ -311,22 +313,6 @@ async function _getLatestTime() {
         FROM synchronizer
     `).first();
     return _time.max_time_sync;
-}
-
-async function _mark(wordsStr, action) {
-    const _newSyncTime = Date.now();
-    await env.DB
-        .prepare(`
-INSERT INTO synchronizer (
-    time_sync,
-    words,
-    action,
-)
-VALUES (?,?,?)`
-        )
-        .bind(_newSyncTime, wordsStr, action)
-        .run()
-    return _newSyncTime;
 }
 
 export async function respond_POST(request, data, env) {
