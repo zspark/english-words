@@ -109,12 +109,8 @@ FROM dictionary`)
 
 function _genMarkSQL(time, str, action, env) {
     return env.DB.prepare(`
-                INSERT INTO synchronizer (
-                    timer_sync,
-                    words,
-                    action,
-                )
-                VALUES (?,?,?)`
+        INSERT INTO synchronizer ( timer_sync, words, action)
+        VALUES (?,?,?)`
     ).bind(time, str, action)
 }
 
@@ -128,15 +124,9 @@ function _genDeleteSQL(word, env) {
 function _genInsertSQL(word, detail, env) {
     return env.DB.prepare(`
                     INSERT OR REPLACE INTO dictionary (
-                        word,
-                        ipa,
-                        meaning,
-                        level,
-                        note,
-                        links,
-                        time_create,
-                        time_modify,
-                        tags
+                        word, ipa, meaning, level,
+                        note, links, tags,
+                        time_create, time_modify
                     )
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
@@ -144,11 +134,13 @@ function _genInsertSQL(word, detail, env) {
         detail.ipa ?? "",
         detail.meaning ?? "",
         detail.level ?? "",
+
         detail.note ?? "",
         detail.links ?? "",
+        detail.tags ?? "",
+
         detail.time_create ?? Date.now(),
-        detail.time_modify ?? Date.now(),
-        detail.tags ?? ""
+        detail.time_modify ?? Date.now()
     );
 }
 
@@ -167,7 +159,7 @@ async function _CToS_add(cmd, syncTime, content, env) {
             cmd.push(_genInsertSQL(w, _dict[w], env));
         });
         if (_list.length > 0) {
-            // cmd.push(_genMarkSQL(Date.now(), _list.join(','), 1, env))
+            cmd.push(_genMarkSQL(Date.now(), _list.join(','), 1, env))
         }
     }
 }
