@@ -223,6 +223,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
         }
     });
 
-    _dictionary.loadDictionary();
+    //_dictionary.sync();
 });
 

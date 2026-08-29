@@ -205,8 +205,8 @@ async function _clientToServer(data, env) {
 
     // data.content:{ wordsObj_add, wordsArr_del, wordsObj_mod}
     await _CToS_add(_cmd, _syncTime, data.content.wordsObj_add, env);
-    await _CToS_del(_cmd, _syncTime, data.content.wordsArr_del, env);
-    await _CToS_modify(_cmd, _syncTime, data.content.wordsObj_mod, env);
+    //await _CToS_del(_cmd, _syncTime, data.content.wordsArr_del, env);
+    //await _CToS_modify(_cmd, _syncTime, data.content.wordsObj_mod, env);
 
     if (_cmd.length > 0) {
         await env.DB.batch(_cmd);
@@ -265,6 +265,7 @@ function _getSyncData(arr) {
 async function sync(request, data, env) {
     await _clientToServer(data, env);
 
+    /*
     const result = await env.DB
         .prepare(`
         SELECT *
@@ -293,6 +294,8 @@ async function sync(request, data, env) {
             info: "sync failed.",
         });
     }
+    */
+    return getEmptyRes('sync');
 }
 
 async function _getLatestTime() {
