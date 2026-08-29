@@ -1,7 +1,6 @@
 
 import { getParseFailureRes, getEmptyRes, parseJSONString } from "./server-utils.js";
-import { respond_GET } from "./data/GET.js";
-import { respond_POST } from "./data/POST.js";
+import { respond_POST } from "./data/data.js";
 import { getNews } from "./rss/rss.js";
 
 export default {

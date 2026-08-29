@@ -43,7 +43,7 @@ ${cmp.switcherSource("id-theme", "Dark Theme?", false)}
     <div class="bs-left-align">
         ${cmp.buttonGroupSource(
         'btn-modal-sync',
-        ['upload', 'download']
+        ['Sync', 'Sync All']
     )}
     </div>
     <div class="bs-right-align">
@@ -233,6 +233,7 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
     });
     const btnExport = ele_root.querySelector("#btn-file-submit");
     btnExport.addEventListener("click", async (e) => {
+        return;
         if (e.target.dataset.index == "0") {
             dictionary.exportDatabase();
         } else if (e.target.dataset.index === "1") {
