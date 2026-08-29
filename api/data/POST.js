@@ -107,17 +107,17 @@ FROM dictionary`)
     });
 };
 
-function _genMarkSQL(time, str, action, env) {
+function _genMarkSQL(time, wordArr, action, env) {
     return env.DB.prepare(`
         INSERT INTO synchronizer ( time_sync, words, action)
         VALUES (?,?,?)`
-    ).bind(time, str, action)
+    ).bind(time, wordArr.join(','), action)
 }
 
 function _genDeleteSQL(word, env) {
     return env.DB.prepare(`
-            DELETE FROM dictionary
-            WHERE word = ?`
+        DELETE FROM dictionary
+        WHERE word = ?`
     ).bind(word);
 }
 
@@ -159,40 +159,44 @@ async function _CToS_add(cmd, syncTime, content, env) {
             cmd.push(_genInsertSQL(w, _dict[w], env));
         });
         if (_list.length > 0) {
-            cmd.push(_genMarkSQL(Date.now(), _list.join(','), 1, env))
+            cmd.push(_genMarkSQL(Date.now(), _list, 1, env))
         }
     }
 }
 
-async function _CToS_del(cmd, syncTime, arr, env) {
-    if (arr.length > 0) {
-        const _a = [];
-        const _r = await _getTimeModify(arr, env);
+async function _CToS_del(cmd, syncTime, content, env) {
+    const _listClient = content.lists.dellist;
+    if (_listClient.length > 0) {
+        const _list = [];
+        const _r = await _getTimeModify(_listClient, env);
         _r.results?.forEach(v => {
             if (v.time_modify < syncTime) {
                 cmd.push(_genDeleteSQL(v.word, env));
-                _a.push(v.word);
+                _list.push(v.word);
             }
         });
-        if (_a.length > 0) {
-            cmd.push(_genMarkSQL(Date.now() + 1, _a.join(','), 2, env))
+
+        if (_list.length > 0) {
+            cmd.push(_genMarkSQL(Date.now(), _list, 2, env))
         }
     }
 }
 
-async function _CToS_modify(cmd, syncTime, obj, env) {
-    const _addObj = Object.keys(obj);
-    if (_addObj.length > 0) {
-        const _a = [];
-        const _r = await _getTimeModify(_addObj, env);
+async function _CToS_modify(cmd, syncTime, content, env) {
+    const _listClient = content.lists.modlist;
+    if (_listClient.length > 0) {
+        const _dict = content.dict;
+        const _list = [];
+        const _r = await _getTimeModify(_listClient, env);
         _r.results?.forEach(v => {
             if (v.time_modify < syncTime) {
-                cmd.push(_genInsertSQL(v.word, _modObj[v.word], env));
-                _a.push(v.word);
+                cmd.push(_genInsertSQL(v.word, _dict[v.word], env));
+                _list.push(v.word);
             }
         });
-        if (_a.length > 0) {
-            cmd.push(_genMarkSQL(Date.now() + 2, _a.join(','), 3, env))
+
+        if (_list.length > 0) {
+            cmd.push(_genMarkSQL(Date.now(), _list, 3, env))
         }
     }
 }
@@ -203,8 +207,8 @@ async function _clientToServer(data, env) {
 
     // data.content:{ wordsObj_add, wordsArr_del, wordsObj_mod}
     await _CToS_add(_cmd, _syncTime, data.content, env);
-    //await _CToS_del(_cmd, _syncTime, data.content.wordsArr_del, env);
-    //await _CToS_modify(_cmd, _syncTime, data.content.wordsObj_mod, env);
+    await _CToS_del(_cmd, _syncTime, data.content, env);
+    await _CToS_modify(_cmd, _syncTime, data.content, env);
 
     if (_cmd.length > 0) {
         await env.DB.batch(_cmd);
