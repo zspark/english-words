@@ -152,20 +152,22 @@ function _genInsertSQL(word, detail, env) {
     );
 }
 
-async function _CToS_add(cmd, syncTime, obj, env) {
-    const _addObj = Object.keys(obj);
-    if (_addObj.length > 0) {
-        const _a = [];
-        const _r = await _getTimeModify(_addObj, env);
+async function _CToS_add(cmd, syncTime, content, env) {
+    const _listClient = content.lists.addlist;
+    if (_listClient.length > 0) {
+        const _listExist = [];
+        const _r = await _getTimeModify(_listClient, env);
         _r.results?.forEach(v => {
-            delete obj[v.word];
+            _listExist.push(v.word);
         });
-        Object.entries(obj).forEach(([word, detail]) => {
-            cmd.push(_genInsertSQL(word, detail, env));
-            _a.push(word);
+
+        const _dict = content.dict;
+        const _list = _listClient.filter(x => !_listExist.includes(x));
+        _list.forEach((w) => {
+            cmd.push(_genInsertSQL(w, _dict[w], env));
         });
-        if (_a.length > 0) {
-            cmd.push(_genMarkSQL(Date.now(), _a.join(','), 1, env))
+        if (_list.length > 0) {
+            // cmd.push(_genMarkSQL(Date.now(), _list.join(','), 1, env))
         }
     }
 }
@@ -208,7 +210,7 @@ async function _clientToServer(data, env) {
     const _cmd = [];
 
     // data.content:{ wordsObj_add, wordsArr_del, wordsObj_mod}
-    await _CToS_add(_cmd, _syncTime, data.content.wordsObj_add, env);
+    await _CToS_add(_cmd, _syncTime, data.content, env);
     //await _CToS_del(_cmd, _syncTime, data.content.wordsArr_del, env);
     //await _CToS_modify(_cmd, _syncTime, data.content.wordsObj_mod, env);
 

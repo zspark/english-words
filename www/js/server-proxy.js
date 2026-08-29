@@ -94,9 +94,18 @@ function initServerProxy(logger, cacher) {
      * format:
      * { wordA: {ipa:"", meaning:""} }
      */
-    async function loadData() {
-    }
+    async function loadData() { }
+
+    /*
+        {
+            lists: {
+                addlist, dellist, modlist,
+            },
+            dict,
+        }
+    */
     async function sync(content) {
+
         debugger;
         const data = await _toServer("../api/data", {
             requestType: "sync",

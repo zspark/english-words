@@ -393,20 +393,26 @@ function initDictionary(logger, cacher, serverProxy) {
             });
             _arr.length = 0;
 
-            let wordsObj_add = {};
-            let wordsArr_del = [];
-            let wordsObj_mod = {};
+            let addlist = [];
+            let dellist = [];
+            let modlist = [];
+            const dict = {};
             Object.entries(_logicObj).forEach(([w, action]) => {
                 if (action === '1') {
-                    wordsObj_add[w] = getWord(w);
+                    addlist.push(w);
+                    dict[w] = getWord(w);
                 } else if (action === '2') {
-                    wordsArr_del.push(w);
+                    dellist.push(w);
                 } else if (action === '3') {
-                    wordsObj_mod[w] = getWord(w);
+                    modlist.push(w);
+                    dict[w] = getWord(w);
                 }
             });
             return {
-                wordsObj_add, wordsArr_del, wordsObj_mod,
+                lists: {
+                    addlist, dellist, modlist,
+                },
+                dict,
             }
         }
         return {
