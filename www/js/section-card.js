@@ -99,7 +99,6 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_linkedWords = ele_card_display.querySelector("#linked-words");
 
     const ele_new_voc = ele_card_edit.querySelector("#id-new-vocab input");
-    ele_new_voc.disabled = true;
     const ele_new_ipa = ele_card_edit.querySelector("#id-new-ipa input");
     const ele_new_meaning = ele_card_edit.querySelector("#id-new-meaning input");
     const ele_new_level = ele_card_edit.querySelector("#id-new-level select");
@@ -115,16 +114,23 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
     const ele_available = ele_card_edit.querySelector("#id-new-tags #id-A");
     const ele_selected = ele_card_edit.querySelector("#id-new-tags #id-B");
 
-    function _handleSearchInputStyle(word) {
-        if (word.length <= 0 || dictionary.hasWord(word)) {
-            ele_searchInput.classList.remove("color-red");
+    function _handleSearchInputStyle(elem) {
+        const word = elem.value;
+        const _out = word.length <= 0 || dictionary.hasWord(word);
+        if (_out) {
+            elem.classList.remove("color-red");
         } else {
-            ele_searchInput.classList.add("color-red");
+            elem.classList.add("color-red");
         }
+        return _out;
     }
+    ele_new_voc.addEventListener('input', (e) => {
+        const word = ele_new_voc.value;
+        _updateCardContentInEditMode(word, dictionary.getWord(word));
+    })
     ele_searchInput.addEventListener('input', (e) => {
+        _handleSearchInputStyle(ele_searchInput);
         const word = ele_searchInput.value;
-        _handleSearchInputStyle(word);
         _updateWordList(word);
     });
     ele_searchInput.addEventListener('focus', () => {
@@ -437,8 +443,7 @@ function initCardSection(ai, dictionary, cmp, pronunciation) {
 
     dictionary.addEventListener(dictionary.EVT_WORD, e => {
         // logger.log(e);
-        const word = ele_searchInput.value;
-        _handleSearchInputStyle(word);
+        _handleSearchInputStyle(ele_searchInput);
     });
 
     _updateTagList([]);
