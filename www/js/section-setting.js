@@ -3,8 +3,10 @@ function initSectionImport(ai, dictionary, cmp, cacher, serverProxy) {
 
     const _localProxy = cacher.localProxy;
     const _localData = _localProxy.get('sec_setting', {});
-
+    const _metaProxy = cacher.metaProxy;
     const _proxy = cacher.lemmatizerProxy;
+
+    function _getTags() { return _metaProxy.get('tags', []); }
 
 
     const _jsonSource = `
@@ -156,7 +158,10 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     function _saveTags(tagsStr) {
         const _tags = tagsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-        _proxy.set("tags", _tags);
+        const _tagArr = _getTags();
+        _tagArr.length = 0;
+        _tagArr.push(..._tags);
+        _metaProxy.delaySave()
     }
 
     const btnConfig = ele_root.querySelector("#btn-config-submit");
@@ -196,8 +201,15 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
     });
 
     function _saveLemma(str) {
-        const _value = str.split(',').map(s => s.trim()).filter(s => !!s);
-        _proxy.set('lemmatizer', _value);
+        _proxy.clear();
+
+        str.split(',')
+            .map(s => s.trim())
+            .filter(s => !!s)
+            .forEach(p => {
+                let _t = p.split(":");
+                _proxy.set(_t[0], _t[1]);
+            });
     }
 
     const _ele_lemmaArea = ele_root.querySelector("#id-tab-body #id-lemmatizer textarea");
