@@ -101,13 +101,29 @@ async function syncAll(request, data, env) {
     }
 };
 
-function _genUserInfoUpdateSQL(userID, tags, env) {
+function _genSetValueSQL(key, value, time, env) {
     return env.DB
         .prepare(`
-            UPDATE user_id
-            SET tags = ?
-            WHERE userID = ?`
-        ).bind(tags, userID)
+            UPDATE keyvalue
+            SET value = ?, time_sync = ?
+            WHERE key = ?`
+        ).bind(value, time, key)
+}
+
+async function _getConfigValues(env) {
+    const result = await env.DB.prepare(`
+        SELECT json_group_object(
+            key,
+            json_object(
+                'value', value,
+                'time_sync', time_sync
+            )
+        ) AS result
+        FROM keyvalue
+        WHERE key IN ('tags', 'lemmatize')`
+    ).first();
+
+    return JSON.parse(result.result);
 }
 
 function _genMarkSQL(time, wordArr, action, env) {
@@ -148,7 +164,7 @@ function _genInsertSQL(word, detail, env) {
 }
 
 async function _CToS_add(cmd, syncTime, content, env) {
-    const _listClient = content.lists.addlist;
+    const _listClient = content.lists?.addlist ?? [];
     if (_listClient.length > 0) {
         const _listExist = [];
         const _r = await _getTimeModify(_listClient, env);
@@ -168,7 +184,7 @@ async function _CToS_add(cmd, syncTime, content, env) {
 }
 
 async function _CToS_del(cmd, syncTime, content, env) {
-    const _listClient = content.lists.dellist;
+    const _listClient = content.lists?.dellist ?? [];
     if (_listClient.length > 0) {
         const _list = [];
         const _r = await _getTimeModify(_listClient, env);
@@ -186,7 +202,7 @@ async function _CToS_del(cmd, syncTime, content, env) {
 }
 
 async function _CToS_modify(cmd, syncTime, content, env) {
-    const _listClient = content.lists.modlist;
+    const _listClient = content.lists?.modlist ?? [];
     if (_listClient.length > 0) {
         const _dict = content.dict;
         const _list = [];
@@ -208,24 +224,30 @@ async function _clientToServer(data, env) {
     const _syncTime = data.syncTime;
     const _cmd = [];
 
-    if (data.content) {
-        await _CToS_add(_cmd, _syncTime, data.content, env);
-        await _CToS_del(_cmd, _syncTime, data.content, env);
-        await _CToS_modify(_cmd, _syncTime, data.content, env);
-    }
-
-    /*
-    if (data.tags) {
-        if (_syncTime >= tagSyncTime) {
-            _cmd.push(_genUserInfoUpdateSQL('jerry-chaos', data.tags, env));
+    if (data.content.tags || data.content.lemmatize) {
+        const _out = await _getConfigValues(env);
+        if (data.content.tags) {
+            if (_out['tags'].time_sync <= _syncTime) {
+                _cmd.push(_genSetValueSQL('tags', data.content.tags.join(','), Date.now(), env));
+            }
+        }
+        if (data.content.lemmatize) {
+            if (_out['lemmatize'].time_sync <= _syncTime) {
+                _cmd.push(_genSetValueSQL('lemmatize', data.content.lemmatize.join(','), Date.now(), env));
+            }
         }
     }
-    */
+
+    await _CToS_add(_cmd, _syncTime, data.content, env);
+    await _CToS_del(_cmd, _syncTime, data.content, env);
+    await _CToS_modify(_cmd, _syncTime, data.content, env);
 
     if (_cmd.length > 0) {
         await env.DB.batch(_cmd);
     }
 }
+
+let aaaa = 'sfsfsfssfsf';
 
 async function _serverToClient(data, env) {
     const result = await env.DB
@@ -243,6 +265,7 @@ async function _serverToClient(data, env) {
         const _o = await _getDetails([...lists.addlist, ...lists.modlist], env);
         const dict = _toObj(_o);
 
+        const _config = await _getConfigValues(env);
         const _timeSync = await getLatestTime(env);
         return getJSONResponse({
             info: "Succeeded.",
@@ -250,6 +273,9 @@ async function _serverToClient(data, env) {
             content: {
                 lists,
                 dict,
+                tags: _config.tags,
+                lemmatize: _config.lemmatize,
+                aaaa,
             }
         });
     } else {
@@ -268,8 +294,8 @@ async function sync(request, data, env) {
         const _tv = Number(_credit);
         if (_tv >= 2) {
             await _clientToServer(data, env);
-            return await _serverToClient(data, env);
-        } else if (_tv >= 1) {
+        }
+        if (_tv >= 1) {
             return await _serverToClient(data, env);
         }
         return getEmptyRes(`Can not process. Token value is: ${_tv}.`);
