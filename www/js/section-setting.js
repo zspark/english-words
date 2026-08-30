@@ -267,9 +267,8 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     (function() {
         //init;
-        elem_tags.value = _proxy.get("tags")?.join(',') ?? '';
-        _ele_lemmaArea.value = _proxy.get("lemmatizer")?.join(',') ?? '';
-
+        elem_tags.value = _getTags().join(',') ?? '';
+        _ele_lemmaArea.value = Object.entries(_proxy.data()).map(([a, b]) => `${a}:${b}`).join(',');
 
         elem_syncInerval.value = _localData['syncInterval'] || 10;
         elem_key.value = _localData['ai_key'] || "";
