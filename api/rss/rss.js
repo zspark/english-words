@@ -5,7 +5,7 @@ export async function getNews(request, _data, env) {
 
     try {
         if (_data.vendor === "RNZ") {
-            return getRNZNews(_data, request, env);
+            return getRNZNews(_data, env);
         } else if (_data.vendor === "xxxxx???sfsf") {
         }
     } catch (error) {

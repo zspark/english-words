@@ -1,6 +1,6 @@
 import { getJSONResponse } from "../server-utils.js";
 
-export async function getRNZNews(data, request, env) {
+export async function getRNZNews(data, env) {
     const _credit = await getValue(data.accessToken, env);
     if (!_credit) {
         return getEmptyRes("server need a token to process.");
@@ -79,22 +79,29 @@ export async function getRNZNews(data, request, env) {
     });
 
     if (!articleResponse.ok) {
-        throw new Error(`Article request failed: ${articleResponse.status}`);
+        throw new Error(
+            `Article request failed: ${articleResponse.status}`
+        );
     }
 
     // --------------------------------------------------
     // 4. Extract article paragraphs
     // --------------------------------------------------
 
-    const _handler = {
-        text(text) {
-            paragraphs.push(text.text);
-        }
-    }
     const paragraphs = [];
+
     const transformed = new HTMLRewriter()
-        .on("article p", _handler)
+        .on("article p", {
+            text(text) {
+                const content = text.text.trim();
+
+                if (content) {
+                    paragraphs.push(content);
+                }
+            }
+        })
         .transform(articleResponse);
+
     await transformed.arrayBuffer();
 
     // --------------------------------------------------
@@ -108,7 +115,7 @@ export async function getRNZNews(data, request, env) {
             link,
             pub_date: pubDate,
             description,
-            content: paragraphs.filter((str) => str.length > 0)
+            content: paragraphs
         }
     });
 }
