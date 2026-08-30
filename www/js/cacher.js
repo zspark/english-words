@@ -67,6 +67,7 @@ function initCacher(logger) {
 
     const localProxy = _create('__localCache__');
     const metaProxy = _create('__metaCache__');
+    const lemmatizerProxy = _create('__lemmatizerCache__');
     const recordsProxy = _create('__recordCache__');
     const wordsProxy = _create('__wordCache__');
 
@@ -75,5 +76,6 @@ function initCacher(logger) {
         metaProxy,
         recordsProxy,
         wordsProxy,
+        lemmatizerProxy,
     }
 }

@@ -1,12 +1,10 @@
 
 function initSectionImport(ai, dictionary, cmp, cacher, serverProxy) {
 
-    const _metaProxy = cacher.metaProxy;
     const _localProxy = cacher.localProxy;
     const _localData = _localProxy.get('sec_setting', {});
 
-    function _getTags() { return _metaProxy.get('tags', []); }
-    function _getLemma() { return _metaProxy.get('lemmatizer', []); }
+    const _proxy = cacher.lemmatizerProxy;
 
 
     const _jsonSource = `
@@ -158,10 +156,7 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     function _saveTags(tagsStr) {
         const _tags = tagsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-        const _tagArr = _getTags();
-        _tagArr.length = 0;
-        _tagArr.push(..._tags);
-        _metaProxy.delaySave()
+        _proxy.set("tags", _tags);
     }
 
     const btnConfig = ele_root.querySelector("#btn-config-submit");
@@ -202,20 +197,13 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     function _saveLemma(str) {
         const _value = str.split(',').map(s => s.trim()).filter(s => !!s);
-        const _lemmaArr = _getLemma();
-        _lemmaArr.length = 0;
-        _lemmaArr.push(..._value)
-        _metaProxy.delaySave();
+        _proxy.set('lemmatizer', _value);
     }
 
     const _ele_lemmaArea = ele_root.querySelector("#id-tab-body #id-lemmatizer textarea");
     const _btnLemma = ele_root.querySelector("#btn-lemmatizer-submit");
     _btnLemma.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {// save
-            const _obj = _metaProxy.get('lemmatizer', {});
-            for (const key in _obj) {
-                delete _obj[key];
-            }
             _saveLemma(_ele_lemmaArea.value);
         }
     });
@@ -267,8 +255,8 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     (function() {
         //init;
-        elem_tags.value = _getTags().join(',')
-        _ele_lemmaArea.value = _getLemma().join(',');
+        elem_tags.value = _proxy.get("tags")?.join(',') ?? '';
+        _ele_lemmaArea.value = _proxy.get("lemmatizer")?.join(',') ?? '';
 
 
         elem_syncInerval.value = _localData['syncInterval'] || 10;

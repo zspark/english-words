@@ -1,6 +1,5 @@
 function initLemmatizer(logger, cacher) {
-    const _metaProxy = cacher.metaProxy;
-    const _obj = _metaProxy.get('lemmatizer', {});
+    const _proxy = cacher.lemmatizerProxy;
 
     function lemmatize(word) {
 
@@ -9,8 +8,9 @@ function initLemmatizer(logger, cacher) {
         }
 
         const lower = word.toLowerCase();
-        if (_obj[lower]) {
-            return _obj[lower];
+        let _w = _proxy.get(lower);
+        if (_w) {
+            return _w;
         }
 
         // ----------------------------------------
