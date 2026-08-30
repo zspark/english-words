@@ -9,6 +9,7 @@ def batch_generate_mp3(
     api_key: str,
     json_path: str = "__audios__.json",
     audio_dir: str = "./audio_files",
+    force: bool = False,
 ):
     """处理单词列表：生成 MP3 音频文件并同步更新 JSON 文件。
 
@@ -39,10 +40,11 @@ def batch_generate_mp3(
    
     # 4. 遍历处理
     for word in raw_words:
-        # 查重：如果在 JSON 中则跳过
-        if word in processed_words:
-            print(f"⏩ 跳过: '{word}' (已存在于 JSON 中)")
-            continue
+        if not force:
+            # 查重：如果在 JSON 中则跳过
+            if word in processed_words:
+                print(f"⏩ 跳过: '{word}' (已存在于 JSON 中)")
+                continue
 
         print(f"🔄 正在生成音频: '{word}'...")
         mp3_path = Path(audio_dir) / f"{word}.mp3"
@@ -83,4 +85,5 @@ if __name__ == "__main__":
         api_key=MY_API_KEY,
         json_path="../www/audio/__audios__.json",  # JSON 路径
         audio_dir="../www/audio",  # MP3 输出路径
+        force=False,
     )
