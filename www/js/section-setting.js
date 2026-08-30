@@ -10,9 +10,10 @@ function initSectionImport(ai, dictionary, cmp, cacher, serverProxy) {
 
 
     const _jsonSource = `
+${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna import into your database. Words are separated with english comma (,)\n\nBetter not more than 50 words.")}
 ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
 <div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-modal-submit', ['Append'])}
+    ${cmp.buttonGroupSource('btn-modal-submit', ['Generate', 'Append'])}
 </div>`;
 
 
@@ -50,10 +51,10 @@ ${cmp.switcherSource("id-theme", "Dark Theme?", false)}
     </div>
 </div>`;
 
-    const _aiAssist = `
-${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna import into your database. Words are separated with english comma (,)\n\nBetter not more than 50 words.")}
+    const _notebooks = `
+${cmp.dropdownSource("id-notebook", "Select Notebook.", ['notebook A', 'notebook B', 'notebook C'])}
 <div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-ai-submit', ['Generate'])}
+    ${cmp.buttonGroupSource('btn-notebook-confirm', ['Create', 'Switch'])}
 </div>`;
 
     const _lemmatizer = `
@@ -66,16 +67,16 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 <div id="id-form" class='bs-panel bs-panel-middle'>
 
     <div class="tab-header">
-        <button class="tab-btn active" data-tab="json-tab">Pure JSON Text</button>
-        <button class="tab-btn" data-tab="ai-tab">AI Support</button>
-        <button class="tab-btn" data-tab="lemmatizer-tab">Lemmatizer</button>
+        <button class="tab-btn active" data-tab="json-tab">AI Support</button>
         <button class="tab-btn" data-tab="file-tab">Local File</button>
+        <button class="tab-btn" data-tab="lemmatizer-tab">Lemmatizer</button>
+        <button class="tab-btn" data-tab="notebook">Notebook</button>
         <button class="tab-btn" data-tab="config-tab">Config</button>
     </div>
 
     <div id="id-tab-body">
         <div id="json-tab" class="tab-content active"> ${_jsonSource} </div>
-        <div id="ai-tab" class="tab-content"> ${_aiAssist} </div>
+        <div id="notebook" class="tab-content"> ${_notebooks} </div>
         <div id="lemmatizer-tab" class="tab-content"> ${_lemmatizer} </div>
         <div id="file-tab" class="tab-content"> ${_fileSource} </div>
         <div id="config-tab" class="tab-content"> ${_configSource} </div>
@@ -130,6 +131,11 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     const _ele_importByJSON = ele_root.querySelector("#id-tab-body #import-text textarea");
     const _ele_importByAI = ele_root.querySelector("#id-tab-body #import-ai textarea");
+
+
+    ele_root.querySelector("#id-notebook").addEventListener("change", (e) => {
+        logger.debug("Selected value:", e.target.value);
+    });
 
     async function _copyText(text) {
         try {
@@ -186,17 +192,21 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
         }
     });
 
-    const _btnAi = ele_root.querySelector("#btn-ai-submit");
-    _btnAi.addEventListener("click", async (e) => {
-        if (e.target.dataset.index === "0") {//generate
-            const _rawData = dictionary.getMissingWords(_ele_importByAI.value.trim());
-            if (!_rawData) {
-                logger.log(`no words detected`);
-                return;
-            }
-
-            const _question = ai.getAIMeaningQuestion(_rawData);
-            _copyText(_question);
+    const _notebookConfirm = ele_root.querySelector("#btn-notebook-confirm");
+    _notebookConfirm.addEventListener("click", async (e) => {
+        if (e.target.dataset.index === "0") {// create
+            let _m = cmp.showMask(`
+    ${cmp.inputSource("id-name", "Input New Notebook Name:", "Input notebook name.", false)}`,
+                "Create", (maskElem) => {
+                    const _eleInput = maskElem.querySelector("#id-name input");
+                    logger.debug(`Create clicked, name is: ${_eleInput.value}`);
+                },
+                "Cancel", () => { logger.debug('Cancel clicked') },
+            );
+            _m.querySelector("#id-name input").focus();
+        } else if (e.target.dataset.index === "1") {
+            // logger.debug("WIP");
+            cmp.showMask(`<p> Switch notebook WIP.</p> `, "Got It", () => { },);
         }
     });
 
@@ -231,9 +241,18 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
     });
     const btnSubmit = ele_root.querySelector("#btn-modal-submit");
     btnSubmit.addEventListener("click", async (e) => {
-        if (e.target.dataset.index == "0") {
+        if (e.target.dataset.index == "1") {
             const _rawData = _ele_importByJSON.value.trim();
             _importData(_rawData, false);
+        } else if (e.target.dataset.index == "0") {
+            const _rawData = dictionary.getMissingWords(_ele_importByAI.value.trim());
+            if (!_rawData) {
+                logger.log(`no words detected`);
+                return;
+            }
+
+            const _question = ai.getAIMeaningQuestion(_rawData);
+            _copyText(_question);
         }
     });
     const btnExport = ele_root.querySelector("#btn-file-submit");
@@ -268,7 +287,7 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
     (function() {
         //init;
         elem_tags.value = _getTags().join(',') ?? '';
-        _ele_lemmaArea.value = Object.entries(_proxy.data()).map(([a, b]) => `${a}:${b}`).join(',');
+        _ele_lemmaArea.value = Object.entries(_proxy.data()).map(([a, b]) => `${a}: ${b}`).join(',');
 
         elem_syncInerval.value = _localData['syncInterval'] || 10;
         elem_key.value = _localData['ai_key'] || "";

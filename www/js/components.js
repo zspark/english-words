@@ -190,8 +190,8 @@ function initComponents() {
 
             <div class="bs-mask-message"> ${message} </div>
             <div class="bs-mask-buttons">
-                ${_okBtnStr}
                 ${_cancelBtnStr}
+                ${_okBtnStr}
             </div>
         </div>`;
 
@@ -200,7 +200,7 @@ function initComponents() {
         const _a = mask.querySelector(".bs-btn-ok")
         if (_a) {
             _a.onclick = () => {
-                onOK();
+                onOK(mask);
                 mask.remove();
             };
         }
@@ -208,7 +208,7 @@ function initComponents() {
         const _b = mask.querySelector(".bs-btn-cancel")
         if (_b) {
             _b.onclick = () => {
-                onCancel();
+                onCancel(mask);
                 mask.remove();
             };
         }
