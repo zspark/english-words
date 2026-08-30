@@ -1,13 +1,12 @@
 
-function initSectionImport(ai, dictionary, cmp, cacher) {
+function initSectionImport(ai, dictionary, cmp, cacher, serverProxy) {
 
     const _metaProxy = cacher.metaProxy;
     const _localProxy = cacher.localProxy;
     const _localData = _localProxy.get('sec_setting', {});
 
-    function _getTags() {
-        return _metaProxy.get('tags', []);
-    }
+    function _getTags() { return _metaProxy.get('tags', []); }
+    function _getLemma() { return _metaProxy.get('lemmatizer', []); }
 
 
     const _jsonSource = `
@@ -157,14 +156,18 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
         });
     }
 
+    function _saveTags(tagsStr) {
+        const _tags = tagsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        const _tagArr = _getTags();
+        _tagArr.length = 0;
+        _tagArr.push(..._tags);
+        _metaProxy.delaySave()
+    }
+
     const btnConfig = ele_root.querySelector("#btn-config-submit");
     btnConfig.addEventListener("click", async (e) => {
         if (e.target.dataset.index === "0") {//save
-            const _tags = elem_tags.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            const _tagArr = _getTags();
-            _tagArr.length = 0;
-            _tagArr.push(..._tags);
-            _metaProxy.delaySave()
+            _saveTags(elem_tags.value);
 
             const _sec = _localData['syncInterval'] = Number(elem_syncInerval.value) || 10;
             _localData['ai_key'] = elem_key.value;
@@ -197,6 +200,14 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
         }
     });
 
+    function _saveLemma(str) {
+        const _value = str.split(',').map(s => s.trim()).filter(s => !!s);
+        const _lemmaArr = _getLemma();
+        _lemmaArr.length = 0;
+        _lemmaArr.push(..._value)
+        _metaProxy.delaySave();
+    }
+
     const _ele_lemmaArea = ele_root.querySelector("#id-tab-body #id-lemmatizer textarea");
     const _btnLemma = ele_root.querySelector("#btn-lemmatizer-submit");
     _btnLemma.addEventListener("click", async (e) => {
@@ -205,12 +216,7 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
             for (const key in _obj) {
                 delete _obj[key];
             }
-            const _value = _ele_lemmaArea.value.split(',').map(s => s.trim()).filter(s => !!s);
-            _value.forEach(pair => {
-                let _v = pair.split(":");
-                _obj[_v[0]] = _v[1];
-            });
-            _metaProxy.delaySave();
+            _saveLemma(_ele_lemmaArea.value);
         }
     });
 
@@ -249,19 +255,20 @@ ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")
 
     function setSync(scrollY) { }
 
+    serverProxy.addEventListener(serverProxy.EVT_SYNC, (e) => {
+        const _data = e.detail.data;
+        if (_data) {
+            _saveTags(_data.tags);
+            elem_tags.value = _data.tags;
+            _saveLemma(_data.lemmatize);
+            _ele_lemmaArea.value = _data.lemmatize;
+        }
+    });
 
     (function() {
         //init;
-        const _tmp = _metaProxy.get('lemmatizer', {});
-        const _obj = Object.entries(_tmp);
-        let _str = '';
-        for (const [a, b] of _obj) {
-            _str += `${a}:${b},`;
-        }
-        _ele_lemmaArea.value = _str;
-
-
         elem_tags.value = _getTags().join(',')
+        _ele_lemmaArea.value = _getLemma().join(',');
 
 
         elem_syncInerval.value = _localData['syncInterval'] || 10;

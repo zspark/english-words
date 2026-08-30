@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     section_article = initArticleSection(_ai, _dictionary, _components, section_card, _pronunciation, _serverProxy, _lemmatizer);
     section_test = initTestSection(_ai, _dictionary, _components, section_words, _pronunciation);
     section_result = initResultSection(logger, _cacher, _dictionary, _components, section_card, _pronunciation);
-    section_setting = initSectionImport(_ai, _dictionary, _components, _cacher);
+    section_setting = initSectionImport(_ai, _dictionary, _components, _cacher, _serverProxy);
 
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key)

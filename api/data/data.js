@@ -244,6 +244,7 @@ async function _clientToServer(data, env) {
 
     if (_cmd.length > 0) {
         await env.DB.batch(_cmd);
+        _server_newest_sync_time = await getLatestTime(env);
     }
 }
 
@@ -266,16 +267,14 @@ async function _serverToClient(data, env) {
         const dict = _toObj(_o);
 
         const _config = await _getConfigValues(env);
-        const _timeSync = await getLatestTime(env);
         return getJSONResponse({
             info: "Succeeded.",
-            syncTime: _timeSync,
+            syncTime: _server_newest_sync_time,
             content: {
                 lists,
                 dict,
-                tags: _config.tags,
-                lemmatize: _config.lemmatize,
-                _server_newest_sync_time,
+                tags: _config.tags.value,
+                lemmatize: _config.lemmatize.value,
             }
         });
     } else {
