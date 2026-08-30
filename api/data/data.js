@@ -61,7 +61,7 @@ function _toObj(result) {
     } else return {};
 }
 
-async function syncAll(request, data, env) {
+async function syncAll(data, env) {
     try {
         const _credit = await getValue(data.accessToken, env);
         if (!_credit) {
@@ -247,7 +247,7 @@ async function _clientToServer(data, env) {
     }
 }
 
-let aaaa = 'sfsfsfssfsf';
+let _server_newest_sync_time = -1;
 
 async function _serverToClient(data, env) {
     const result = await env.DB
@@ -275,7 +275,7 @@ async function _serverToClient(data, env) {
                 dict,
                 tags: _config.tags,
                 lemmatize: _config.lemmatize,
-                aaaa,
+                _server_newest_sync_time,
             }
         });
     } else {
@@ -285,7 +285,7 @@ async function _serverToClient(data, env) {
     }
 }
 
-async function sync(request, data, env) {
+async function sync(data, env) {
     try {
         const _credit = await getValue(data.accessToken, env);
         if (!_credit) {
@@ -305,13 +305,15 @@ async function sync(request, data, env) {
 }
 
 export async function respond_POST(request, data, env) {
+    if (_server_newest_sync_time < 0) {
+        _server_newest_sync_time = await getLatestTime(env);
+    }
     if (data.requestType === "sync") {
-        return sync(request, data, env);
+        return sync(data, env);
     } else if (data.requestType === "sync-all") {
-        return syncAll(request, data, env);
+        return syncAll(data, env);
     }
     return getEmptyRes('POST');
 }
-
 
 
