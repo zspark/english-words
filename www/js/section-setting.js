@@ -1,14 +1,12 @@
 import logger from "./logger.js";
 import ai from "./ai.js";
-import cacher from "./cacher.js";
+import Cacher from "./cacher.js";
 import serverProxy from "./server-proxy.js";
 import cmp from "./components.js";
 import { SectionBase } from "./section-base.js";
-const _localProxy = cacher.localProxy;
-const _localData = _localProxy.get('sec_setting', {});
-const _metaProxy = cacher.metaProxy;
-const _proxy = cacher.lemmatizerProxy;
-function _getTags() { return _metaProxy.get('tags', []); }
+const _metaProxy = Cacher.metaProxy;
+const _localProxy = Cacher.localProxy;
+const _proxy = Cacher.lemmatizerProxy;
 const _jsonSource = `
 ${cmp.textareaSource("import-ai", null, 'h300px', "Input words that you wanna import into your database. Words are separated with english comma (,)\n\nBetter not more than 50 words.")}
 ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database content here.")}
@@ -93,6 +91,7 @@ export default class SectionSetting extends SectionBase {
         const _ele_importByJSON = this.ui.get("#id-tab-body #import-text textarea");
         const _ele_importByAI = this.ui.get("#id-tab-body #import-ai textarea");
         this.#_updateTags();
+        const _localData = _localProxy.get('sec_setting', {});
         elem_syncInerval.value = (_localData.syncInterval || 10) + '';
         elem_key.value = _localData.ai_key || "";
         elem_provider.value = _localData.ai_provider || "";
@@ -127,13 +126,15 @@ export default class SectionSetting extends SectionBase {
             const _target = e.target;
             if (_target.dataset.index === "0") { //save
                 this.#_saveTags(this.#_elem_tags.value);
-                const _sec = _localData['syncInterval'] = Number(elem_syncInerval.value) || 10;
-                _localData['ai_key'] = elem_key.value;
-                _localData['ai_provider'] = elem_provider.value;
-                _localData['userID'] = elem_user.value;
-                _localData['theme'] = elem_theme.checked;
-                _localProxy.delaySave();
-                this._dict.setSyncInterval(_sec);
+                const _value = {
+                    syncInterval: Number(elem_syncInerval.value),
+                    ai_key: elem_key.value,
+                    ai_provider: elem_provider.value,
+                    userID: elem_user.value,
+                    theme: elem_theme.checked,
+                };
+                _localProxy.set('sec_setting', _value);
+                this._dict.setSyncInterval(_value.syncInterval);
                 if (elem_theme.checked) {
                     document.documentElement.setAttribute('data-theme', 'dark');
                 }
@@ -234,11 +235,7 @@ export default class SectionSetting extends SectionBase {
         }
     }
     #_saveTags(tagsStr) {
-        const _tags = tagsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-        const _tagArr = _getTags();
-        _tagArr.length = 0;
-        _tagArr.push(..._tags);
-        _metaProxy.delaySave();
+        _metaProxy.set('tags', tagsStr.split(',').map(s => s.trim()).filter(s => s.length > 0));
     }
     #_saveLemma(str) {
         _proxy.clear();
@@ -251,7 +248,7 @@ export default class SectionSetting extends SectionBase {
         });
     }
     #_updateTags() {
-        this.#_elem_tags.value = _getTags().join(',') ?? '';
+        this.#_elem_tags.value = _metaProxy.get('tags', []).join(',') ?? '';
         this.#_ele_lemmaArea.value = Object.entries(_proxy.data()).map(([a, b]) => `${a}: ${b}`).join(',');
     }
 }

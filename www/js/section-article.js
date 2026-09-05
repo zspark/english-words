@@ -1,13 +1,11 @@
 import logger from "./logger.js";
 import ai from "./ai.js";
 import Dictionary from "./dictionary.js";
-import cacher from "./cacher.js";
+import Cacher from "./cacher.js";
 import serverProxy from "./server-proxy.js";
 import cmp from "./components.js";
 import { lemmatize } from "./lemmatize.js";
 import { SectionBase } from "./section-base.js";
-const _rts = cacher.localProxy.get('sec_article', {});
-_rts.scrollY = _rts.scrollY || 0;
 const articleSource = `
 <div class="bs-panel lh2p4">
     <div class="word-header">
@@ -58,9 +56,11 @@ export default class SectionArticle extends SectionBase {
         });
         serverProxy.addEventListener(serverProxy.EVT_NEWS, (e) => {
             //@ts-ignore
-            const _v = e.detail.data;
+            const _v = e?.detail?.data;
             // logger.debug(_v);
-            this._renderNews(_v);
+            if (_v) {
+                this._renderNews(_v);
+            }
         });
         const _renderWord = (e) => {
             let _w = this._getWordUnderCursor(e);
@@ -91,7 +91,7 @@ export default class SectionArticle extends SectionBase {
         });
     }
     #_setArticle(content) {
-        cacher.metaProxy.set("article", content);
+        Cacher.metaProxy.set("article", content);
     }
     _renderNews(content) {
         content = content ?? {
@@ -186,19 +186,19 @@ export default class SectionArticle extends SectionBase {
         return (left + right).toLowerCase();
     }
     _renderArticle() {
-        const _ar = cacher.metaProxy.get("article", "");
+        const _ar = Cacher.metaProxy.get("article", "");
         const _paragraphs = _ar.split(/\n/).filter(para => para.trim() !== '');
         const finalHtml = _paragraphs?.map(para => { return `<p>${para}</p>`; }).join('');
         this.ui.setInnerHTML("#article-content", finalHtml ?? "");
     }
     setSync(scrollY) {
-        _rts.scrollY = scrollY;
+        Cacher.localProxy.set('sec_article.scrollY', scrollY ?? 0);
     }
     deactive() {
-        _rts.scrollY = window.scrollY;
+        this.setSync(window.scrollY);
     }
     active() {
-        window.scrollTo(0, _rts.scrollY);
+        window.scrollTo(0, Cacher.localProxy.get('sec_article.scrollY', 0));
         const ele_card = this.ui.get("#id-cardContainer");
         this._card.setParent(ele_card);
     }
