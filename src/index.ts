@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             logger.error(`Should not be here. secion id is: ${id}`);
             return;
         }
-        _rts.sectionID = id;
+        Cacher.localProxy.set("homepage.sectionID", id);
         _currentSection?.deactive();
         _currentSection = _nextSection;
         _currentSection.ui.setParent(ele_container);
@@ -74,9 +74,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
     }
 
 
-    const _rts = Cacher.localProxy.get("homepage", {});
-    logger.log(`current section id: ${_rts.sectionID}`);
-    _switchToSection(_rts.sectionID || "sec-dictionary");
+    const _v = Cacher.localProxy.get("homepage.sectionID", "sec-dictionary");
+    logger.log(`current section id: ${_v}`);
+    _switchToSection(_v);
+    _navigator.highlightSection(_v);
 
     window.addEventListener('scroll', () => {
         //logger.debug(window.scrollY);

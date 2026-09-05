@@ -55,20 +55,43 @@ class Cacher {
         }
     }
 
+    /**
+     * key will be separated by '.';
+     */
     set(key: string, value: any): void {
-        this.#_obj[key] = value;
+        const _arr = key.split('.');
+        let _obj = this.#_createObject(_arr);
+        _obj[_arr[_arr.length - 1]] = value;
         this.delaySave();
     }
 
     get(key: string, defaultValue: any = null): any {
-        let _v = this.#_obj[key];
+        const _arr = key.split('.');
+        let _obj = this.#_createObject(_arr);
+        let _name = _arr[_arr.length - 1];
+        let _v = _obj[_name];
         if (!_v) {
             _v = defaultValue;
             if (defaultValue) {
-                this.set(key, defaultValue);
+                _obj[_name] = defaultValue;
             }
         }
         return _v;
+    }
+
+    #_createObject(path: string[]): any {
+        const N = path.length;
+        if (N <= 0) return;
+
+        let _obj = this.#_obj;
+        for (let i = 0; i < N - 1; ++i) {
+            let _name = path[i];
+            if (!_obj[_name]) {
+                _obj[_name] = {};
+            }
+            _obj = _obj[_name];
+        }
+        return _obj;
     }
 
     has(key: string): boolean {

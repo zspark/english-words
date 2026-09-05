@@ -38,17 +38,19 @@ export { NAV_EVT_SECTION }
 
 export default class Navigator extends EventTarget {
 
-    #_currentSectionElemBtn: HTMLElement | null = null;
+    #_currentSectionElemBtn: HTMLElement | undefined = undefined;
     #_ui: SectionUIBase;
 
     constructor(dict: Dictionary) {
         super();
-        const ui = this.#_ui = new SectionUIBase("hTop", _source);
+        const ui = this.#_ui = new SectionUIBase("navigator", _source);
 
         ui.get("#top-bar-left").addEventListener('click', (e) => {
             const _tar = findNearestElementWithTag(e.target as HTMLElement, 'div');
-            this.#_highlightSection(_tar);
-            this.dispatchEvent(new CustomEvent<nav_evt_data_type>(NAV_EVT_SECTION, { detail: { id: _tar?.id as string } }));
+            if (_tar) {
+                this.highlightSection(_tar.id);
+                this.dispatchEvent(new CustomEvent<nav_evt_data_type>(NAV_EVT_SECTION, { detail: { id: _tar.id } }));
+            }
         });
         ui.get("#top-bar-right").addEventListener('click', (e) => {
         });
@@ -69,11 +71,13 @@ export default class Navigator extends EventTarget {
         return this;
     }
 
-    #_highlightSection(elem: HTMLElement | null): void {
-        if (this.#_currentSectionElemBtn == elem) return;
+    highlightSection(id: string): void {
+        const elem = this.#_ui.getAll<HTMLElement>("#top-bar-left div").find(e => {
+            return e.id === id;
+        });
+        if (this.#_currentSectionElemBtn === elem) return;
         this.#_currentSectionElemBtn?.removeAttribute("active");
         elem?.setAttribute("active", "");
         this.#_currentSectionElemBtn = elem;
     }
-
 }

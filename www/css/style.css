@@ -124,7 +124,7 @@ body {
     line-height: 1.6;
 }
 
-#navigator {
+.navigator {
     position: sticky;
     padding: 5px;
     top: 0;
@@ -1650,7 +1650,7 @@ svg {
         padding: 10px;
     }
 
-    #navigator {
+    .navigator {
         grid-template-columns: 1fr;
         gap: 0px;
     }
