@@ -1,13 +1,18 @@
-import logger from "./logger.js";
-import ai from "./ai.js";
-import Dictionary from "./dictionary.js";
-import cacher from "./cacher.js";
-import serverProxy from "./server-proxy.js";
-import cmp from "./components.js";
-import { lemmatize } from "./lemmatize.js";
-import { SectionBase } from "./section-base.js";
+import logger from "./logger.js"
+import ai from "./ai.js"
+import Dictionary from "./dictionary.js"
+import cacher from "./cacher.js"
+import serverProxy from "./server-proxy.js"
+import cmp from "./components.js"
+import words from "./section-words.js"
+import Card from "./card.js"
+import { lemmatize } from "./lemmatize.js"
+import { ArticleContentType, HTMLString, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseData, ResponseEvent } from "./types.js"
+import { SectionBase, SectionUIBase } from "./section-base.js"
+
 const _rts = cacher.localProxy.get('sec_article', {});
 _rts.scrollY = _rts.scrollY || 0;
+
 const articleSource = `
 <div class="bs-panel lh2p4">
     <div class="word-header">
@@ -23,19 +28,23 @@ const articleSource = `
 </div>
 
 <div id="id-cardContainer"> </div>
-</div>`;
+</div>`
+
 export default class SectionArticle extends SectionBase {
-    constructor(dict, card) {
+
+    constructor(dict: Dictionary, card: Card) {
         super("container", articleSource, dict, card);
+
         this.ui.get("#id-action").addEventListener("click", async (e) => {
-            const _tar = e.target;
+            const _tar = e.target as HTMLButtonElement;
             if (_tar.dataset.index === "0") {
                 // alert("Function is under construction!");
-                const pickedArray = [];
+                const pickedArray: string[] = [];
                 if (pickedArray.length === 0) {
                     logger.error('Pick some words first, then give it a go!');
                     return;
                 }
+
                 _tar.disabled = true;
                 ele_article.innerHTML = "AI is generating articles ...";
                 const resultText = await ai.genArticle(pickedArray.join(', '));
@@ -43,45 +52,53 @@ export default class SectionArticle extends SectionBase {
                     this.#_setArticle(resultText);
                 }
                 this._renderArticle();
+
                 _tar.disabled = false;
             }
         });
+
+
         this.ui.get("#id-action-2").addEventListener('click', (e) => {
-            if (e.target?.dataset.index === "0") {
-                const ele_RSSVendor = this.ui.get('#id-tagRSS select');
+            if ((e.target as HTMLElement)?.dataset.index === "0") {
+                const ele_RSSVendor = this.ui.get<HTMLInputElement>('#id-tagRSS select');
                 const _vendor = ele_RSSVendor.value;
                 serverProxy.getNews(_vendor);
             }
         });
+
         this._dict.addEventListener(Dictionary.EVT_DICT, (e) => {
             // logger.debug("[article]");
         });
+
         serverProxy.addEventListener(serverProxy.EVT_NEWS, (e) => {
             //@ts-ignore
-            const _v = e.detail.data;
+            const _v = e.detail.data as ArticleContentType;
             // logger.debug(_v);
             this._renderNews(_v);
-        });
-        const _renderWord = (e) => {
+        })
+
+        const _renderWord = (e: MouseEvent): void => {
             let _w = this._getWordUnderCursor(e);
             if (!this._dict.hasWord(_w)) {
-                _w = lemmatize(_w);
+                _w = lemmatize(_w)
             }
             if (_w) {
-                card.renderCard(_w);
+                card.renderCard(_w)
             }
-        };
-        let ele_actived_word;
+        }
+        let ele_actived_word: HTMLElement;
         const ele_article = this.ui.get("#article-content");
         ele_article.addEventListener("click", (e) => {
-            let ele_clicked = e.target;
+            let ele_clicked = e.target as HTMLElement;
             if (ele_clicked.tagName === "SPAN") {
-                ele_actived_word?.removeAttribute("active");
+                ele_actived_word?.removeAttribute("active")
                 ele_actived_word = ele_clicked;
                 ele_clicked.setAttribute("active", '');
-                card.renderCard(ele_clicked.outerText);
+
+                card.renderCard(ele_clicked.outerText)
                 return;
             }
+
             if (e.ctrlKey) {
                 _renderWord(e);
             }
@@ -89,11 +106,15 @@ export default class SectionArticle extends SectionBase {
         ele_article.addEventListener("dblclick", (e) => {
             _renderWord(e);
         });
+
     }
-    #_setArticle(content) {
+
+    #_setArticle(content: string) {
         cacher.metaProxy.set("article", content);
     }
-    _renderNews(content) {
+
+
+    _renderNews(content: ArticleContentType): void {
         content = content ?? {
             content: [
                 "At least five New Zealanders have been reported missing following a ",
@@ -123,6 +144,7 @@ export default class SectionArticle extends SectionBase {
             pub_date: "Thu, 27 Aug 2026 20:23:49 +1200",
             title: "Otago councils pause regional deals after National backtracks on bed tax",
         };
+
         let _str = '';
         let _s = content.content[0];
         for (let i = 1, N = content.content.length - 1; i < N; ++i) {
@@ -134,8 +156,10 @@ export default class SectionArticle extends SectionBase {
             _s += str;
         }
         _str += `<p>${_s}<\p>`;
+
         //<p id="news-description" class="news-description">${content.description}</p>
-        this.ui.setInnerHTML("#article-content", `<article class="news-article">
+        this.ui.setInnerHTML("#article-content",
+            `<article class="news-article">
     <h1 id="news-title">${content.title}</h1>
 
     <div class="news-meta">
@@ -146,6 +170,7 @@ export default class SectionArticle extends SectionBase {
     <div id="news-content" class="news-content">${_str}</div>
 </article>`);
     }
+
     /*
     const easyWords = new Set(`
     a an the and or but if then else
@@ -173,34 +198,41 @@ export default class SectionArticle extends SectionBase {
     easy hard long short high low
     `.trim().split(/\s+/));
     */
-    _getWordUnderCursor(e) {
+
+    _getWordUnderCursor(e: MouseEvent): string {
         const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
         if (!pos || pos.offsetNode.nodeType !== Node.TEXT_NODE)
             return '';
+
         const text = pos.offsetNode.textContent;
         const offset = pos.offset;
         const before = text?.slice(0, offset);
         const after = text?.slice(offset);
         const left = before?.match(/[\w'-]+$/)?.[0] ?? '';
         const right = after?.match(/^[\w'-]+/)?.[0] ?? '';
+
         return (left + right).toLowerCase();
     }
-    _renderArticle() {
-        const _ar = cacher.metaProxy.get("article", "");
+
+    _renderArticle(): void {
+        const _ar = cacher.metaProxy.get("article", "") as string;
         const _paragraphs = _ar.split(/\n/).filter(para => para.trim() !== '');
         const finalHtml = _paragraphs?.map(para => { return `<p>${para}</p>`; }).join('');
         this.ui.setInnerHTML("#article-content", finalHtml ?? "");
     }
-    setSync(scrollY) {
+
+    setSync(scrollY: number): void {
         _rts.scrollY = scrollY;
     }
-    deactive() {
+    deactive(): void {
         _rts.scrollY = window.scrollY;
     }
-    active() {
+    active(): void {
         window.scrollTo(0, _rts.scrollY);
         const ele_card = this.ui.get("#id-cardContainer");
         this._card.setParent(ele_card);
     }
-    keyEvent(event) { }
+
+    keyEvent(event: Event): void { }
 }
+

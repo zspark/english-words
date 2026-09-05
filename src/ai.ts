@@ -1,15 +1,25 @@
-import logger from "./logger.js";
-import cacher from "./cacher.js";
-import chatGPT from "./ai/chatGPT.js";
-import deepseek from "./ai/deepseek.js";
+import { AI_API, AIProvider } from "./utils.js"
+import logger from "./logger.js"
+import cacher from "./cacher.js"
+import chatGPT from "./ai/chatGPT.js"
+import deepseek from "./ai/deepseek.js"
+
 const _localProxy = cacher.localProxy;
-function _getAIKey() {
+
+function _getAIKey(): AI_API {
     return _localProxy.get("sec_setting", {})['ai_key'] || "";
 }
-function _getAIProvider() {
+
+function _getAIProvider(): string {
     return _localProxy.get("sec_setting", {})['ai_provider'] || "";
 }
-function _getAI() {
+
+type output = {
+    api: AI_API,
+    provider: AIProvider,
+} | null;
+
+function _getAI(): output {
     const _apiKey = _getAIKey();
     if (_apiKey == "") {
         const _s = `You do not config ChatGPT API KEY.`;
@@ -17,6 +27,7 @@ function _getAI() {
         logger.log(_s);
         return null;
     }
+
     const _provider = _getAIProvider().toLowerCase();
     switch (_provider) {
         case "chatgpt":
@@ -27,7 +38,8 @@ function _getAI() {
             return null;
     }
 }
-async function genArticle(wordsString) {
+
+async function genArticle(wordsString: string): Promise<string> {
     const _ai = _getAI();
     if (_ai) {
         const question = `你是一个优秀的英语创意写作导师。
@@ -44,22 +56,22 @@ async function genArticle(wordsString) {
 `;
         logger.log(question);
         return await _ai.provider.ask(_ai.api, question);
-    }
-    else {
+    } else {
         return "";
     }
 }
-async function genMeaning(wordsString) {
+
+async function genMeaning(wordsString: string): Promise<string> {
     const _ai = _getAI();
     if (_ai) {
         const _question = getAIMeaningQuestion(wordsString);
         return await _ai.provider.ask(_ai.api, _question);
-    }
-    else {
+    } else {
         return "";
     }
 }
-function getAIMeaningQuestion(wordsString) {
+
+function getAIMeaningQuestion(wordsString: string): string {
     const _question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
 
 这些单词或者短语是（用逗号分开）:
@@ -82,21 +94,26 @@ json格式如下：
 4. links去重，英文逗号分隔，不要出现常规复数、副词形式，不要出现常规动名词形式；
 6. 严格使用提供的json字段，不多也不少，所有的value都是字符串，且是正确格式的JSON；
 7. note字段提供至少2个使用不同意思的例句，意思多的单词可以提供3个例句，附带汉语翻译。例句之间用'\n\n'（两个\n）分开`;
+
     logger.log(_question);
     return _question;
 }
-function getQuestionAboutWord(word) {
+
+function getQuestionAboutWord(word: string): string {
     const _question = `详细用汉语解释这个英语单词：${word} 
 
 要求：
 1. 要有汉语意思与音标；
 2. 要有例句；`;
+
     logger.log(_question);
     return _question;
 }
+
 export default {
     genArticle,
     genMeaning,
     getAIMeaningQuestion,
     getQuestionAboutWord,
-};
+}
+

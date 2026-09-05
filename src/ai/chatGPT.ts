@@ -1,4 +1,7 @@
-async function ask(api, question) {
+
+import { AI_API, AIProvider } from "../utils.js"
+
+async function ask(api: AI_API, question: string): Promise<string> {
     const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
@@ -10,15 +13,19 @@ async function ask(api, question) {
             input: question
         })
     });
+
     if (!response.ok) {
         throw new Error(await response.text());
     }
+
     const json = await response.json();
-    return json.output.find((item) => item.type === "message")
-        ?.content.find((c) => c.type === "output_text")
+    return json.output.find((item: any) => item.type === "message")
+        ?.content.find((c: any) => c.type === "output_text")
         ?.text;
 }
-const _p = {
+
+const _p: AIProvider = {
     ask,
-};
+}
+
 export default _p;

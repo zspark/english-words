@@ -150,12 +150,12 @@ body {
     justify-content: flex-end;
 }
 
-.hide {
-    display: none;
-}
-
 .clickable {
     cursor: pointer;
+}
+
+.not-selectable{
+    user-select: none;
 }
 
 .sec-btn {
@@ -1623,6 +1623,10 @@ svg {
 .news-source {
     display: inline-block;
     margin-top: 1rem;
+}
+
+.hide {
+    display: none;
 }
 
 @media (max-width: 768px) {
