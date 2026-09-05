@@ -181,10 +181,23 @@ class Card extends EventTarget {
                 }
             }
         });
+        const _moveTag = (event) => {
+            if (!event.target)
+                return;
+            const tag = event.target;
+            if (!tag.classList.contains("tag"))
+                return;
+            if (tag.parentElement === this.ele_available) {
+                this.ele_selected.appendChild(tag);
+            }
+            else {
+                this.ele_available.appendChild(tag);
+            }
+        };
         const ele_available = this.ele_available = ui.get("#card-edit #id-new-tags #id-A");
-        ele_available.addEventListener("click", this.moveTag);
         const ele_selected = this.ele_selected = ui.get("#card-edit #id-new-tags #id-B");
-        ele_selected.addEventListener("click", this.moveTag);
+        ele_available.addEventListener("click", _moveTag);
+        ele_selected.addEventListener("click", _moveTag);
         const ele_new_voc = this.ele_new_voc = ui.get("#card-edit #id-new-vocab input");
         ele_new_voc.addEventListener('input', (e) => {
             const word = ele_new_voc.value;
@@ -323,19 +336,6 @@ class Card extends EventTarget {
 </div>`;
         }
         this.ele_searchResult.innerHTML = htmlBuffer;
-    }
-    moveTag(event) {
-        if (!event.target)
-            return;
-        const tag = event.target;
-        if (!tag.classList.contains("tag"))
-            return;
-        if (tag.parentElement === this.ele_available) {
-            this.ele_selected.appendChild(tag);
-        }
-        else {
-            this.ele_available.appendChild(tag);
-        }
     }
     #_updateCardContentInEditMode(word, detail) {
         if (this.#_dict.hasWord(word)) {
