@@ -1,6 +1,7 @@
 var _b;
 import { isMobile } from "./utils.js";
 import logger from "./logger.js";
+import cacher from "./cacher.js";
 import cmp from "./components.js";
 import ai from "./ai.js";
 import Dictionary from "./dictionary.js";
@@ -201,7 +202,7 @@ class Card extends EventTarget {
         const ele_new_voc = this.ele_new_voc = ui.get("#card-edit #id-new-vocab input");
         ele_new_voc.addEventListener('input', (e) => {
             const word = ele_new_voc.value;
-            this.#_updateCardContentInEditMode(word, dict.getWord(word));
+            // this.#_updateCardContentInEditMode(word, dict.getWord(word));
         });
         this.ele_new_ipa = ui.get("#card-edit #id-new-ipa input");
         this.ele_new_meaning = ui.get("#card-edit #id-new-meaning input");
@@ -274,6 +275,17 @@ class Card extends EventTarget {
         this.#_updateTagList([]);
         this.renderCard('');
         this.ele_card_edit = ui.remove("#card-edit");
+        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
+            const data = e.detail;
+            if (this.currentWord === data.word) {
+                if (this._currentMode === MODE_EDIT) {
+                    this.#_renderEditPanel(data.word, data.detail);
+                }
+                else if (this._currentMode === MODE_READ) {
+                    this.renderCard(data.word, data.detail);
+                }
+            }
+        });
     }
     setParent(p) {
         this.#_ui.setParent(p);
@@ -366,7 +378,7 @@ class Card extends EventTarget {
         this.#_updateTagList(sTag);
     }
     #_updateTagList(sTags) {
-        const aTags = this.#_dict.getTags();
+        const aTags = cacher.metaProxy.get('tags', []);
         let _s = '';
         let _a = '';
         aTags.forEach(tag => {
@@ -396,7 +408,7 @@ class Card extends EventTarget {
         this.ele_card_content.replaceChildren(this.ele_card_display);
         this.dispatchEvent(new CustomEvent(_b.CARD_EVT_MODE_READ, { detail: {} }));
     }
-    renderCard(word) {
+    renderCard(word, detail) {
         if (word != this.currentWord) {
             let previousWord = this.currentWord;
             this.currentWord = word;
@@ -408,22 +420,19 @@ class Card extends EventTarget {
         else {
             this.#_ui.addAttrib('#id-body', 'hidden');
         }
-        const _detail = this.#_dict.getWord(word);
         this.ele_voc.textContent = word;
-        this.ele_ipa.textContent = _detail?.ipa || "<need implement>";
-        this.ele_meaning.textContent = _detail?.meaning || "<need implement>";
-        this.ele_level.textContent = _detail?.level || "";
-        this.ele_tag.textContent = _detail?.tags || "";
-        this.ele_note.innerHTML = ((notes) => {
-            let _s = '';
-            notes.forEach(s => { _s += `<p>${s}</p>`; });
-            return _s;
-        })(_detail?.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0) || []);
-        this.ele_linkedWords.innerHTML = ((links) => {
-            let _s = '';
-            links.forEach(w => { _s += `<a>${w}</a>`; });
-            return _s;
-        })(_detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0) || []);
+        const _detail = detail ?? this.#_dict.getWord(word);
+        if (!_detail) {
+            this.ele_ipa.textContent = "no such word.";
+            return;
+        }
+        this.ele_ipa.textContent = _detail.ipa;
+        this.ele_ipa.textContent = _detail.ipa;
+        this.ele_meaning.textContent = _detail.meaning;
+        this.ele_level.textContent = _detail.level;
+        this.ele_tag.textContent = _detail.tags;
+        this.ele_note.innerHTML = _detail.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0).map(s => `<p>${s}</p>`).join('') ?? "";
+        this.ele_linkedWords.innerHTML = _detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0).map(s => `<a>${s}</a>`).join('') ?? "";
     }
     ;
     async #_fillByAI() {
@@ -454,8 +463,8 @@ class Card extends EventTarget {
         this.renderCard(word);
         this.#_enterReadMode();
     }
-    #_renderEditPanel(word) {
-        const _detail = this.#_dict.getWord(word);
+    #_renderEditPanel(word, detail) {
+        const _detail = detail ?? this.#_dict.getWord(word);
         this.#_updateCardContentInEditMode(word, _detail);
     }
     update() {

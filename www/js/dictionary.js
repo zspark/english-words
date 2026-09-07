@@ -4,19 +4,19 @@
 var _a;
 import { readOnly } from "./utils.js";
 import logger from "./logger.js";
-import cacher from "./cacher.js";
+import cacher, { StorageCacher } from "./cacher.js";
 import serverProxy from "./server-proxy.js";
 const __VERSION__ = "0.3.0";
 let _needToUpload = false;
 const _localProxy = cacher.localProxy;
 const _metaProxy = cacher.metaProxy;
 const _recordsProxy = cacher.recordsProxy;
-const _wordsProxy = cacher.wordsProxy;
+const _detailCacher = cacher.wordsProxy;
 class SearchHelper {
     #_flexSearch;
     constructor() {
         this.#_flexSearch = this.#_create();
-        this.addWords(_wordsProxy.data());
+        this.addWords(_detailCacher.data());
     }
     #_create() {
         return new FlexSearch.Index({
@@ -47,6 +47,16 @@ class SearchHelper {
         this.#_flexSearch = this.#_create();
     }
 }
+const _MOCK_DETAIL_ = Object.freeze({
+    ipa: "fetching from the server ...",
+    meaning: "",
+    level: "ALL",
+    tags: "",
+    note: "",
+    links: "",
+    time_create: -1,
+    time_modify: -1,
+});
 const _SYMBOLIC_LOGIC_ = Object.freeze({
     // add:1 delete:2 modify:3
     '21': '3', // first 'delete' then 'add' -> it is a 'modify' operation.
@@ -63,6 +73,8 @@ class Dictionary extends EventTarget {
     static EVT_RECORD = "EVT_RECORD";
     static EVT_WORD = "EVT_WORD";
     static EVT_DICT = "EVT_DICT";
+    static DICT_EVT_DETAIL_RECEIVED = "DICT_EVT_DETAIL_RECEIVED";
+    #_listCacher = new StorageCacher('__listCache__');
     #_arr = [];
     #_syncTimer;
     #_searchAPI;
@@ -73,8 +85,21 @@ class Dictionary extends EventTarget {
         serverProxy.addEventListener(serverProxy.EVT_SYNC_ALL, (event) => {
             const _data = event.detail?.content;
             if (_data) {
-                _wordsProxy.clear();
+                _detailCacher.clear();
                 this.importDictionaryByContent(_data);
+            }
+        });
+        serverProxy.addEventListener(serverProxy.EVT_GET_DETAIL, (event) => {
+            const _data = event.detail?.content;
+            if (_data) {
+                _detailCacher.set(_data.word, _data.detail);
+                this.#_dispEvt(_a.DICT_EVT_DETAIL_RECEIVED, _data);
+            }
+        });
+        serverProxy.addEventListener(serverProxy.EVT_GET_WORDLIST, (event) => {
+            const _data = event.detail?.content;
+            if (_data) {
+                this.#_listCacher.append(_data.wordList);
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_SYNC, (event) => {
@@ -85,6 +110,7 @@ class Dictionary extends EventTarget {
                 this.#_dispDictEvt("delete");
             }
         });
+        serverProxy.getWordList();
     }
     #_push(wordsStr, action) {
         this.#_arr.push({ wordsStr, action });
@@ -139,7 +165,7 @@ class Dictionary extends EventTarget {
             __VERSION__,
             "meta": _metaProxy.data(),
             "record": _recordsProxy.data(),
-            "dict": _wordsProxy.data()
+            "dict": _detailCacher.data()
         };
     }
     exportDatabase() {
@@ -169,7 +195,7 @@ class Dictionary extends EventTarget {
         for (const detail of Object.values(_words)) {
             this.#_fillDetailInfosIfMissing(detail);
         }
-        _wordsProxy.append(_words);
+        _detailCacher.append(_words);
         this.#_searchAPI.addWords(_words);
     }
     ;
@@ -211,7 +237,7 @@ class Dictionary extends EventTarget {
         _localProxy.save();
         _metaProxy.clear();
         _recordsProxy.clear();
-        _wordsProxy.clear();
+        _detailCacher.clear();
         this.#_searchAPI.clear();
         this.#_dispDictEvt("clear");
     }
@@ -230,7 +256,7 @@ class Dictionary extends EventTarget {
         if (!word)
             return;
         let _action;
-        let _detail = _wordsProxy.get(word);
+        let _detail = _detailCacher.get(word);
         if (_detail) {
             _detail.ipa = ipa;
             _detail.meaning = meaning;
@@ -272,12 +298,12 @@ class Dictionary extends EventTarget {
                 });
             }
         }
-        _wordsProxy.set(word, _detail);
+        _detailCacher.set(word, _detail);
         this.#_dispWordEvt(word, _action);
         _needToUpload = true;
     }
     #_addLink(word, linkedWord) {
-        const _detail = _wordsProxy.get(word);
+        const _detail = _detailCacher.get(word);
         if (!_detail)
             return;
         const checkRegex = new RegExp(`\\b${linkedWord}\\b`, "i");
@@ -289,29 +315,27 @@ class Dictionary extends EventTarget {
                 _detail.links += linkedWord;
             }
         }
-        _wordsProxy.delaySave();
     }
     #_removeLink(word, linkedWord) {
-        const _detail = _wordsProxy.get(word);
+        const _detail = _detailCacher.get(word);
         if (!_detail)
             return;
         const regex = new RegExp(`,*\s*\\b${linkedWord}\\b`, "gi");
         _detail.links.replace(regex, "");
-        _wordsProxy.save();
     }
     deleteWord(word, dispatch = true) {
-        if (!word || !_wordsProxy.has(word))
+        if (!word || !_detailCacher.has(word))
             return;
         const _parseLinks = (str) => {
             if (!str)
                 return [];
             return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
         };
-        const _linksArray = _parseLinks(_wordsProxy.get(word)['links']);
+        const _linksArray = _parseLinks(_detailCacher.get(word)['links']);
         _linksArray.forEach(_linkedWord => {
             this.#_removeLink(_linkedWord, word);
         });
-        _wordsProxy.remove(word);
+        _detailCacher.remove(word);
         this.#_searchAPI.removeWord(word);
         if (dispatch)
             this.#_dispWordEvt(word, "delete");
@@ -327,13 +351,16 @@ class Dictionary extends EventTarget {
     #_dispRecordEvt(action) {
         this.dispatchEvent(new CustomEvent(_a.EVT_RECORD, { detail: { action } }));
     }
+    #_dispEvt(eventName, data) {
+        this.dispatchEvent(new CustomEvent(eventName, { detail: data }));
+    }
     getWordsCount() {
-        return Object.keys(_wordsProxy.data()).length;
+        return Object.keys(this.#_listCacher.data()).length;
     }
     getWords(searchQuery, level, tag) {
         tag = tag.toUpperCase();
-        const _allWords = Object.entries(_wordsProxy.data());
-        const _selected = this.#_searchAPI.search(searchQuery) ?? Object.keys(_wordsProxy.data());
+        const _allWords = Object.entries(_detailCacher.data());
+        const _selected = this.#_searchAPI.search(searchQuery) ?? Object.keys(_detailCacher.data());
         const out = {};
         for (const [word, detail] of _allWords) {
             const matchesLevel = (level === 'ALL' || detail.level?.toUpperCase() === level);
@@ -345,24 +372,35 @@ class Dictionary extends EventTarget {
         }
         return readOnly(out);
     }
+    hasWordDetail(word) {
+        if ((!word) || (word.length <= 0))
+            return false;
+        return _detailCacher.has(word);
+    }
     hasWord(word) {
         if ((!word) || (word.length <= 0))
             return false;
-        return _wordsProxy.has(word);
+        return this.#_listCacher.has(word);
     }
     getWord(word) {
         if ((!word) || (word.length <= 0))
-            return null;
-        const _out = _wordsProxy.get(word);
-        this.#_fillDetailInfosIfMissing(_out);
-        return _out;
-    }
-    getTags() {
-        return readOnly(_metaProxy.get('tags', []));
+            return undefined;
+        const _out = _detailCacher.get(word);
+        if (_out) {
+            this.#_fillDetailInfosIfMissing(_out);
+            return _out;
+        }
+        if (this.hasWord(word)) {
+            serverProxy.getDetail(word);
+            return _MOCK_DETAIL_;
+        }
+        else {
+            return undefined;
+        }
     }
     getNRandomWords(n, out = []) {
         const N = n + out.length;
-        const _tmp = Object.keys(_wordsProxy.data());
+        const _tmp = Object.keys(_detailCacher.data());
         while (out.length < N) {
             let _w = _tmp[Math.floor(Math.random() * _tmp.length)];
             if (!out.includes(_w)) {

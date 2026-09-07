@@ -1,38 +1,19 @@
 import { readOnly } from "./utils.js"
 import logger from "./logger.js"
 
-class Cacher {
+
+export class RuntimeCacher {
 
     #_name: string;
-    #_delayMS: number;
-
     #_isEmpty: boolean = true;
-    #_obj: Record<string, any> = {};
-    #_timer: number = 0;
+    #_obj: Record<string, any>;
 
-    constructor(name: string, delayMS: number = 1000) {
+    constructor(name: string, data: Record<string, any> | undefined = undefined) {
         this.#_name = name;
-        this.#_delayMS = delayMS;
-
-        const _a = localStorage.getItem(name);
-        if (_a) {
-            this.#_isEmpty = false;
-            this.#_obj = JSON.parse(_a);
-        }
+        this.#_obj = (!!data) ? data : {};
     }
 
-    delaySave(): void {
-        if (this.#_delayMS <= 0) {
-            this.save();
-            return;
-        }
-        if (!this.#_timer) {
-            this.#_timer = setTimeout(() => {
-                this.save();
-                this.#_timer = 0;
-            }, this.#_delayMS)
-        }
-    }
+    get name(): string { return this.#_name; }
 
     isEmpty(): boolean {
         return this.#_isEmpty;
@@ -44,15 +25,6 @@ class Cacher {
 
     append(data: Record<string, any>): void {
         Object.assign(this.#_obj, data);
-        this.delaySave();
-    }
-
-    save(): void {
-        try {
-            localStorage.setItem(this.#_name, JSON.stringify(this.#_obj));
-        } catch (e) {
-            logger.vital(e);
-        }
     }
 
     /**
@@ -62,10 +34,9 @@ class Cacher {
         const _arr = key.split('.');
         let _obj = this.#_createObject(_arr);
         _obj[_arr[_arr.length - 1]] = value;
-        this.delaySave();
     }
 
-    get(key: string, defaultValue: any = null): any {
+    get(key: string, defaultValue: any = undefined): any {
         const _arr = key.split('.');
         let _obj = this.#_createObject(_arr);
         let _name = _arr[_arr.length - 1];
@@ -100,20 +71,82 @@ class Cacher {
 
     remove(key: string): void {
         delete this.#_obj[key];
-        this.delaySave();
     }
 
-    clear(): void {
-        localStorage.removeItem(this.#_name);
-        this.#_obj = {};
+    clear(data: Record<string, any> | undefined = undefined): void {
+        this.#_obj = (!!data) ? data : {};
+    }
+
+    toString(): string {
+        return JSON.stringify(this.#_obj);
     }
 }
 
-const localProxy = new Cacher('__localCache__');
-const metaProxy = new Cacher('__metaCache__');
-const lemmatizerProxy = new Cacher('__lemmatizerCache__');
-const recordsProxy = new Cacher('__recordCache__');
-const wordsProxy = new Cacher('__wordCache__');
+export class StorageCacher extends RuntimeCacher {
+
+    #_delayMS: number;
+    #_timer: number = 0;
+
+    constructor(name: string, delayMS: number = 1000) {
+
+        let _obj: Record<string, any>;
+        const _a = localStorage.getItem(name);
+        if (_a) {
+            _obj = JSON.parse(_a);
+        } else {
+            _obj = {};
+        }
+        super(name, _obj);
+        this.#_delayMS = delayMS;
+    }
+
+    append(data: Record<string, any>): void {
+        super.append(data);
+        this.#_delaySave();
+    }
+
+    set(key: string, value: any): void {
+        super.set(key, value);
+        this.#_delaySave();
+    }
+
+    remove(key: string): void {
+        super.remove(key);
+        this.#_delaySave();
+    }
+
+    clear(data: Record<string, any> | undefined = undefined): void {
+        super.clear(data);
+        this.#_delaySave();
+    }
+
+    #_delaySave(): void {
+        if (this.#_delayMS <= 0) {
+            this.save();
+            return;
+        }
+        if (!this.#_timer) {
+            this.#_timer = setTimeout(() => {
+                this.save();
+                this.#_timer = 0;
+            }, this.#_delayMS)
+        }
+    }
+
+    save(): void {
+        try {
+            localStorage.setItem(this.name, this.toString());
+        } catch (e) {
+            logger.vital(e);
+        }
+    }
+}
+
+const localProxy = new StorageCacher('__localCache__');
+const metaProxy = new StorageCacher('__metaCache__');
+const lemmatizerProxy = new StorageCacher('__lemmatizerCache__');
+const recordsProxy = new StorageCacher('__recordCache__');
+const wordsProxy = new StorageCacher('__wordCache__');
 
 export default {
     localProxy,

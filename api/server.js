@@ -1,6 +1,7 @@
 
 import { getParseFailureRes, getEmptyRes, parseJSONString } from "./server-utils.js";
 import { respond_POST } from "./data/data.js";
+import respond from "./word.js";
 import { getNews } from "./rss/rss.js";
 
 export default {
@@ -73,6 +74,8 @@ export default {
         const url = new URL(request.url);
         if (url.pathname === "/api/rss") {
             return getNews(request, _data, env);
+        } else if (url.pathname === "/api/word") {
+            return respond(request, _data, env);
         } else if (url.pathname === "/api/data") {
             if (request.method === "POST") {
                 return respond_POST(request, _data, env);

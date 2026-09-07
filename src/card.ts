@@ -223,7 +223,7 @@ export default class Card extends EventTarget {
         const ele_new_voc = this.ele_new_voc = ui.get<HTMLInputElement>("#card-edit #id-new-vocab input");
         ele_new_voc.addEventListener('input', (e) => {
             const word = ele_new_voc.value;
-            this.#_updateCardContentInEditMode(word, dict.getWord(word));
+            // this.#_updateCardContentInEditMode(word, dict.getWord(word));
         })
         this.ele_new_ipa = ui.get<HTMLInputElement>("#card-edit #id-new-ipa input");
         this.ele_new_meaning = ui.get<HTMLInputElement>("#card-edit #id-new-meaning input");
@@ -301,6 +301,17 @@ export default class Card extends EventTarget {
         this.renderCard('');
 
         this.ele_card_edit = ui.remove("#card-edit");
+
+        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
+            const data = (e as CustomEvent).detail;
+            if (this.currentWord === data.word) {
+                if (this._currentMode === MODE_EDIT) {
+                    this.#_renderEditPanel(data.word, data.detail);
+                } else if (this._currentMode === MODE_READ) {
+                    this.renderCard(data.word, data.detail);
+                }
+            }
+        });
     }
 
     setParent(p: HTMLElement | null): void {
@@ -368,7 +379,7 @@ export default class Card extends EventTarget {
         this.ele_searchResult.innerHTML = htmlBuffer;
     }
 
-    #_updateCardContentInEditMode(word: string, detail: Detail | null): void {
+    #_updateCardContentInEditMode(word: string, detail: Detail | undefined): void {
         if (this.#_dict.hasWord(word)) {
             this.ele_new_voc.classList.remove('color-red');
         } else {
@@ -397,7 +408,7 @@ export default class Card extends EventTarget {
     }
 
     #_updateTagList(sTags: string[]): void {
-        const aTags = this.#_dict.getTags()
+        const aTags = cacher.metaProxy.get('tags', []) as string[];
 
         let _s = ''; let _a = '';
         aTags.forEach(tag => {
@@ -427,7 +438,7 @@ export default class Card extends EventTarget {
         this.dispatchEvent(new CustomEvent(Card.CARD_EVT_MODE_READ, { detail: {} }));
     }
 
-    renderCard(word: string): void {
+    renderCard(word: string, detail?: Detail): void {
         if (word != this.currentWord) {
             let previousWord = this.currentWord;
             this.currentWord = word;
@@ -440,22 +451,21 @@ export default class Card extends EventTarget {
             this.#_ui.addAttrib('#id-body', 'hidden');
         }
 
-        const _detail = this.#_dict.getWord(word);
         this.ele_voc.textContent = word;
-        this.ele_ipa.textContent = _detail?.ipa || "<need implement>";
-        this.ele_meaning.textContent = _detail?.meaning || "<need implement>";
-        this.ele_level.textContent = _detail?.level || "";
-        this.ele_tag.textContent = _detail?.tags || "";
-        this.ele_note.innerHTML = ((notes) => {
-            let _s = '';
-            notes.forEach(s => { _s += `<p>${s}</p>`; })
-            return _s;
-        })(_detail?.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0) || []);
-        this.ele_linkedWords.innerHTML = ((links) => {
-            let _s = '';
-            links.forEach(w => { _s += `<a>${w}</a>`; });
-            return _s;
-        })(_detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0) || []);
+        const _detail = detail ?? this.#_dict.getWord(word);
+        if (!_detail) {
+            this.ele_ipa.textContent = "no such word.";
+            return;
+        }
+
+        this.ele_ipa.textContent = _detail.ipa;
+        this.ele_ipa.textContent = _detail.ipa;
+        this.ele_meaning.textContent = _detail.meaning;
+        this.ele_level.textContent = _detail.level;
+        this.ele_tag.textContent = _detail.tags;
+        this.ele_note.innerHTML = _detail.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0).map(s => `<p>${s}</p>`).join('') ?? "";
+
+        this.ele_linkedWords.innerHTML = _detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0).map(s => `<a>${s}</a>`).join('') ?? "";
     };
 
     async #_fillByAI() {
@@ -487,8 +497,8 @@ export default class Card extends EventTarget {
         this.#_enterReadMode();
     }
 
-    #_renderEditPanel(word: string): void {
-        const _detail = this.#_dict.getWord(word);
+    #_renderEditPanel(word: string, detail?: Detail): void {
+        const _detail = detail ?? this.#_dict.getWord(word);
         this.#_updateCardContentInEditMode(word, _detail);
     }
 

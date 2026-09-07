@@ -44,7 +44,7 @@ type DictSyncDataSC = DictSyncData & {
     lemmatize: string,
 }
 
-type RequestType = "sync" | "sync-all" | "get-news";
+type RequestType = "sync" | "sync-all" | "get-news" | 'get-detail' | "get-word-list";
 type RequestData = {
     requestType: RequestType,
     content: {}
@@ -53,7 +53,7 @@ type RequestData = {
 }
 type ResponseData = {
     msg: string,
-    content: {},
+    content: any,
     syncTime: number,
 } | null
 

@@ -60,9 +60,9 @@ async function _toServer(url, data) {
         body: JSON.stringify(data, null, 4),
     });
     try {
-        const _responseData = await _response.json();
-        logger.log(`S -> C ${_response.status} ${_responseData.info}`);
+        logger.log(`S -> C ${_response.url}: ${_response.status}: ${_response.statusText}`);
         if (_response.ok) {
+            const _responseData = await _response.json();
             if (_responseData.syncTime) {
                 _data['syncTime'] = _responseData.syncTime;
                 _localProxy.save();
@@ -81,6 +81,8 @@ class ServerProxy {
     EVT_NEWS = "EVT_NEWS";
     EVT_SYNC_ALL = "EVT_SYNC_ALL";
     EVT_SYNC = "EVT_SYNC";
+    EVT_GET_DETAIL = "EVT_GET_DETAIL";
+    EVT_GET_WORDLIST = "EVT_GET_WORDLIST";
     #_et = new EventTarget();
     addEventListener(type, cb) {
         this.#_et.addEventListener(type, cb);
@@ -100,6 +102,26 @@ class ServerProxy {
             content: {},
         });
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC_ALL, { detail }));
+    }
+    async getWordList() {
+        const detail = await _toServer("../api/word", {
+            requestType: "get-word-list",
+            content: {},
+        });
+        if (detail) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
+        }
+    }
+    async getDetail(word) {
+        const detail = await _toServer("../api/word", {
+            requestType: "get-detail",
+            content: {
+                word,
+            },
+        });
+        if (detail) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
+        }
     }
     async getNews(vendor) {
         const detail = await _toServer("../api/rss", {

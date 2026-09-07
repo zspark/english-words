@@ -76,7 +76,7 @@ export default class SectionArticle extends SectionBase {
         })
 
         const _renderWord = (e: MouseEvent): void => {
-            let _w = this._getWordUnderCursor(e);
+            let _w = this.#_getWordUnderCursor(e);
             if (!this._dict.hasWord(_w)) {
                 _w = lemmatize(_w)
             }
@@ -105,6 +105,11 @@ export default class SectionArticle extends SectionBase {
             _renderWord(e);
         });
 
+        /*
+        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
+            const data = (e as CustomEvent).detail;
+        });
+        */
     }
 
     #_setArticle(content: string) {
@@ -197,7 +202,7 @@ export default class SectionArticle extends SectionBase {
     `.trim().split(/\s+/));
     */
 
-    _getWordUnderCursor(e: MouseEvent): string {
+    #_getWordUnderCursor(e: MouseEvent): string {
         const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
         if (!pos || pos.offsetNode.nodeType !== Node.TEXT_NODE)
             return '';

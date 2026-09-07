@@ -63,7 +63,7 @@ export default class SectionArticle extends SectionBase {
             }
         });
         const _renderWord = (e) => {
-            let _w = this._getWordUnderCursor(e);
+            let _w = this.#_getWordUnderCursor(e);
             if (!this._dict.hasWord(_w)) {
                 _w = lemmatize(_w);
             }
@@ -89,6 +89,11 @@ export default class SectionArticle extends SectionBase {
         ele_article.addEventListener("dblclick", (e) => {
             _renderWord(e);
         });
+        /*
+        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
+            const data = (e as CustomEvent).detail;
+        });
+        */
     }
     #_setArticle(content) {
         Cacher.metaProxy.set("article", content);
@@ -173,7 +178,7 @@ export default class SectionArticle extends SectionBase {
     easy hard long short high low
     `.trim().split(/\s+/));
     */
-    _getWordUnderCursor(e) {
+    #_getWordUnderCursor(e) {
         const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
         if (!pos || pos.offsetNode.nodeType !== Node.TEXT_NODE)
             return '';

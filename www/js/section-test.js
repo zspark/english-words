@@ -1,6 +1,7 @@
 import logger from "./logger.js";
 import { assertExist } from "./assert.js";
 import { shuffle } from "./utils.js";
+import Dictionary from "./dictionary.js";
 import cacher from "./cacher.js";
 import prpc from "./pronunciation.js";
 import cmp from "./components.js";
@@ -177,6 +178,9 @@ export default class SectionTest extends SectionBase {
             else if (_tar.dataset.index === "1") { //restart
                 this._setupBeforeText();
             }
+        });
+        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
+            const data = e.detail;
         });
     }
     _setupBeforeText() {
