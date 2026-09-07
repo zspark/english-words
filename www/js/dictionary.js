@@ -6,7 +6,7 @@ import { cloneDetail, readOnly } from "./utils.js";
 import logger from "./logger.js";
 import cacher, { StorageCacher } from "./cacher.js";
 import serverProxy from "./server-proxy.js";
-import cmp from "./components.js";
+import Compare, { compareET, EVT_CMP_MODIFY, EVT_CMP_DELETE } from "./compare.js";
 const __VERSION__ = "0.3.0";
 let _needToUpload = false;
 const _localProxy = cacher.localProxy;
@@ -119,7 +119,7 @@ class Dictionary extends EventTarget {
             const _data = event.detail;
             if (_data) {
                 if (_data.success) {
-                    const _detail = _detailCacher.get(_data.detail.word);
+                    const _detail = _detailCacher.get(_data.word);
                     const word = _detail.word;
                     const _parseLinks = (str) => {
                         if (!str)
@@ -136,26 +136,19 @@ class Dictionary extends EventTarget {
                 }
                 else {
                     /// show different panel;
-                    const _detail = _data.detail;
-                    cmp.showMask(`Deleting conflicted, server is newer, currently system prefer to update the word detail. WIP...`, 'OK', (e) => {
-                        const _oldDetail = _detailCacher.get(_detail.word);
-                        _detailCacher.set(_detail.word, _detail);
-                        this.#_updateLink(_detail.word, _oldDetail.links, _detail.links);
-                        this.#_dispWordEvt(_detail.word, "modify");
-                    });
+                    new Compare(_data.clientDetail, _data.serverDetail, "modify");
                 }
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_PUT_DETAIL, (event) => {
             const _data = event.detail;
             if (_data) {
-                const _detail = _data.detail;
                 if (_data.success) {
-                    const word = _detail.word;
+                    const word = _data.word;
                     const _oldDetail = _detailCacher.get(word);
-                    this.#_updateLink(word, _oldDetail.links, _detail.links);
-                    _detailCacher.set(word, _detail);
-                    if (_detail.time_modify === _detail.time_create) {
+                    this.#_updateLink(word, _oldDetail.links, _data.serverDetail.links);
+                    _detailCacher.set(word, _data.serverDetail);
+                    if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
                         this.#_dispWordEvt(word, "add");
                         this.#_searchAPI.addWord(word);
                     }
@@ -165,13 +158,34 @@ class Dictionary extends EventTarget {
                 }
                 else {
                     /// show different panel;
-                    cmp.showMask(`Put detail conflicted, currently system prefer server side. WIP...`, 'OK', (e) => {
-                        const _oldDetail = _detailCacher.get(_detail.word);
-                        _detailCacher.set(_detail.word, _detail);
-                        this.#_updateLink(_detail.word, _oldDetail.links, _detail.links);
-                        this.#_dispWordEvt(_detail.word, "modify");
-                    });
+                    new Compare(_data.clientDetail, _data.serverDetail, "modify");
                 }
+            }
+        });
+        compareET.addEventListener(EVT_CMP_MODIFY, (e) => {
+            const _cr = e.detail;
+            const word = _cr.word;
+            const _detail = _cr.detail;
+            _detailCacher.set(word, _detail);
+            const _oldDetail = _detailCacher.get(word);
+            this.#_updateLink(word, _oldDetail.links, _detail.links);
+            this.#_dispWordEvt(word, "modify");
+            if (_cr.prefer === "client") {
+                serverProxy.putDetail(_detail);
+            }
+        });
+        compareET.addEventListener(EVT_CMP_DELETE, (e) => {
+            const _cr = e.detail;
+            const _detail = _cr.detail;
+            if (_cr.prefer === "delete") {
+                serverProxy.deleteWord(_detail);
+            }
+            else if (_cr.prefer === "modify") {
+                const word = _cr.word;
+                _detailCacher.set(word, _detail);
+                const _oldDetail = _detailCacher.get(word);
+                this.#_updateLink(word, _oldDetail.links, _detail.links);
+                this.#_dispWordEvt(word, "modify");
             }
         });
         serverProxy.getWordList();

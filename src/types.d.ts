@@ -29,11 +29,11 @@ type CSType = {
     },
     putDetail: {
         C: RequestBodyContentType<{ detail: Detail }>,
-        S: ResponseBodyContentType<{ detail: Detail, success: boolean }>,
+        S: ResponseBodyContentType<{ word: string, serverDetail: Detail, clientDetail: Detail, success: boolean }>,
     },
     deleteWord: {
         C: RequestBodyContentType<{ detail: Detail }>,
-        S: ResponseBodyContentType<{ detail: Detail, success: boolean }>,
+        S: ResponseBodyContentType<{ word: string, serverDetail?: Detail, clientDetail: Detail, success: boolean }>,
     },
     sync: {
         C: RequestBodyContentType<{}>,
@@ -82,6 +82,7 @@ type Dict = {
     dict: Words,
 }
 
+type ActionWord = "delete" | "add" | "modify";
 
 type DictSyncData = {
     lists: {
@@ -111,5 +112,5 @@ type SectionID = "dictionary" | "article" | "test" | "result" | "setting";
 
 type ChildMode = "append-first" | "append-last" | "removeall"
 
-export { CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
+export { ActionWord, CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
 
