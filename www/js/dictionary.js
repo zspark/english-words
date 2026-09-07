@@ -83,21 +83,21 @@ class Dictionary extends EventTarget {
         this.#_searchAPI = new SearchHelper();
         this.setSyncInterval(_localProxy.get("sec_setting", {})["syncInterval"] || 10);
         serverProxy.addEventListener(serverProxy.EVT_SYNC_ALL, (event) => {
-            const _data = event.detail?.content;
+            const _data = event.detail;
             if (_data) {
                 _detailCacher.clear();
                 this.importDictionaryByContent(_data);
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_GET_DETAIL, (event) => {
-            const _data = event.detail.content;
+            const _data = event.detail;
             if (_data) {
                 _detailCacher.set(_data.word, _data);
                 this.#_dispEvt(_a.DICT_EVT_DETAIL_RECEIVED, _data);
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_GET_WORDLIST, (event) => {
-            const _data = event.detail.content;
+            const _data = event.detail;
             if (_data) {
                 _data.forEach(w => {
                     this.#_listCacher.set(w, true);
@@ -105,7 +105,7 @@ class Dictionary extends EventTarget {
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_SYNC, (event) => {
-            const _data = event.detail?.content;
+            const _data = event.detail;
             if (_data) {
                 this.assignWords(_data.dict);
                 _data.lists.dellist.forEach(w => this.deleteWord(w, false));
