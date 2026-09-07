@@ -49,13 +49,12 @@ import logger from "./logger.js"
 import cacher from "./cacher.js"
 import { RequestData, ResponseData, RequestBody, ResponseBody, CSKey, CSType, RequestType, Detail, RequestBodyContentType, ResponseBodyContentType, ResponseCallback } from "../types.d.js"
 
-const _localProxy = cacher.localProxy;
-const _data = _localProxy.get("sec_setting", {});
+const _localCacher = cacher.localProxy;
 
 async function _toServer<K extends CSKey>(url: string, requestType: RequestType, content: RequestData<K>): Promise<ResponseData<K> | null> {
     const req: RequestBody<K> = {
-        accessToken: _data["userID"] || "",
-        syncTime: _data['syncTime'] || 1,
+        accessToken: _localCacher.get("sec_setting.userID") || "",
+        syncTime: _localCacher.get("sec_setting.syncTime") || -1,
         requestType,
         content
     }
@@ -77,8 +76,7 @@ async function _toServer<K extends CSKey>(url: string, requestType: RequestType,
         const responseData = await response.json() as ResponseBody<K>;
         if (response.ok) {
             if (responseData.syncTime) {
-                _data["syncTime"] = responseData.syncTime;
-                _localProxy.save();
+                _localCacher.set("sec_setting.syncTime", responseData.syncTime);
             }
 
             return responseData.content;
@@ -129,10 +127,10 @@ class ServerProxy {
     }
 
     async getWordList(): Promise<void> {
-        const detail = await _toServer<"wordList">(
+        const detail = await _toServer<"getWordList">(
             "../api/word",
-            "wordList",
-            undefined
+            "getWordList",
+            {}
         )
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));

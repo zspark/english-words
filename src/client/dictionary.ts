@@ -129,10 +129,11 @@ export default class Dictionary extends EventTarget {
                 this.#_dispEvt(Dictionary.DICT_EVT_DETAIL_RECEIVED, _data);
             }
         });
-        serverProxy.addEventListener<'wordList'>(serverProxy.EVT_GET_WORDLIST, (event) => {
+        serverProxy.addEventListener<'getWordList'>(serverProxy.EVT_GET_WORDLIST, (event) => {
             const _data = event.detail;
-            if (_data) {
-                _data.forEach(w => {
+            if (_data?.list) {
+                _listCacher.clear();
+                _data.list.forEach(w => {
                     _listCacher.set(w, true);
                 });
             }

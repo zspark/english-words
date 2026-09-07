@@ -41,16 +41,32 @@ async function _getWordList(env: any): Promise<DBResultType<Detail>> {
     return result;
 }
 
-async function getWordList(data: RequestBody<"wordList">, env: any): Promise<Response> {
-    const detail = await _getWordList(env);
-    if (detail.success) {
-        const content = detail.results?.map(({ word }) => word) as string[];
-        return getJSONResponse<"wordList">({
+let _time_sync_wordlist: number = -1;
+let _wordlist: string[] = [];
+
+async function getWordList(data: RequestBody<"getWordList">, env: any): Promise<Response> {
+    if (data.syncTime < _time_sync_wordlist) {
+        return getJSONResponse<"getWordList">({
             info: "Succeeded.",
-            content,
+            syncTime: _time_sync_wordlist,
+            content: {
+                list: _wordlist,
+            },
         });
     } else {
-        return getInternalErrorRes(`Internal Error: get word list failed.`);
+        return getJSONResponse<"getWordList">({
+            info: "your word list is already up to date.",
+            syncTime: _time_sync_wordlist,
+            content: {},
+        });
+    }
+}
+
+async function syncWordlist(env: any): Promise<void> {
+    const detail = await _getWordList(env);
+    if (detail.success) {
+        _wordlist = detail.results?.map(({ word }) => word) as string[];
+        _time_sync_wordlist = Date.now();
     }
 }
 
@@ -67,6 +83,14 @@ async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Resp
     }
 }
 
+function updateWordlist(word: string) {
+    const _index = _wordlist.indexOf(word)
+    if (_index !== -1) {
+        _wordlist.splice(_index, 1);
+        _time_sync_wordlist = Date.now();
+    }
+}
+
 async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Response> {
     const detail = data.content.detail;
 
@@ -76,6 +100,7 @@ async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Re
     }
 
     if (result.meta.changes > 0) {
+        updateWordlist(detail.word);
         return getJSONResponse<"deleteWord">({
             info: "Succeeded.",
             content: {
@@ -118,6 +143,7 @@ async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Resp
 
     const _newestDetail: Detail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
+        updateWordlist(detail.word);
         return getJSONResponse<"putDetail">({
             info: "Succeeded.",
             content: {
@@ -147,9 +173,12 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: any):
 */
 
 export default async function respond(request: Request, data: RequestBodyContentType<any>, env: any): Promise<Response> {
+    if (_time_sync_wordlist === -1) {
+        await syncWordlist(env);
+    }
     if (data.requestType === "getDetail") {
         return getDetail(data, env);
-    } else if (data.requestType === "wordList") {
+    } else if (data.requestType === "getWordList") {
         return getWordList(data, env);
     } else if (data.requestType === "putDetail") {
         return putDetail(data, env);

@@ -1,4 +1,4 @@
-import { genDeleteSQL, genInsertSQL2, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { genDeleteSQL, genInsertSQL2, getJSONResponse, getEmptyRes } from "./server-utils.js";
 async function _getDetail(word, env) {
     const result = await env.DB
         .prepare(`
@@ -28,17 +28,31 @@ async function _getWordList(env) {
         .all();
     return result;
 }
+let _time_sync_wordlist = -1;
+let _wordlist = [];
 async function getWordList(data, env) {
-    const detail = await _getWordList(env);
-    if (detail.success) {
-        const content = detail.results?.map(({ word }) => word);
+    if (data.syncTime < _time_sync_wordlist) {
         return getJSONResponse({
             info: "Succeeded.",
-            content,
+            syncTime: _time_sync_wordlist,
+            content: {
+                list: _wordlist,
+            },
         });
     }
     else {
-        return getInternalErrorRes(`Internal Error: get word list failed.`);
+        return getJSONResponse({
+            info: "your word list is already up to date.",
+            syncTime: _time_sync_wordlist,
+            content: {},
+        });
+    }
+}
+async function syncWordlist(env) {
+    const detail = await _getWordList(env);
+    if (detail.success) {
+        _wordlist = detail.results?.map(({ word }) => word);
+        _time_sync_wordlist = Date.now();
     }
 }
 async function getDetail(data, env) {
@@ -54,6 +68,13 @@ async function getDetail(data, env) {
         return getEmptyRes(`No such word: ${data.content.word}.`);
     }
 }
+function updateWordlist(word) {
+    const _index = _wordlist.indexOf(word);
+    if (_index !== -1) {
+        _wordlist.splice(_index, 1);
+        _time_sync_wordlist = Date.now();
+    }
+}
 async function deleteWord(data, env) {
     const detail = data.content.detail;
     const result = await genDeleteSQL(detail, env).run();
@@ -61,6 +82,7 @@ async function deleteWord(data, env) {
         return getEmptyRes(`delete word (${detail.word}) failed.`);
     }
     if (result.meta.changes > 0) {
+        updateWordlist(detail.word);
         return getJSONResponse({
             info: "Succeeded.",
             content: {
@@ -99,6 +121,7 @@ async function putDetail(data, env) {
     }
     const _newestDetail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
+        updateWordlist(detail.word);
         return getJSONResponse({
             info: "Succeeded.",
             content: {
@@ -127,10 +150,13 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: any):
 }
 */
 export default async function respond(request, data, env) {
+    if (_time_sync_wordlist === -1) {
+        await syncWordlist(env);
+    }
     if (data.requestType === "getDetail") {
         return getDetail(data, env);
     }
-    else if (data.requestType === "wordList") {
+    else if (data.requestType === "getWordList") {
         return getWordList(data, env);
     }
     else if (data.requestType === "putDetail") {

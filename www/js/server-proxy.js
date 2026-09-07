@@ -46,12 +46,11 @@ const Response = {
  */
 import logger from "./logger.js";
 import cacher from "./cacher.js";
-const _localProxy = cacher.localProxy;
-const _data = _localProxy.get("sec_setting", {});
+const _localCacher = cacher.localProxy;
 async function _toServer(url, requestType, content) {
     const req = {
-        accessToken: _data["userID"] || "",
-        syncTime: _data['syncTime'] || 1,
+        accessToken: _localCacher.get("sec_setting.userID") || "",
+        syncTime: _localCacher.get("sec_setting.syncTime") || -1,
         requestType,
         content
     };
@@ -68,8 +67,7 @@ async function _toServer(url, requestType, content) {
         const responseData = await response.json();
         if (response.ok) {
             if (responseData.syncTime) {
-                _data["syncTime"] = responseData.syncTime;
-                _localProxy.save();
+                _localCacher.set("sec_setting.syncTime", responseData.syncTime);
             }
             return responseData.content;
         }
@@ -104,7 +102,7 @@ class ServerProxy {
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC_ALL, { detail }));
     }
     async getWordList() {
-        const detail = await _toServer("../api/word", "wordList", undefined);
+        const detail = await _toServer("../api/word", "getWordList", {});
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
         }

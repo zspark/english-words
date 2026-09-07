@@ -98,8 +98,9 @@ class Dictionary extends EventTarget {
         });
         serverProxy.addEventListener(serverProxy.EVT_GET_WORDLIST, (event) => {
             const _data = event.detail;
-            if (_data) {
-                _data.forEach(w => {
+            if (_data?.list) {
+                _listCacher.clear();
+                _data.list.forEach(w => {
                     _listCacher.set(w, true);
                 });
             }

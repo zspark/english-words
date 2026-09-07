@@ -19,9 +19,9 @@ type ResponseCallback<T> = (e: ResponseEvent<T>) => void;
 type SyncRecordType = { id: number, time_sync: number, words: string, action: number };
 
 type CSType = {
-    wordList: {
-        C: RequestBodyContentType<undefined>,
-        S: ResponseBodyContentType<string[]>,
+    getWordList: {
+        C: RequestBodyContentType<{}>,
+        S: ResponseBodyContentType<{ list?: string[] }>,
     },
     getDetail: {
         C: RequestBodyContentType<{ word: string }>,
