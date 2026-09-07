@@ -6,28 +6,6 @@ type DBResultType<T> = {
     results: T[],
 }
 
-async function _getDetails(list: string[], env: any): Promise<Record<string, Detail>> {
-    if (list.length <= 0) return {};
-    const placeholders = list.map(() => "?").join(",");
-    const result = await env.DB
-        .prepare(`
-            SELECT
-                word,
-                ipa,
-                meaning,
-                level,
-                note,
-                links,
-                time_create,
-                time_modify,
-                tags
-            FROM dictionary
-            WHERE word IN (${placeholders})
-        `)
-        .all()
-    return result;
-}
-
 async function _getDetail(word: string, env: any): Promise<DBResultType<Detail>> {
     const result = await env.DB
         .prepare(`
@@ -42,13 +20,14 @@ async function _getDetail(word: string, env: any): Promise<DBResultType<Detail>>
                 time_modify,
                 tags
             FROM dictionary
-            WHERE word = ${word}
+            WHERE word = ?
         `)
+        .bind(word)
         .all()
     return result;
 }
 
-async function _getWordList<T>(env: any): Promise<DBResultType<T>> {
+async function _getWordList(env: any): Promise<DBResultType<Detail>> {
     const result = await env.DB
         .prepare(`
             SELECT word
@@ -60,8 +39,7 @@ async function _getWordList<T>(env: any): Promise<DBResultType<T>> {
 }
 
 async function getWordList(data: RequestBody<"wordList">, env: any): Promise<Response> {
-    type S = CSType['wordList']['S'];
-    const detail = await _getWordList<Detail>(env);
+    const detail = await _getWordList(env);
     if (detail.success) {
         const content = detail.results?.map(({ word }) => word) as string[];
         return getJSONResponse<"wordList">({
@@ -74,7 +52,6 @@ async function getWordList(data: RequestBody<"wordList">, env: any): Promise<Res
 }
 
 async function getDetail(data: RequestBody<"wordDetail">, env: any): Promise<Response> {
-    type S = CSType['wordDetail']['S'];
     const detail = await _getDetail(data.content.word, env);
     if (detail.success) {
         const d = detail.results[0];

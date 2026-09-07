@@ -1,26 +1,4 @@
 import { getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
-async function _getDetails(list, env) {
-    if (list.length <= 0)
-        return {};
-    const placeholders = list.map(() => "?").join(",");
-    const result = await env.DB
-        .prepare(`
-            SELECT
-                word,
-                ipa,
-                meaning,
-                level,
-                note,
-                links,
-                time_create,
-                time_modify,
-                tags
-            FROM dictionary
-            WHERE word IN (${placeholders})
-        `)
-        .all();
-    return result;
-}
 async function _getDetail(word, env) {
     const result = await env.DB
         .prepare(`
@@ -35,8 +13,9 @@ async function _getDetail(word, env) {
                 time_modify,
                 tags
             FROM dictionary
-            WHERE word = ${word}
+            WHERE word = ?
         `)
+        .bind(word)
         .all();
     return result;
 }
