@@ -181,9 +181,7 @@ export default class Dictionary extends EventTarget {
                 if (_data.success) {
                     const word = _data.word;
                     const _oldDetail: Detail | undefined = _detailCacher.get(word);
-                    if (!_oldDetail) return;
-
-                    this.#_updateLink(word, _oldDetail.links, _data.serverDetail.links)
+                    this.#_updateLink(word, _oldDetail?.links, _data.serverDetail.links)
                     _detailCacher.set(word, _data.serverDetail);
                     if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
                         this.#_dispWordEvt(word, "add");
