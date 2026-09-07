@@ -292,12 +292,19 @@ class Card extends EventTarget {
     }
     #_handleSearchInputStyle(elem) {
         const word = elem.value;
-        const _out = word.length <= 0 || this.#_dict.hasWord(word);
+        const _out = this.#_dict.hasWord(word);
         if (_out) {
-            elem.classList.remove("color-red");
+            if (this.#_dict.hasWordDetail(word)) {
+                elem.classList.remove("color-red", "color-yellow");
+            }
+            else {
+                elem.classList.remove("color-red");
+                elem.classList.add("color-yellow");
+            }
         }
         else {
             elem.classList.add("color-red");
+            elem.classList.remove("color-yellow");
         }
     }
     async keyEvent(event) {
@@ -338,15 +345,14 @@ class Card extends EventTarget {
     }
     #_updateWordList(word) {
         let htmlBuffer = '';
-        const _words = word.length < 2 ? [] : Object.entries(this.#_dict.getWords(word, 'ALL', 'ALL'));
-        for (let i = 0; i < _words.length; ++i) {
-            const _word = _words[i][0];
-            const _detail = _words[i][1];
-            htmlBuffer += `<div class="search-result" data-word="${_word}">
-    <span class="word-name">${_word}</span>
-    <span class="word-meaning">${_detail.meaning}</span>
+        const _words = word.length < 2 ? [] : this.#_dict.searchWords(word);
+        _words.forEach(w => {
+            let _detail = this.#_dict.getWord(w);
+            htmlBuffer += `<div class="search-result" data-word="${w}">
+    <span class="word-name">${w}</span>
+    <span class="word-meaning">${_detail?.meaning ?? ""}</span>
 </div>`;
-        }
+        });
         this.ele_searchResult.innerHTML = htmlBuffer;
     }
     #_updateCardContentInEditMode(word, detail) {

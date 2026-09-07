@@ -403,6 +403,10 @@ class Dictionary extends EventTarget {
     getWordsCount() {
         return Object.keys(_listCacher.data()).length;
     }
+    searchWords(searchQuery) {
+        const _selected = this.#_searchAPI.search(searchQuery) ?? [];
+        return _selected;
+    }
     getWords(searchQuery, level, tag) {
         tag = tag.toUpperCase();
         const _allWords = Object.entries(_detailCacher.data());

@@ -458,6 +458,11 @@ export default class Dictionary extends EventTarget {
         return Object.keys(_listCacher.data()).length;
     }
 
+    searchWords(searchQuery: string): string[] {
+        const _selected = (this.#_searchAPI.search(searchQuery) as string[]) ?? [];
+        return _selected;
+    }
+
     getWords(searchQuery: string, level: WordLevelType, tag: string): Words {
         tag = tag.toUpperCase();
 
