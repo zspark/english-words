@@ -293,9 +293,6 @@ export default class Dictionary extends EventTarget {
         } else {
             _words = data as Words;
         }
-        for (const detail of Object.values(_words)) {
-            this.#_fillDetailInfosIfMissing(detail);
-        }
         _detailCacher.append(_words);
         //this.#_searchAPI.addWords(_words)
     };
@@ -342,16 +339,6 @@ export default class Dictionary extends EventTarget {
         this.#_searchAPI.clear();
         this.#_dispDictEvt("clear");
     };
-
-    #_fillDetailInfosIfMissing(detail: Detail): void {
-        if (!detail) return;
-        detail.ipa = detail.ipa || '';
-        detail.meaning = detail.meaning || '';
-        detail.level = detail.level || '';
-        detail.note = detail.note || '';
-        detail.links = detail.links || '';
-        detail.tags = detail.tags || '';
-    }
 
     updateWord(
         word: string,
@@ -492,15 +479,14 @@ export default class Dictionary extends EventTarget {
         return _listCacher.has(word);
     }
 
-    getWord(word: string): Detail | undefined {
+    getWord(word: string, fetchIfMissing: boolean = true): Detail | undefined {
         if ((!word) || (word.length <= 0)) return undefined;
         const _out = _detailCacher.get(word);
         if (_out) {
-            this.#_fillDetailInfosIfMissing(_out);
             return _out;
         }
 
-        if (this.hasWord(word)) {
+        if (fetchIfMissing && this.hasWord(word)) {
             serverProxy.getDetail(word);
             return _MOCK_DETAIL_;
         } else {

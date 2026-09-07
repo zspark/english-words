@@ -202,7 +202,7 @@ class Card extends EventTarget {
         const ele_new_voc = this.ele_new_voc = ui.get("#card-edit #id-new-vocab input");
         ele_new_voc.addEventListener('input', (e) => {
             const word = ele_new_voc.value;
-            // this.#_updateCardContentInEditMode(word, dict.getWord(word));
+            this.#_updateCardContentInEditMode(word, dict.getWord(word));
         });
         this.ele_new_ipa = ui.get("#card-edit #id-new-ipa input");
         this.ele_new_meaning = ui.get("#card-edit #id-new-meaning input");
@@ -347,7 +347,7 @@ class Card extends EventTarget {
         let htmlBuffer = '';
         const _words = word.length < 2 ? [] : this.#_dict.searchWords(word);
         _words.forEach(w => {
-            let _detail = this.#_dict.getWord(w);
+            let _detail = this.#_dict.getWord(w, false);
             htmlBuffer += `<div class="search-result" data-word="${w}">
     <span class="word-name">${w}</span>
     <span class="word-meaning">${_detail?.meaning ?? ""}</span>
