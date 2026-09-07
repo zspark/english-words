@@ -70,8 +70,9 @@ async function _toServer(url: string, data: RequestData): OutTpye {
 
     try {
         logger.log(`S -> C ${_response.url}: ${_response.status}: ${_response.statusText}`);
+        const _responseData = await _response.json();
+        logger.log(`S -> C ${_responseData}`);
         if (_response.ok) {
-            const _responseData = await _response.json();
             if (_responseData.syncTime) {
                 _data['syncTime'] = _responseData.syncTime;
                 _localProxy.save();

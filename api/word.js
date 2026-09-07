@@ -49,6 +49,8 @@ async function _getWordList(env) {
             FROM dictionary
         `)
         .all()
+        .run()
+
     return result;
 }
 
@@ -83,16 +85,10 @@ async function getWordList(data, env) {
         if (_tv >= 1) {
             const detail = await _getWordList(env);
             if (detail.success) {
-                const wordList = [];
-                const _tmp = result.results;
-                for (let i = 0, N = _tmp.length; i < N; ++i) {
-                    let _v = _tmp[i];
-                    wordList.push(_v.word)
-                }
                 return getJSONResponse({
                     info: "Succeeded.",
                     content: {
-                        wordList,
+                        wordList: detail.results.map(({ word }) => word)
                     }
                 });
             } else {
