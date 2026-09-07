@@ -47,16 +47,7 @@ function _toObj(result) {
         const _tmp = result.results;
         for (let i = 0, N = _tmp.length; i < N; ++i) {
             let _v = _tmp[i];
-            _obj[_v.word] = {
-                ipa: _v.ipa,
-                meaning: _v.meaning,
-                level: _v.level,
-                note: _v.note,
-                links: _v.links,
-                time_create: _v.time_create,
-                time_modify: _v.time_modify,
-                tags: _v.tags,
-            };
+            _obj[_v.word] = _v;
         }
         return _obj;
     }

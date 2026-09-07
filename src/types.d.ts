@@ -29,7 +29,7 @@ type CSType = {
     },
     putDetail: {
         C: RequestBodyContentType<{ detail: Detail }>,
-        S: ResponseBodyContentType<{}>,
+        S: ResponseBodyContentType<{ detail: Detail, success: boolean }>,
     },
     sync: {
         C: RequestBodyContentType<{}>,
@@ -53,17 +53,15 @@ type ResponseData<K extends CSKey> = CSType[K]["S"]['content'];
 type WordLevelType = "ALL" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 
 type Detail = {
-    word?: string, // Basically used as key in a map or object. So it's optional.
-
+    word: string,
     ipa: string,
     meaning: string,
     level: WordLevelType,
     note: string,
     links: string,
     tags: string,
-    time_create: number,
-    time_modify: number,
-
+    readonly time_create: number,
+    readonly time_modify: number,
 }
 type Words = Record<string, Detail>
 

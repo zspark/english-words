@@ -6,6 +6,7 @@ import { readOnly } from "./utils.js";
 import logger from "./logger.js";
 import cacher, { StorageCacher } from "./cacher.js";
 import serverProxy from "./server-proxy.js";
+import cmp from "./components.js";
 const __VERSION__ = "0.3.0";
 let _needToUpload = false;
 const _localProxy = cacher.localProxy;
@@ -47,6 +48,7 @@ class SearchHelper {
     }
 }
 const _MOCK_DETAIL_ = Object.freeze({
+    word: '',
     ipa: "fetching from the server ...",
     meaning: "",
     level: "ALL",
@@ -108,6 +110,30 @@ class Dictionary extends EventTarget {
                 this.assignWords(_data.dict);
                 _data.lists.dellist.forEach(w => this.deleteWord(w, false));
                 this.#_dispDictEvt("delete");
+            }
+        });
+        serverProxy.addEventListener(serverProxy.EVT_PUT_DETAIL, (event) => {
+            const _data = event.detail;
+            if (_data) {
+                const _detail = _data.detail;
+                if (_data.success) {
+                    _detailCacher.set(_detail.word, _detail);
+                    if (_detail.time_modify === _detail.time_create) {
+                        this.#_dispWordEvt(_detail.word, "add");
+                    }
+                    else {
+                        this.#_dispWordEvt(_detail.word, "modify");
+                    }
+                }
+                else {
+                    /// show different panel;
+                    cmp.showMask(`Detail conflicted, currently system prefer server side. WIP...`, 'OK', (e) => {
+                        const _oldDetail = _detailCacher.get(_detail.word);
+                        _detailCacher.set(_detail.word, _detail);
+                        this.#_updateLink(_detail.word, _oldDetail.links, _detail.links);
+                        this.#_dispWordEvt(_detail.word, "modify");
+                    });
+                }
             }
         });
         serverProxy.getWordList();
@@ -255,7 +281,6 @@ class Dictionary extends EventTarget {
     updateWord(word, ipa, meaning, level, note, links, tags) {
         if (!word)
             return;
-        let _action;
         let _detail = _detailCacher.get(word);
         if (_detail) {
             _detail.ipa = ipa;
@@ -264,43 +289,40 @@ class Dictionary extends EventTarget {
             _detail.note = note;
             _detail.links = links;
             _detail.tags = tags;
-            _detail.time_modify = Date.now();
-            _action = "modify";
-            this.#_push(word, '3');
         }
         else {
             _detail = {
+                word,
                 ipa: ipa || '',
                 meaning: meaning || '',
                 level: level || '',
                 note: note || '',
                 links: links || '',
                 tags: tags || '',
-                time_create: Date.now(),
-                time_modify: Date.now(),
+                time_create: -1,
+                time_modify: -1,
             };
-            _action = "add";
-            this.#_push(word, '1');
         }
-        const oldLinks = _detail.links;
-        if (links != oldLinks) {
+        this.#_updateLink(word, _detail.links, links);
+        _detailCacher.set(word, _detail);
+        serverProxy.putDetail(_detail);
+    }
+    #_updateLink(word, oldLink, newlink) {
+        if (newlink != oldLink) {
             const parseLinks = (str) => str.split(',').map(w => w.trim()).filter(w => w.length > 0);
-            if (oldLinks?.length > 0) {
-                const arrOldLink = parseLinks(oldLinks);
+            if (oldLink?.length > 0) {
+                const arrOldLink = parseLinks(oldLink);
                 arrOldLink.forEach(w => {
                     this.#_removeLink(w, word);
                 });
             }
-            if (links?.length > 0) {
-                const arrNewLink = parseLinks(links);
+            if (newlink?.length > 0) {
+                const arrNewLink = parseLinks(newlink);
                 arrNewLink.forEach(w => {
                     this.#_addLink(w, word);
                 });
             }
         }
-        _detailCacher.set(word, _detail);
-        this.#_dispWordEvt(word, _action);
-        _needToUpload = true;
     }
     #_addLink(word, linkedWord) {
         const _detail = _detailCacher.get(word);

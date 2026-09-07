@@ -1,9 +1,12 @@
 import { RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
-import { genInsertSQL, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 
 type DBResultType<T> = {
     success: boolean,
     results: T[],
+    meta: {
+        changes: number,
+    },
 }
 
 async function _getDetail(word: string, env: any): Promise<DBResultType<Detail>> {
@@ -66,16 +69,49 @@ async function getDetail(data: RequestBody<"wordDetail">, env: any): Promise<Res
 
 async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Response> {
     const detail = data.content.detail;
-    const result = await genInsertSQL(detail, env).all() as DBResultType<undefined>;
-    if (result.success) {
-        return getJSONResponse<"putDetail">({
-            info: "Succeeded.",
-            content: {}
-        });
-    } else {
+    const syncTime: number = Date.now();
+
+    const result = await genInsertSQL2(detail, syncTime, env).all() as DBResultType<undefined>;
+    if (!result.success) {
         return getEmptyRes(`put word (${detail.word}) failed.`);
     }
+
+    // Valid request, but database rejected the update
+    // because the incoming version/timestamp was older
+    const _d = await _getDetail(detail.word, env) as DBResultType<Detail>;
+    if (!_d.success) {
+        return getEmptyRes(`put word (${detail.word}) failed..`);
+    }
+
+    const _newestDetail: Detail = _d.results[0];
+    if (_newestDetail.time_modify === syncTime) {
+        return getJSONResponse<"putDetail">({
+            info: "Succeeded.",
+            content: {
+                detail: _newestDetail,
+                success: true,
+            }
+        });
+    } else {
+        return getJSONResponse<"putDetail">({
+            info: "Failed.",
+            content: {
+                detail: _newestDetail,
+                success: false,
+            }
+        });
+    }
 }
+
+/*
+function _runMarkSQL(time: number, wordArr: string[], action: number, env: any): any {
+    env.DB.prepare(`
+        INSERT INTO synchronizer ( time_sync, words, action)
+        VALUES (?,?,?)`
+    ).bind(time, wordArr.join(','), action)
+        .run();
+}
+*/
 
 export default async function respond(request: Request, data: RequestBodyContentType<any>, env: any): Promise<Response> {
     if (data.requestType === "wordDetail") {

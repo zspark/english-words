@@ -117,6 +117,38 @@ export async function getLatestTime(env: any): Promise<number> {
     return _time.max_time_sync;
 }
 
+export function genInsertSQL2(detail: Detail, syncTime: number, env: any): any {
+    return env.DB.prepare(`
+        INSERT INTO dictionary (
+            word, ipa, meaning, level,
+            note, links, tags,
+            time_create, time_modify
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(word) DO UPDATE SET
+            ipa = excluded.ipa,
+            meaning = excluded.meaning,
+            level = excluded.level,
+            note = excluded.note,
+            links = excluded.links,
+            tags = excluded.tags,
+            time_modify = ?
+        WHERE excluded.time_modify >= dictionary.time_modify`
+    ).bind(
+        detail.word,
+        detail.ipa,
+        detail.meaning,
+        detail.level,
+
+        detail.note,
+        detail.links,
+        detail.tags,
+
+        syncTime,
+        syncTime,
+        syncTime
+    );
+}
 export function genInsertSQL(detail: Detail, env: any): any {
     return env.DB.prepare(`
         INSERT OR REPLACE INTO dictionary (
@@ -139,3 +171,18 @@ export function genInsertSQL(detail: Detail, env: any): any {
         detail.time_modify ?? Date.now()
     );
 }
+export function cloneDetail(from: Detail, time_modify?: number, time_create?: number): Detail {
+    return {
+        word: from.word,
+        ipa: from.word,
+        meaning: from.meaning,
+        level: from.level,
+        tags: from.tags,
+        note: from.note,
+        links: from.links,
+        time_create: time_create ?? from.time_create,
+        time_modify: time_modify ?? from.time_modify,
+    }
+}
+
+

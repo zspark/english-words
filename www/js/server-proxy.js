@@ -86,6 +86,7 @@ class ServerProxy {
     EVT_SYNC_ALL = "EVT_SYNC_ALL";
     EVT_SYNC = "EVT_SYNC";
     EVT_GET_DETAIL = "EVT_GET_DETAIL";
+    EVT_PUT_DETAIL = "EVT_PUT_DETAIL";
     EVT_GET_WORDLIST = "EVT_GET_WORDLIST";
     #_et = new EventTarget();
     addEventListener(type, cb) {
@@ -113,10 +114,10 @@ class ServerProxy {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }
     }
-    async updateDetail(detail) {
+    async putDetail(detail) {
         const out = await _toServer("../api/word", "putDetail", { detail });
         if (out) {
-            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail: out }));
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_PUT_DETAIL, { detail: out }));
         }
     }
     async getNews(vendor) {

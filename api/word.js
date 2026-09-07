@@ -1,4 +1,4 @@
-import { genInsertSQL, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { genInsertSQL2, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 async function _getDetail(word, env) {
     const result = await env.DB
         .prepare(`
@@ -56,17 +56,46 @@ async function getDetail(data, env) {
 }
 async function putDetail(data, env) {
     const detail = data.content.detail;
-    const result = await genInsertSQL(detail, env).all();
-    if (result.success) {
+    const syncTime = Date.now();
+    const result = await genInsertSQL2(detail, syncTime, env).all();
+    if (!result.success) {
+        return getEmptyRes(`put word (${detail.word}) failed.`);
+    }
+    // Valid request, but database rejected the update
+    // because the incoming version/timestamp was older
+    const _d = await _getDetail(detail.word, env);
+    if (!_d.success) {
+        return getEmptyRes(`put word (${detail.word}) failed..`);
+    }
+    const _newestDetail = _d.results[0];
+    if (_newestDetail.time_modify === syncTime) {
         return getJSONResponse({
             info: "Succeeded.",
-            content: {}
+            content: {
+                detail: _newestDetail,
+                success: true,
+            }
         });
     }
     else {
-        return getEmptyRes(`put word (${detail.word}) failed.`);
+        return getJSONResponse({
+            info: "Failed.",
+            content: {
+                detail: _newestDetail,
+                success: false,
+            }
+        });
     }
 }
+/*
+function _runMarkSQL(time: number, wordArr: string[], action: number, env: any): any {
+    env.DB.prepare(`
+        INSERT INTO synchronizer ( time_sync, words, action)
+        VALUES (?,?,?)`
+    ).bind(time, wordArr.join(','), action)
+        .run();
+}
+*/
 export default async function respond(request, data, env) {
     if (data.requestType === "wordDetail") {
         return getDetail(data, env);

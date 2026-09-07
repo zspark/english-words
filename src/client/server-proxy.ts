@@ -97,6 +97,7 @@ class ServerProxy {
     readonly EVT_SYNC_ALL = "EVT_SYNC_ALL";
     readonly EVT_SYNC = "EVT_SYNC";
     readonly EVT_GET_DETAIL = "EVT_GET_DETAIL";
+    readonly EVT_PUT_DETAIL = "EVT_PUT_DETAIL";
     readonly EVT_GET_WORDLIST = "EVT_GET_WORDLIST";
 
     #_et: EventTarget = new EventTarget();
@@ -146,14 +147,14 @@ class ServerProxy {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }
     }
-    async updateDetail(detail: Detail): Promise<void> {
+    async putDetail(detail: Detail): Promise<void> {
         const out = await _toServer<"putDetail">(
             "../api/word",
             "putDetail",
             { detail }
         );
         if (out) {
-            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail: out }));
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_PUT_DETAIL, { detail: out }));
         }
     }
 
