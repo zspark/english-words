@@ -1,4 +1,4 @@
-import { getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { genInsertSQL, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 async function _getDetail(word, env) {
     const result = await env.DB
         .prepare(`
@@ -54,12 +54,28 @@ async function getDetail(data, env) {
         return getEmptyRes(`No such word: ${data.content.word}.`);
     }
 }
+async function putDetail(data, env) {
+    const detail = data.content.detail;
+    const result = await genInsertSQL(detail, env).all();
+    if (result.success) {
+        return getJSONResponse({
+            info: "Succeeded.",
+            content: {}
+        });
+    }
+    else {
+        return getEmptyRes(`put word (${detail.word}) failed.`);
+    }
+}
 export default async function respond(request, data, env) {
-    if (data.requestType === "get-detail") {
+    if (data.requestType === "wordDetail") {
         return getDetail(data, env);
     }
-    else if (data.requestType === "get-word-list") {
+    else if (data.requestType === "wordList") {
         return getWordList(data, env);
+    }
+    else if (data.requestType === "putDetail") {
+        return putDetail(data, env);
     }
     return getEmptyRes('POST');
 }

@@ -119,7 +119,7 @@ class ServerProxy {
     async syncAll(): Promise<void> {
         const detail = await _toServer<"syncAll">(
             "../api/data",
-            "sync-all",
+            "syncAll",
             {}
         )
 
@@ -129,7 +129,7 @@ class ServerProxy {
     async getWordList(): Promise<void> {
         const detail = await _toServer<"wordList">(
             "../api/word",
-            "get-word-list",
+            "wordList",
             undefined
         )
         if (detail) {
@@ -139,18 +139,28 @@ class ServerProxy {
     async getDetail(word: string): Promise<void> {
         const detail = await _toServer<"wordDetail">(
             "../api/word",
-            "get-detail",
+            "wordDetail",
             { word }
         );
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }
     }
+    async updateDetail(detail: Detail): Promise<void> {
+        const out = await _toServer<"putDetail">(
+            "../api/word",
+            "putDetail",
+            { detail }
+        );
+        if (out) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail: out }));
+        }
+    }
 
     async getNews(vendor: string): Promise<void> {
         const detail = await _toServer<"getNews">(
             "../api/word",
-            "get-news",
+            "getNews",
             { vendor }
         );
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_NEWS, { detail }));

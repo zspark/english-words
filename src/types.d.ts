@@ -1,5 +1,5 @@
 
-type RequestType = "sync" | "sync-all" | "get-news" | 'get-detail' | "get-word-list";
+type RequestType = keyof CSType;
 type RequestBodyContentType<T> = {
     accessToken: string,
     syncTime: number,
@@ -26,6 +26,10 @@ type CSType = {
     wordDetail: {
         C: RequestBodyContentType<{ word: string }>,
         S: ResponseBodyContentType<Detail>,
+    },
+    putDetail: {
+        C: RequestBodyContentType<{ detail: Detail }>,
+        S: ResponseBodyContentType<{}>,
     },
     sync: {
         C: RequestBodyContentType<{}>,

@@ -98,23 +98,29 @@ class ServerProxy {
         }
     }
     async syncAll() {
-        const detail = await _toServer("../api/data", "sync-all", {});
+        const detail = await _toServer("../api/data", "syncAll", {});
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC_ALL, { detail }));
     }
     async getWordList() {
-        const detail = await _toServer("../api/word", "get-word-list", undefined);
+        const detail = await _toServer("../api/word", "wordList", undefined);
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
         }
     }
     async getDetail(word) {
-        const detail = await _toServer("../api/word", "get-detail", { word });
+        const detail = await _toServer("../api/word", "wordDetail", { word });
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }
     }
+    async updateDetail(detail) {
+        const out = await _toServer("../api/word", "putDetail", { detail });
+        if (out) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail: out }));
+        }
+    }
     async getNews(vendor) {
-        const detail = await _toServer("../api/word", "get-news", { vendor });
+        const detail = await _toServer("../api/word", "getNews", { vendor });
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_NEWS, { detail }));
     }
 }

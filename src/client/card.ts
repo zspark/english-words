@@ -303,12 +303,12 @@ export default class Card extends EventTarget {
         this.ele_card_edit = ui.remove("#card-edit");
 
         dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
-            const data = (e as CustomEvent).detail;
+            const data = (e as CustomEvent).detail as Detail;
             if (this.currentWord === data.word) {
                 if (this._currentMode === MODE_EDIT) {
-                    this.#_renderEditPanel(data.word, data.detail);
+                    this.#_renderEditPanel(data.word, data);
                 } else if (this._currentMode === MODE_READ) {
-                    this.renderCard(data.word, data.detail);
+                    this.renderCard(data.word, data);
                 }
             }
         });

@@ -279,10 +279,10 @@ class Card extends EventTarget {
             const data = e.detail;
             if (this.currentWord === data.word) {
                 if (this._currentMode === MODE_EDIT) {
-                    this.#_renderEditPanel(data.word, data.detail);
+                    this.#_renderEditPanel(data.word, data);
                 }
                 else if (this._currentMode === MODE_READ) {
-                    this.renderCard(data.word, data.detail);
+                    this.renderCard(data.word, data);
                 }
             }
         });

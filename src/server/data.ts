@@ -1,5 +1,5 @@
 import { CSType, RequestBodyContentType, Detail } from "../types.d.js"
-import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes, genInsertSQL } from "./server-utils.js";
 
 async function _getTimeModify(list: string[], env: any): Promise<any> {
     try {
@@ -141,29 +141,6 @@ function _genDeleteSQL(word: string, env: any): any {
     ).bind(word);
 }
 
-function _genInsertSQL(word: string, detail: Detail, env: any): any {
-    return env.DB.prepare(`
-        INSERT OR REPLACE INTO dictionary (
-            word, ipa, meaning, level,
-            note, links, tags,
-            time_create, time_modify
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(
-        word,
-        detail.ipa ?? "",
-        detail.meaning ?? "",
-        detail.level ?? "",
-
-        detail.note ?? "",
-        detail.links ?? "",
-        detail.tags ?? "",
-
-        detail.time_create ?? Date.now(),
-        detail.time_modify ?? Date.now()
-    );
-}
-
 async function _CToS_add(cmd: any[], syncTime: number, content: any, env: any): Promise<void> {
     const _listClient = content.lists?.addlist ?? [];
     if (_listClient.length > 0) {
@@ -177,7 +154,7 @@ async function _CToS_add(cmd: any[], syncTime: number, content: any, env: any): 
         const _dict = content.dict;
         const _list = _listClient.filter((x: string) => !_listExist.includes(x));
         _list.forEach((w: string) => {
-            cmd.push(_genInsertSQL(w, _dict[w], env));
+            cmd.push(genInsertSQL(_dict[w], env));
         });
         if (_list.length > 0) {
             cmd.push(_genMarkSQL(Date.now(), _list, 1, env))
@@ -213,7 +190,7 @@ async function _CToS_modify(cmd: any[], syncTime: number, content: any, env: any
         _r.results?.forEach((v: Detail) => {
             if (v.time_modify <= syncTime) {
                 let _w = v.word as string;
-                cmd.push(_genInsertSQL(v.word as string, _dict[_w], env));
+                cmd.push(genInsertSQL(_dict[_w], env));
                 _list.push(_w);
             }
         });
@@ -315,7 +292,7 @@ export default async function respond_POST(request: Request, data: RequestBodyCo
     }
     if (data.requestType === "sync") {
         return sync(data, env);
-    } else if (data.requestType === "sync-all") {
+    } else if (data.requestType === "syncAll") {
         return syncAll(data, env);
     }
     return getEmptyRes('POST');

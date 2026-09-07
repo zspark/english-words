@@ -1,5 +1,5 @@
-import { CSKey, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
-import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
+import { genInsertSQL, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 
 type DBResultType<T> = {
     success: boolean,
@@ -64,11 +64,26 @@ async function getDetail(data: RequestBody<"wordDetail">, env: any): Promise<Res
     }
 }
 
+async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Response> {
+    const detail = data.content.detail;
+    const result = await genInsertSQL(detail, env).all() as DBResultType<undefined>;
+    if (result.success) {
+        return getJSONResponse<"putDetail">({
+            info: "Succeeded.",
+            content: {}
+        });
+    } else {
+        return getEmptyRes(`put word (${detail.word}) failed.`);
+    }
+}
+
 export default async function respond(request: Request, data: RequestBodyContentType<any>, env: any): Promise<Response> {
-    if (data.requestType === "get-detail") {
+    if (data.requestType === "wordDetail") {
         return getDetail(data, env);
-    } else if (data.requestType === "get-word-list") {
+    } else if (data.requestType === "wordList") {
         return getWordList(data, env);
+    } else if (data.requestType === "putDetail") {
+        return putDetail(data, env);
     }
     return getEmptyRes('POST');
 }

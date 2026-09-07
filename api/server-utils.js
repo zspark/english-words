@@ -106,3 +106,12 @@ export async function getLatestTime(env) {
     `).first();
     return _time.max_time_sync;
 }
+export function genInsertSQL(detail, env) {
+    return env.DB.prepare(`
+        INSERT OR REPLACE INTO dictionary (
+            word, ipa, meaning, level,
+            note, links, tags,
+            time_create, time_modify
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(detail.word, detail.ipa ?? "", detail.meaning ?? "", detail.level ?? "", detail.note ?? "", detail.links ?? "", detail.tags ?? "", detail.time_create ?? Date.now(), detail.time_modify ?? Date.now());
+}
