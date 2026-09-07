@@ -124,6 +124,12 @@ export function genInsertSQL2(detail, syncTime, env) {
             time_modify = ?
         WHERE excluded.time_modify >= dictionary.time_modify`).bind(detail.word, detail.ipa, detail.meaning, detail.level, detail.note, detail.links, detail.tags, syncTime, syncTime, syncTime);
 }
+export function genDeleteSQL(detail, env) {
+    return env.DB.prepare(`
+        DELETE FROM dictionary
+        WHERE word = ? AND time_modify <= ?
+    `).bind(detail.word, detail.time_modify);
+}
 export function genInsertSQL(detail, env) {
     return env.DB.prepare(`
         INSERT OR REPLACE INTO dictionary (

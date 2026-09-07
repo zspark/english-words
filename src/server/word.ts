@@ -1,5 +1,5 @@
 import { RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
-import { cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { genDeleteSQL, cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 
 type DBResultType<T> = {
     success: boolean,
@@ -67,6 +67,39 @@ async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Resp
     }
 }
 
+async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Response> {
+    const detail = data.content.detail;
+
+    const result = await genDeleteSQL(detail, env).run() as DBResultType<undefined>;
+    if (!result.success) {
+        return getEmptyRes(`delete word (${detail.word}) failed.`);
+    }
+
+    if (result.meta.changes > 0) {
+        return getJSONResponse<"deleteWord">({
+            info: "Succeeded.",
+            content: {
+                detail,
+                success: true,
+            }
+        });
+    } else {
+        const _d = await _getDetail(detail.word, env) as DBResultType<Detail>;
+        if (!_d.success) {
+            return getEmptyRes(`delete word (${detail.word}) failed..`);
+        }
+
+        const _newestDetail: Detail = _d.results[0];
+        return getJSONResponse<"deleteWord">({
+            info: "Succeeded.",
+            content: {
+                detail: _newestDetail,
+                success: false,
+            }
+        });
+    }
+}
+
 async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Response> {
     const detail = data.content.detail;
     const syncTime: number = Date.now();
@@ -120,6 +153,8 @@ export default async function respond(request: Request, data: RequestBodyContent
         return getWordList(data, env);
     } else if (data.requestType === "putDetail") {
         return putDetail(data, env);
+    } else if (data.requestType === "deleteWord") {
+        return deleteWord(data, env);
     }
     return getEmptyRes('POST');
 }

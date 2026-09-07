@@ -149,6 +149,15 @@ export function genInsertSQL2(detail: Detail, syncTime: number, env: any): any {
         syncTime
     );
 }
+export function genDeleteSQL(detail: Detail, env: any): any {
+    return env.DB.prepare(`
+        DELETE FROM dictionary
+        WHERE word = ? AND time_modify <= ?
+    `).bind(
+        detail.word,
+        detail.time_modify
+    );
+}
 export function genInsertSQL(detail: Detail, env: any): any {
     return env.DB.prepare(`
         INSERT OR REPLACE INTO dictionary (

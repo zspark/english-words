@@ -1,3 +1,4 @@
+import { Detail } from "../types.d.js"
 
 type AI_API = string;
 
@@ -111,3 +112,16 @@ export function findNearestElementWithTag<T extends HTMLElement>(fromElem: HTMLE
     return null;
 }
 
+export function cloneDetail(from: Detail, time_modify?: number, time_create?: number): Detail {
+    return {
+        word: from.word,
+        ipa: from.word,
+        meaning: from.meaning,
+        level: from.level,
+        tags: from.tags,
+        note: from.note,
+        links: from.links,
+        time_create: time_create ?? from.time_create,
+        time_modify: time_modify ?? from.time_modify,
+    }
+}

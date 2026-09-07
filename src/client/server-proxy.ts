@@ -98,6 +98,7 @@ class ServerProxy {
     readonly EVT_SYNC = "EVT_SYNC";
     readonly EVT_GET_DETAIL = "EVT_GET_DETAIL";
     readonly EVT_PUT_DETAIL = "EVT_PUT_DETAIL";
+    readonly EVT_DELETE_WORD = "EVT_DELETE_WORD";
     readonly EVT_GET_WORDLIST = "EVT_GET_WORDLIST";
 
     #_et: EventTarget = new EventTarget();
@@ -135,6 +136,16 @@ class ServerProxy {
         )
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
+        }
+    }
+    async deleteWord(detail: Detail): Promise<void> {
+        const out = await _toServer<"deleteWord">(
+            "../api/word",
+            "deleteWord",
+            { detail }
+        );
+        if (out) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_DELETE_WORD, { detail: out }));
         }
     }
     async getDetail(word: string): Promise<void> {

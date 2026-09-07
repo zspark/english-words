@@ -31,6 +31,10 @@ type CSType = {
         C: RequestBodyContentType<{ detail: Detail }>,
         S: ResponseBodyContentType<{ detail: Detail, success: boolean }>,
     },
+    deleteWord: {
+        C: RequestBodyContentType<{ detail: Detail }>,
+        S: ResponseBodyContentType<{ detail: Detail, success: boolean }>,
+    },
     sync: {
         C: RequestBodyContentType<{}>,
         S: ResponseBodyContentType<{}>,

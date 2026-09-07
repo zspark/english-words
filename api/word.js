@@ -1,4 +1,4 @@
-import { genInsertSQL2, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { genDeleteSQL, genInsertSQL2, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 async function _getDetail(word, env) {
     const result = await env.DB
         .prepare(`
@@ -54,6 +54,36 @@ async function getDetail(data, env) {
         return getEmptyRes(`No such word: ${data.content.word}.`);
     }
 }
+async function deleteWord(data, env) {
+    const detail = data.content.detail;
+    const result = await genDeleteSQL(detail, env).run();
+    if (!result.success) {
+        return getEmptyRes(`delete word (${detail.word}) failed.`);
+    }
+    if (result.meta.changes > 0) {
+        return getJSONResponse({
+            info: "Succeeded.",
+            content: {
+                detail,
+                success: true,
+            }
+        });
+    }
+    else {
+        const _d = await _getDetail(detail.word, env);
+        if (!_d.success) {
+            return getEmptyRes(`delete word (${detail.word}) failed..`);
+        }
+        const _newestDetail = _d.results[0];
+        return getJSONResponse({
+            info: "Succeeded.",
+            content: {
+                detail: _newestDetail,
+                success: false,
+            }
+        });
+    }
+}
 async function putDetail(data, env) {
     const detail = data.content.detail;
     const syncTime = Date.now();
@@ -105,6 +135,9 @@ export default async function respond(request, data, env) {
     }
     else if (data.requestType === "putDetail") {
         return putDetail(data, env);
+    }
+    else if (data.requestType === "deleteWord") {
+        return deleteWord(data, env);
     }
     return getEmptyRes('POST');
 }

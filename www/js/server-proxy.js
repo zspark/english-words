@@ -87,6 +87,7 @@ class ServerProxy {
     EVT_SYNC = "EVT_SYNC";
     EVT_GET_DETAIL = "EVT_GET_DETAIL";
     EVT_PUT_DETAIL = "EVT_PUT_DETAIL";
+    EVT_DELETE_WORD = "EVT_DELETE_WORD";
     EVT_GET_WORDLIST = "EVT_GET_WORDLIST";
     #_et = new EventTarget();
     addEventListener(type, cb) {
@@ -106,6 +107,12 @@ class ServerProxy {
         const detail = await _toServer("../api/word", "wordList", undefined);
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
+        }
+    }
+    async deleteWord(detail) {
+        const out = await _toServer("../api/word", "deleteWord", { detail });
+        if (out) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_DELETE_WORD, { detail: out }));
         }
     }
     async getDetail(word) {

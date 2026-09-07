@@ -86,3 +86,16 @@ export function findNearestElementWithTag(fromElem, tagName) {
     }
     return null;
 }
+export function cloneDetail(from, time_modify, time_create) {
+    return {
+        word: from.word,
+        ipa: from.word,
+        meaning: from.meaning,
+        level: from.level,
+        tags: from.tags,
+        note: from.note,
+        links: from.links,
+        time_create: time_create ?? from.time_create,
+        time_modify: time_modify ?? from.time_modify,
+    };
+}

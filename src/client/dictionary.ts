@@ -3,7 +3,7 @@
 // ===============================
 
 
-import { readOnly } from "./utils.js"
+import { cloneDetail, readOnly } from "./utils.js"
 import logger from "./logger.js"
 import cacher, { StorageCacher } from "./cacher.js"
 import serverProxy from "./server-proxy.js"
@@ -137,6 +137,7 @@ export default class Dictionary extends EventTarget {
                 });
             }
         });
+        /*
         serverProxy.addEventListener<'sync'>(serverProxy.EVT_SYNC, (event) => {
             const _data = event.detail;
             if (_data) {
@@ -145,20 +146,56 @@ export default class Dictionary extends EventTarget {
                 this.#_dispDictEvt("delete");
             }
         });
+        */
+        serverProxy.addEventListener<'deleteWord'>(serverProxy.EVT_DELETE_WORD, (event) => {
+            const _data = event.detail;
+            if (_data) {
+                if (_data.success) {
+                    const _detail = _detailCacher.get(_data.detail.word) as Detail;
+                    const word: string = _detail.word;
+                    const _parseLinks = (str: string): string[] => {
+                        if (!str) return [];
+                        return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
+                    };
+
+                    const _linksArray = _parseLinks(_detail.links);
+                    _linksArray.forEach(_linkedWord => {
+                        this.#_removeLink(_linkedWord, word)
+                    });
+
+                    _detailCacher.remove(word);
+                    this.#_searchAPI.removeWord(word);
+                    this.#_dispWordEvt(_detail.word, "delete");
+                } else {
+                    /// show different panel;
+                    const _detail = _data.detail;
+                    cmp.showMask(`Deleting conflicted, server is newer, currently system prefer to update the word detail. WIP...`, 'OK', (e) => {
+                        const _oldDetail = _detailCacher.get(_detail.word) as Detail;
+                        _detailCacher.set(_detail.word, _detail);
+                        this.#_updateLink(_detail.word, _oldDetail.links, _detail.links,);
+                        this.#_dispWordEvt(_detail.word, "modify");
+                    });
+                }
+            }
+        });
         serverProxy.addEventListener<'putDetail'>(serverProxy.EVT_PUT_DETAIL, (event) => {
             const _data = event.detail;
             if (_data) {
                 const _detail = _data.detail;
                 if (_data.success) {
-                    _detailCacher.set(_detail.word, _detail);
+                    const word = _detail.word;
+                    const _oldDetail = _detailCacher.get(word) as Detail;
+                    this.#_updateLink(word, _oldDetail.links, _detail.links)
+                    _detailCacher.set(word, _detail);
                     if (_detail.time_modify === _detail.time_create) {
-                        this.#_dispWordEvt(_detail.word, "add");
+                        this.#_dispWordEvt(word, "add");
+                        this.#_searchAPI.addWord(word);
                     } else {
-                        this.#_dispWordEvt(_detail.word, "modify");
+                        this.#_dispWordEvt(word, "modify");
                     }
                 } else {
                     /// show different panel;
-                    cmp.showMask(`Detail conflicted, currently system prefer server side. WIP...`, 'OK', (e) => {
+                    cmp.showMask(`Put detail conflicted, currently system prefer server side. WIP...`, 'OK', (e) => {
                         const _oldDetail = _detailCacher.get(_detail.word) as Detail;
                         _detailCacher.set(_detail.word, _detail);
                         this.#_updateLink(_detail.word, _oldDetail.links, _detail.links,);
@@ -326,10 +363,9 @@ export default class Dictionary extends EventTarget {
     ): void {
         if (!word) return;
 
-        let _oldLink = '';
         let _detail = _detailCacher.get(word) as Detail | null;
         if (_detail) {
-            _oldLink = _detail.links;
+            _detail = cloneDetail(_detail);
             _detail.ipa = ipa;
             _detail.meaning = meaning;
             _detail.level = level ?? _detail.level;
@@ -349,8 +385,6 @@ export default class Dictionary extends EventTarget {
                 time_modify: -1,
             };
         }
-        this.#_updateLink(word, _oldLink, links)
-        _detailCacher.set(word, _detail);
         serverProxy.putDetail(_detail);
     }
 
@@ -396,24 +430,11 @@ export default class Dictionary extends EventTarget {
         _detail.links.replace(regex, "");
     }
 
-    deleteWord(word: string, dispatch = true): void {
+    deleteWord(word: string): void {
         if (!word || !_detailCacher.has(word)) return;
 
-        const _parseLinks = (str: string): string[] => {
-            if (!str) return [];
-            return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
-        };
-
-        const _linksArray = _parseLinks(_detailCacher.get(word)['links']);
-        _linksArray.forEach(_linkedWord => {
-            this.#_removeLink(_linkedWord, word)
-        });
-
-        _detailCacher.remove(word);
-        this.#_searchAPI.removeWord(word);
-        if (dispatch) this.#_dispWordEvt(word, "delete");
-        this.#_push(word, '2');
-        _needToUpload = true;
+        const _detail = _detailCacher.get(word) as Detail;
+        serverProxy.deleteWord(_detail);
     }
 
     #_dispWordEvt(word: string, action: ActionWord): void {
