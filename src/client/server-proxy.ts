@@ -69,11 +69,9 @@ async function _toServer<K extends CSKey>(url: string, requestType: RequestType,
     });
 
     try {
-        logger.log(
-            `S -> C ${response.url}: ${response.status}: ${response.statusText}`
-        );
-
         const responseData = await response.json() as ResponseBody<K>;
+        logger.log(`S -> C\n\turl: ${response.url}\n\tstatus: ${response.status}\n\tstatus text: ${response.statusText}\n\tinfo: ${responseData.info}`);
+
         if (response.ok) {
             if (responseData.syncTime) {
                 _localCacher.set("sec_setting.syncTime", responseData.syncTime);
@@ -82,7 +80,6 @@ async function _toServer<K extends CSKey>(url: string, requestType: RequestType,
             return responseData.content;
         }
 
-        logger.error(`S -> C respnse info: ${responseData.info}`);
         return null;
     } catch (err: any) {
         logger.vital(`S -> C ${err}`);

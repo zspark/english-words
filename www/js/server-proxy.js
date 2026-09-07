@@ -63,15 +63,14 @@ async function _toServer(url, requestType, content) {
         body: JSON.stringify(req),
     });
     try {
-        logger.log(`S -> C ${response.url}: ${response.status}: ${response.statusText}`);
         const responseData = await response.json();
+        logger.log(`S -> C\n\turl: ${response.url}\n\tstatus: ${response.status}\n\tstatus text: ${response.statusText}\n\tinfo: ${responseData.info}`);
         if (response.ok) {
             if (responseData.syncTime) {
                 _localCacher.set("sec_setting.syncTime", responseData.syncTime);
             }
             return responseData.content;
         }
-        logger.error(`S -> C respnse info: ${responseData.info}`);
         return null;
     }
     catch (err) {
