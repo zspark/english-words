@@ -6,8 +6,9 @@ const EVT_CMP_MODIFY = "EVT_CMP_MODIFY";
 export { compareET, EVT_CMP_DELETE, EVT_CMP_MODIFY };
 export default class Compare {
     constructor(clientDetail, serverDetail, action) {
+        let _elem;
         if (action === "modify") {
-            cmp.showMask(this.#genHTMLString(clientDetail, serverDetail), "Prefer Left", (e) => {
+            _elem = cmp.showMask(this.#genHTMLString(clientDetail, serverDetail), "Prefer Left", (e) => {
                 compareET.dispatchEvent(new CustomEvent(EVT_CMP_MODIFY, {
                     detail: {
                         client: clientDetail,
@@ -30,7 +31,7 @@ export default class Compare {
             });
         }
         else {
-            cmp.showMask(this.#genHTMLString(clientDetail, serverDetail), "Delte", (e) => {
+            _elem = cmp.showMask(this.#genHTMLString(clientDetail, serverDetail), "Delte", (e) => {
                 compareET.dispatchEvent(new CustomEvent(EVT_CMP_DELETE, {
                     detail: {
                         perfer: "delete",
@@ -50,6 +51,7 @@ export default class Compare {
                 }));
             });
         }
+        _elem.firstElementChild?.classList.add("w-90pct");
     }
     #genHTMLString(a, b) {
         return `

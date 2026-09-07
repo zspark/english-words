@@ -166,8 +166,8 @@ class Dictionary extends EventTarget {
             const _cr = e.detail;
             const word = _cr.word;
             const _detail = _cr.detail;
-            _detailCacher.set(word, _detail);
             const _oldDetail = _detailCacher.get(word);
+            _detailCacher.set(word, _detail);
             this.#_updateLink(word, _oldDetail.links, _detail.links);
             this.#_dispWordEvt(word, "modify");
             if (_cr.prefer === "client") {
@@ -182,8 +182,8 @@ class Dictionary extends EventTarget {
             }
             else if (_cr.prefer === "modify") {
                 const word = _cr.word;
-                _detailCacher.set(word, _detail);
                 const _oldDetail = _detailCacher.get(word);
+                _detailCacher.set(word, _detail);
                 this.#_updateLink(word, _oldDetail.links, _detail.links);
                 this.#_dispWordEvt(word, "modify");
             }

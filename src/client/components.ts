@@ -199,8 +199,8 @@ function showMask(
 
             <div class="bs-mask-message"> ${message} </div>
             <div class="bs-mask-buttons">
-                ${_cancelBtnStr}
                 ${_okBtnStr}
+                ${_cancelBtnStr}
             </div>
         </div>`;
 

@@ -1478,7 +1478,6 @@ svg {
 
 .bs-mask-dialog {
     width: 480px;
-    max-width: 90vw;
     background: white;
     border-radius: 12px;
     padding: 30px;
@@ -1631,6 +1630,10 @@ svg {
 
 .hide {
     display: none;
+}
+
+.w-90pct{
+    width: 90%;
 }
 
 @media (max-width: 768px) {
