@@ -134,7 +134,7 @@ async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Resp
     const syncTime: number = Date.now();
     const word: string = detail.word;
 
-    const result = await genInsertSQL2(detail, syncTime, env).all() as DBResultType<undefined>;
+    const result = await genInsertSQL2(detail, detail.time_modify, syncTime, env).all() as DBResultType<undefined>;
     if (!result.success) {
         return getEmptyRes(`put word (${word}) failed.`);
     }

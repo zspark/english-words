@@ -114,7 +114,7 @@ async function putDetail(data, env) {
     const detail = data.content.detail;
     const syncTime = Date.now();
     const word = detail.word;
-    const result = await genInsertSQL2(detail, syncTime, env).all();
+    const result = await genInsertSQL2(detail, detail.time_modify, syncTime, env).all();
     if (!result.success) {
         return getEmptyRes(`put word (${word}) failed.`);
     }

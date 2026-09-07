@@ -106,7 +106,7 @@ export async function getLatestTime(env) {
     `).first();
     return _time.max_time_sync;
 }
-export function genInsertSQL2(detail, syncTime, env) {
+export function genInsertSQL2(detail, lastModifyTime, syncTime, env) {
     return env.DB.prepare(`
         INSERT INTO dictionary (
             word, ipa, meaning, level,
@@ -122,7 +122,7 @@ export function genInsertSQL2(detail, syncTime, env) {
             links = excluded.links,
             tags = excluded.tags,
             time_modify = ?
-        WHERE excluded.time_modify >= dictionary.time_modify`).bind(detail.word, detail.ipa, detail.meaning, detail.level, detail.note, detail.links, detail.tags, syncTime, syncTime, syncTime);
+        WHERE ? >= dictionary.time_modify`).bind(detail.word, detail.ipa, detail.meaning, detail.level, detail.note, detail.links, detail.tags, syncTime, syncTime, syncTime, lastModifyTime);
 }
 export function genDeleteSQL(detail, env) {
     return env.DB.prepare(`

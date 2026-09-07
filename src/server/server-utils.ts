@@ -117,7 +117,7 @@ export async function getLatestTime(env: any): Promise<number> {
     return _time.max_time_sync;
 }
 
-export function genInsertSQL2(detail: Detail, syncTime: number, env: any): any {
+export function genInsertSQL2(detail: Detail, lastModifyTime: number, syncTime: number, env: any): any {
     return env.DB.prepare(`
         INSERT INTO dictionary (
             word, ipa, meaning, level,
@@ -133,7 +133,7 @@ export function genInsertSQL2(detail: Detail, syncTime: number, env: any): any {
             links = excluded.links,
             tags = excluded.tags,
             time_modify = ?
-        WHERE excluded.time_modify >= dictionary.time_modify`
+        WHERE ? >= dictionary.time_modify`
     ).bind(
         detail.word,
         detail.ipa,
@@ -146,7 +146,8 @@ export function genInsertSQL2(detail: Detail, syncTime: number, env: any): any {
 
         syncTime,
         syncTime,
-        syncTime
+        syncTime,
+        lastModifyTime
     );
 }
 export function genDeleteSQL(detail: Detail, env: any): any {
