@@ -9,7 +9,7 @@ import serverProxy from "./server-proxy.js"
 import prpc from "./pronunciation.js"
 import cmp from "./components.js"
 import words from "./section-words.js"
-import { HTMLString, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseData, ResponseEvent } from "./types.js"
+import { HTMLString, Detail, Result } from "../types.d.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
 

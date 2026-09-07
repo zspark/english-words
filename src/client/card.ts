@@ -1,7 +1,7 @@
 
 import { isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
 import logger from "./logger.js"
-import { HTMLString, WordLevelType, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseData, ResponseEvent } from "./types.js"
+import { HTMLString, WordLevelType, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseEvent } from "../types.d.js"
 import cacher from "./cacher.js"
 import cmp from "./components.js"
 import ai from "./ai.js"

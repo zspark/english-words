@@ -90,16 +90,18 @@ class Dictionary extends EventTarget {
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_GET_DETAIL, (event) => {
-            const _data = event.detail?.content;
+            const _data = event.detail.content;
             if (_data) {
-                _detailCacher.set(_data.word, _data.detail);
+                _detailCacher.set(_data.word, _data);
                 this.#_dispEvt(_a.DICT_EVT_DETAIL_RECEIVED, _data);
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_GET_WORDLIST, (event) => {
-            const _data = event.detail?.content;
+            const _data = event.detail.content;
             if (_data) {
-                this.#_listCacher.append(_data.wordList);
+                _data.forEach(w => {
+                    this.#_listCacher.set(w, true);
+                });
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_SYNC, (event) => {

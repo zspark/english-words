@@ -47,18 +47,18 @@ const Response = {
  */
 import logger from "./logger.js"
 import cacher from "./cacher.js"
-import { ResponseData, ResponseCallback, RequestData } from "./types.js"
+import { CSType, RequestType, Detail, RequestBodyContentType, ResponseBodyContentType, ResponseCallback } from "../types.d.js"
+
+const _connectionBreakRes: ResponseBodyContentType<undefined> = Object.freeze({
+    info: 'Internet Disconnected.',
+    content: undefined,
+});
 
 const _localProxy = cacher.localProxy;
 const _data = _localProxy.get("sec_setting", {});
 
-type OutTpye = Promise<ResponseData>;
-
-async function _toServer(url: string, data: RequestData): OutTpye {
+async function _toServer<C extends RequestBodyContentType<any>, S extends ResponseBodyContentType<any>>(url: string, data: C): Promise<S> {
     logger.log(`C -> S request type: ${data.requestType}`);
-
-    data.accessToken = _data["userID"] || "";
-    data.syncTime = _data['syncTime'] || 1;
 
     const _response = await fetch(url, {
         method: "POST",
@@ -80,10 +80,19 @@ async function _toServer(url: string, data: RequestData): OutTpye {
             // logger.debug(`${_responseData}`);
             return _responseData.content;
         }
-        return null;
+        return _connectionBreakRes as S;
     } catch (err) {
         logger.vital(`To server: ${err}`);
-        return null;
+        return _connectionBreakRes as S;
+    }
+}
+
+function _composeRquestData<T>(requestType: RequestType, content: T): RequestBodyContentType<T> {
+    return {
+        accessToken: _data["userID"] || "",
+        syncTime: _data['syncTime'] || 1,
+        requestType,
+        content
     }
 }
 
@@ -96,57 +105,64 @@ class ServerProxy {
 
     #_et: EventTarget = new EventTarget();
 
-    addEventListener(type: string, cb: ResponseCallback) {
+    addEventListener<T>(type: string, cb: ResponseCallback<T>) {
         this.#_et.addEventListener(type, cb as EventListener);
     }
 
     async sync(content: {}): Promise<void> {
-        const detail: ResponseData = await _toServer("../api/data", {
-            requestType: "sync",
-            content,
-        })
+        type C = CSType['sync']['C'];
+        type S = CSType['sync']['S'];
+        const detail: S = await _toServer<C, S>(
+            "../api/data",
+            _composeRquestData("sync", content)
+        )
         if (detail) {
-            this.#_et.dispatchEvent(new CustomEvent<ResponseData>(this.EVT_SYNC, { detail }));
+            this.#_et.dispatchEvent(new CustomEvent<S>(this.EVT_SYNC, { detail }));
         }
     }
 
     async syncAll(): Promise<void> {
-        const detail: ResponseData = await _toServer("../api/data", {
-            requestType: "sync-all",
-            content: {},
-        })
-        this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC_ALL, { detail }));
+        type C = CSType['syncAll']['C'];
+        type S = CSType['syncAll']['S'];
+        const detail: S = await _toServer<C, S>(
+            "../api/data",
+            _composeRquestData("sync-all", {})
+        )
+
+        this.#_et.dispatchEvent(new CustomEvent<S>(this.EVT_SYNC_ALL, { detail }));
     }
 
     async getWordList(): Promise<void> {
-        const detail: ResponseData = await _toServer("../api/word", {
-            requestType: "get-word-list",
-            content: {},
-        })
+        type C = CSType['wordList']['C'];
+        type S = CSType['wordList']['S'];
+        const detail: S = await _toServer<C, S>(
+            "../api/word",
+            _composeRquestData<C['content']>("get-word-list", undefined)
+        )
         if (detail) {
-            this.#_et.dispatchEvent(new CustomEvent<ResponseData>(this.EVT_GET_WORDLIST, { detail }));
+            this.#_et.dispatchEvent(new CustomEvent<S>(this.EVT_GET_WORDLIST, { detail }));
         }
     }
     async getDetail(word: string): Promise<void> {
-        const detail: ResponseData = await _toServer("../api/word", {
-            requestType: "get-detail",
-            content: {
-                word,
-            },
-        })
+        type C = CSType['wordDetail']['C'];
+        type S = CSType['wordDetail']['S'];
+        const detail: S = await _toServer<C, S>(
+            "../api/word",
+            _composeRquestData<C['content']>("get-detail", { word })
+        );
         if (detail) {
-            this.#_et.dispatchEvent(new CustomEvent<ResponseData>(this.EVT_GET_DETAIL, { detail }));
+            this.#_et.dispatchEvent(new CustomEvent<S>(this.EVT_GET_DETAIL, { detail }));
         }
     }
 
     async getNews(vendor: string): Promise<void> {
-        const detail: ResponseData = await _toServer("../api/rss", {
-            requestType: "get-news",
-            content: {
-                vendor
-            },
-        })
-        this.#_et.dispatchEvent(new CustomEvent(this.EVT_NEWS, { detail }));
+        type C = CSType['getNews']['C'];
+        type S = CSType['getNews']['S'];
+        const detail: S = await _toServer<C, S>(
+            "../api/word",
+            _composeRquestData<C['content']>("get-news", { vendor })
+        );
+        this.#_et.dispatchEvent(new CustomEvent<S>(this.EVT_NEWS, { detail }));
     }
 
 }

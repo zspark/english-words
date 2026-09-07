@@ -46,12 +46,14 @@ const Response = {
  */
 import logger from "./logger.js";
 import cacher from "./cacher.js";
+const _connectionBreakRes = Object.freeze({
+    info: 'Internet Disconnected.',
+    content: undefined,
+});
 const _localProxy = cacher.localProxy;
 const _data = _localProxy.get("sec_setting", {});
 async function _toServer(url, data) {
     logger.log(`C -> S request type: ${data.requestType}`);
-    data.accessToken = _data["userID"] || "";
-    data.syncTime = _data['syncTime'] || 1;
     const _response = await fetch(url, {
         method: "POST",
         headers: {
@@ -71,12 +73,20 @@ async function _toServer(url, data) {
             // logger.debug(`${_responseData}`);
             return _responseData.content;
         }
-        return null;
+        return _connectionBreakRes;
     }
     catch (err) {
         logger.vital(`To server: ${err}`);
-        return null;
+        return _connectionBreakRes;
     }
+}
+function _composeRquestData(requestType, content) {
+    return {
+        accessToken: _data["userID"] || "",
+        syncTime: _data['syncTime'] || 1,
+        requestType,
+        content
+    };
 }
 class ServerProxy {
     EVT_NEWS = "EVT_NEWS";
@@ -89,48 +99,29 @@ class ServerProxy {
         this.#_et.addEventListener(type, cb);
     }
     async sync(content) {
-        const detail = await _toServer("../api/data", {
-            requestType: "sync",
-            content,
-        });
+        const detail = await _toServer("../api/data", _composeRquestData("sync", content));
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC, { detail }));
         }
     }
     async syncAll() {
-        const detail = await _toServer("../api/data", {
-            requestType: "sync-all",
-            content: {},
-        });
+        const detail = await _toServer("../api/data", _composeRquestData("sync-all", {}));
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC_ALL, { detail }));
     }
     async getWordList() {
-        const detail = await _toServer("../api/word", {
-            requestType: "get-word-list",
-            content: {},
-        });
+        const detail = await _toServer("../api/word", _composeRquestData("get-word-list", undefined));
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
         }
     }
     async getDetail(word) {
-        const detail = await _toServer("../api/word", {
-            requestType: "get-detail",
-            content: {
-                word,
-            },
-        });
+        const detail = await _toServer("../api/word", _composeRquestData("get-detail", { word }));
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }
     }
     async getNews(vendor) {
-        const detail = await _toServer("../api/rss", {
-            requestType: "get-news",
-            content: {
-                vendor
-            },
-        });
+        const detail = await _toServer("../api/word", _composeRquestData("get-news", { vendor }));
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_NEWS, { detail }));
     }
 }

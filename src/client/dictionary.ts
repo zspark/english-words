@@ -7,7 +7,7 @@ import { readOnly } from "./utils.js"
 import logger from "./logger.js"
 import cacher, { StorageCacher } from "./cacher.js"
 import serverProxy from "./server-proxy.js"
-import { Detail, Words, Results, Result, Dict, DictSyncData, ResponseData, WordLevelType } from "./types.js"
+import { CSType, Detail, Words, Results, Result, Dict, DictSyncData, WordLevelType } from "../types.d.js"
 
 declare const FlexSearch: any;
 type ActionWord = "delete" | "add" | "modify";
@@ -115,27 +115,29 @@ export default class Dictionary extends EventTarget {
         this.#_searchAPI = new SearchHelper();
 
         this.setSyncInterval(_localProxy.get("sec_setting", {})["syncInterval"] || 10);
-        serverProxy.addEventListener(serverProxy.EVT_SYNC_ALL, (event) => {
+        serverProxy.addEventListener<CSType['syncAll']['S']>(serverProxy.EVT_SYNC_ALL, (event) => {
             const _data = event.detail?.content;
             if (_data) {
                 _detailCacher.clear();
                 this.importDictionaryByContent(_data);
             }
         });
-        serverProxy.addEventListener(serverProxy.EVT_GET_DETAIL, (event) => {
-            const _data = event.detail?.content;
+        serverProxy.addEventListener<CSType['wordDetail']['S']>(serverProxy.EVT_GET_DETAIL, (event) => {
+            const _data = event.detail.content;
             if (_data) {
-                _detailCacher.set(_data.word, _data.detail);
+                _detailCacher.set(_data.word as string, _data);
                 this.#_dispEvt(Dictionary.DICT_EVT_DETAIL_RECEIVED, _data);
             }
         });
-        serverProxy.addEventListener(serverProxy.EVT_GET_WORDLIST, (event) => {
-            const _data = event.detail?.content;
+        serverProxy.addEventListener<CSType['wordList']['S']>(serverProxy.EVT_GET_WORDLIST, (event) => {
+            const _data = event.detail.content;
             if (_data) {
-                this.#_listCacher.append(_data.wordList);
+                _data.forEach(w => {
+                    this.#_listCacher.set(w, true);
+                });
             }
         });
-        serverProxy.addEventListener(serverProxy.EVT_SYNC, (event) => {
+        serverProxy.addEventListener<CSType['sync']['S']>(serverProxy.EVT_SYNC, (event) => {
             const _data = event.detail?.content;
             if (_data) {
                 this.assignWords((_data as DictSyncData).dict);

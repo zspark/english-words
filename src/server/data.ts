@@ -1,6 +1,7 @@
-import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "../server-utils.js";
+import { CSType, RequestBodyContentType, Detail } from "../types.d.js"
+import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 
-async function _getTimeModify(list, env) {
+async function _getTimeModify(list: string[], env: any): Promise<any> {
     try {
         if (!list?.length) return {};
         const placeholders = list.map(() => "?").join(",");
@@ -13,11 +14,11 @@ async function _getTimeModify(list, env) {
             .bind(...list)
             .all()
         return result;
-    } catch (e) {
+    } catch (e: any) {
         throw new Error(`_getTimeModify failed: ${e.message}`);
     }
 }
-async function _getDetails(list, env) {
+async function _getDetails(list: string[], env: any): Promise<any> {
     if (!list?.length) return {};
     const placeholders = list.map(() => "?").join(",");
     const result = await env.DB
@@ -40,13 +41,13 @@ async function _getDetails(list, env) {
     return result;
 }
 
-function _toObj(result) {
+function _toObj(result: any): Record<string, Detail> {
     if (result.success) {
-        const _obj = {};
+        const _obj: Record<string, Detail> = {};
         const _tmp = result.results;
         for (let i = 0, N = _tmp.length; i < N; ++i) {
-            let _v = _tmp[i];
-            _obj[_v.word] = {
+            let _v = _tmp[i] as Detail;
+            _obj[_v.word as string] = {
                 ipa: _v.ipa,
                 meaning: _v.meaning,
                 level: _v.level,
@@ -61,7 +62,7 @@ function _toObj(result) {
     } else return {};
 }
 
-async function syncAll(data, env) {
+async function syncAll(data: RequestBodyContentType<any>, env: any): Promise<Response> {
     try {
         const _credit = await getValue(data.accessToken, env);
         if (!_credit) {
@@ -96,12 +97,12 @@ async function syncAll(data, env) {
         } else {
             return getEmptyRes(`Can not process. Token value is: ${_tv}.`);
         }
-    } catch (e) {
+    } catch (e: any) {
         return getInternalErrorRes(`Internal Error: ${e.message} .`);
     }
 };
 
-function _genSetValueSQL(key, value, time, env) {
+function _genSetValueSQL(key: string, value: any, time: number, env: any): any {
     return env.DB
         .prepare(`
             UPDATE keyvalue
@@ -110,7 +111,7 @@ function _genSetValueSQL(key, value, time, env) {
         ).bind(value, time, key)
 }
 
-async function _getConfigValues(env) {
+async function _getConfigValues(env: any): Promise<any> {
     const result = await env.DB.prepare(`
         SELECT json_group_object(
             key,
@@ -126,21 +127,21 @@ async function _getConfigValues(env) {
     return JSON.parse(result.result);
 }
 
-function _genMarkSQL(time, wordArr, action, env) {
+function _genMarkSQL(time: number, wordArr: string[], action: number, env: any): any {
     return env.DB.prepare(`
         INSERT INTO synchronizer ( time_sync, words, action)
         VALUES (?,?,?)`
     ).bind(time, wordArr.join(','), action)
 }
 
-function _genDeleteSQL(word, env) {
+function _genDeleteSQL(word: string, env: any): any {
     return env.DB.prepare(`
         DELETE FROM dictionary
         WHERE word = ?`
     ).bind(word);
 }
 
-function _genInsertSQL(word, detail, env) {
+function _genInsertSQL(word: string, detail: Detail, env: any): any {
     return env.DB.prepare(`
         INSERT OR REPLACE INTO dictionary (
             word, ipa, meaning, level,
@@ -163,18 +164,19 @@ function _genInsertSQL(word, detail, env) {
     );
 }
 
-async function _CToS_add(cmd, syncTime, content, env) {
+async function _CToS_add(cmd: any[], syncTime: number, content: any, env: any): Promise<void> {
     const _listClient = content.lists?.addlist ?? [];
     if (_listClient.length > 0) {
-        const _listExist = [];
+        const _listExist: string[] = [];
         const _r = await _getTimeModify(_listClient, env);
-        _r.results?.forEach(v => {
-            _listExist.push(v.word);
+
+        _r.results?.forEach((v: Detail) => {
+            _listExist.push(v.word as string);
         });
 
         const _dict = content.dict;
-        const _list = _listClient.filter(x => !_listExist.includes(x));
-        _list.forEach((w) => {
+        const _list = _listClient.filter((x: string) => !_listExist.includes(x));
+        _list.forEach((w: string) => {
             cmd.push(_genInsertSQL(w, _dict[w], env));
         });
         if (_list.length > 0) {
@@ -183,15 +185,16 @@ async function _CToS_add(cmd, syncTime, content, env) {
     }
 }
 
-async function _CToS_del(cmd, syncTime, content, env) {
+async function _CToS_del(cmd: any[], syncTime: number, content: any, env: any): Promise<void> {
     const _listClient = content.lists?.dellist ?? [];
     if (_listClient.length > 0) {
-        const _list = [];
+        const _list: string[] = [];
         const _r = await _getTimeModify(_listClient, env);
-        _r.results?.forEach(v => {
+        _r.results?.forEach((v: Detail) => {
             if (v.time_modify <= syncTime) {
-                cmd.push(_genDeleteSQL(v.word, env));
-                _list.push(v.word);
+                let _w = v.word as string;
+                cmd.push(_genDeleteSQL(_w, env));
+                _list.push(_w);
             }
         });
 
@@ -201,16 +204,17 @@ async function _CToS_del(cmd, syncTime, content, env) {
     }
 }
 
-async function _CToS_modify(cmd, syncTime, content, env) {
+async function _CToS_modify(cmd: any[], syncTime: number, content: any, env: any): Promise<void> {
     const _listClient = content.lists?.modlist ?? [];
     if (_listClient.length > 0) {
         const _dict = content.dict;
-        const _list = [];
+        const _list: string[] = [];
         const _r = await _getTimeModify(_listClient, env);
-        _r.results?.forEach(v => {
+        _r.results?.forEach((v: Detail) => {
             if (v.time_modify <= syncTime) {
-                cmd.push(_genInsertSQL(v.word, _dict[v.word], env));
-                _list.push(v.word);
+                let _w = v.word as string;
+                cmd.push(_genInsertSQL(v.word as string, _dict[_w], env));
+                _list.push(_w);
             }
         });
 
@@ -220,7 +224,7 @@ async function _CToS_modify(cmd, syncTime, content, env) {
     }
 }
 
-async function _clientToServer(data, env) {
+async function _clientToServer(data: RequestBodyContentType<any>, env: any) {
     const _syncTime = data.syncTime;
     const _cmd = [];
 
@@ -250,7 +254,7 @@ async function _clientToServer(data, env) {
 
 let _server_newest_sync_time = -1;
 
-async function _serverToClient(data, env) {
+async function _serverToClient(data: RequestBodyContentType<any>, env: any): Promise<Response> {
     const result = await env.DB
         .prepare(`
             SELECT *
@@ -280,11 +284,13 @@ async function _serverToClient(data, env) {
     } else {
         return getJSONResponse({
             info: "sync failed.",
+            content: {},
         });
     }
 }
 
-async function sync(data, env) {
+async function sync(data: CSType['sync']['C'], env: any): Promise<Response> {
+    type S = CSType['sync']['S'];
     try {
         const _credit = await getValue(data.accessToken, env);
         if (!_credit) {
@@ -298,12 +304,12 @@ async function sync(data, env) {
             return await _serverToClient(data, env);
         }
         return getEmptyRes(`Can not process. Token value is: ${_tv}.`);
-    } catch (e) {
+    } catch (e: any) {
         return getInternalErrorRes(`Internal Error: sync failed, ${e.message} .`);
     }
 }
 
-export async function respond_POST(request, data, env) {
+export default async function respond_POST(request: Request, data: RequestBodyContentType<any>, env: any): Promise<Response> {
     if (_server_newest_sync_time < 0) {
         _server_newest_sync_time = await getLatestTime(env);
     }

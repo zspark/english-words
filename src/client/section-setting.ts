@@ -2,7 +2,7 @@ import logger from "./logger.js"
 import ai from "./ai.js"
 import Cacher from "./cacher.js"
 import serverProxy from "./server-proxy.js"
-import { Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseData, ResponseEvent } from "./types.js"
+import { CSType, Words, Dict, DictSyncDataSC, ResponseEvent } from "../types.d.js"
 import cmp from "./components.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"
@@ -242,7 +242,7 @@ export default class SectionSetting extends SectionBase {
             }
         });
 
-        serverProxy.addEventListener(serverProxy.EVT_SYNC, (e: ResponseEvent) => {
+        serverProxy.addEventListener<CSType['sync']['S']>(serverProxy.EVT_SYNC, (e) => {
             const _data: DictSyncDataSC = e.detail?.content as DictSyncDataSC
             if (_data) {
                 this.#_saveTags(_data.tags);

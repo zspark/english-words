@@ -1,5 +1,4 @@
 import { isEditing, isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
-import { ChildMode } from "./types.js"
 import logger from "./logger.js"
 import Cacher from "./cacher.js"
 import Navigator, { NAV_EVT_SECTION } from "./navigator.js"

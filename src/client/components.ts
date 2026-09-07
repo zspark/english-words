@@ -1,5 +1,5 @@
 
-import { HTMLString } from "./types.js"
+import { HTMLString } from "../types.d.js"
 
 function checkboxSource(
     id: string,

@@ -6,8 +6,8 @@ import serverProxy from "./server-proxy.js"
 import cmp from "./components.js"
 import Card from "./card.js"
 import { lemmatize } from "./lemmatize.js"
-import { ArticleContentType, HTMLString, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseData, ResponseEvent } from "./types.js"
-import { SectionBase, SectionUIBase } from "./section-base.js"
+import { ArticleContentType } from "../types.d.js"
+import { SectionBase } from "./section-base.js"
 
 const articleSource = `
 <div class="bs-panel lh2p4">

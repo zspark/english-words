@@ -1,7 +1,9 @@
+import { SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
 import { getInternalErrorRes, getValue, getParseFailureRes, getEmptyRes, parseJSONString } from "./server-utils.js";
 import respond_POST from "./data.js";
 import respond from "./word.js";
 //import { getNews } from "./rss/rss.js";
+
 export default {
     /**
      const Request = {
@@ -63,12 +65,13 @@ export default {
         clone: function () {}
     };
      */
-    async fetch(request, env) {
+    async fetch(request: Request, env: any): Promise<Response> {
         try {
-            const _data = await parseJSONString(request);
+            const _data: RequestBodyContentType<any> = await parseJSONString(request) as RequestBodyContentType<any>;
             if (!_data) {
                 return getParseFailureRes();
             }
+
             const _credit = await getValue(_data.accessToken, env);
             if (!_credit) {
                 return getEmptyRes("server need a token to process.");
@@ -76,22 +79,20 @@ export default {
             if (Number(_credit) < 1) {
                 return getEmptyRes("your token is restricted.");
             }
+
             const url = new URL(request.url);
             if (url.pathname === "/api/rss") {
                 return getEmptyRes('ROOT');
                 //return getNews(request, _data, env);
-            }
-            else if (url.pathname === "/api/word") {
+            } else if (url.pathname === "/api/word") {
                 return respond(request, _data, env);
-            }
-            else if (url.pathname === "/api/data") {
+            } else if (url.pathname === "/api/data") {
                 if (request.method === "POST") {
                     return respond_POST(request, _data, env);
                 }
             }
             return getEmptyRes('ROOT');
-        }
-        catch (e) {
+        } catch (e: any) {
             return getInternalErrorRes(`Internal Error: ${e.message}`);
         }
     }

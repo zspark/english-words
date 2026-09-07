@@ -2,7 +2,7 @@
 
 import { isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
 import logger from "./logger.js"
-import { HTMLString, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseData, ResponseEvent, WordLevelType } from "./types.js"
+import { HTMLString, Detail, WordLevelType } from "../types.d.js"
 import Cacher from "./cacher.js"
 import cmp from "./components.js"
 import Dictionary from "./dictionary.js"

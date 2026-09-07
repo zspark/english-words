@@ -1,4 +1,4 @@
-import { ChildMode } from "./types.js"
+import { ChildMode } from "../types.d.js"
 import { HTMLString } from "./components.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"

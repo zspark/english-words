@@ -1,7 +1,7 @@
-import { getJSONResponse } from "../server-utils.js";
-import { getRNZNews } from "./rnz.js";
+import { RequestBodyContentType, getJSONResponse } from "./server-utils.js";
+import { getRNZNews } from "./rss/rnz.js";
 
-export async function getNews(request, _data, env) {
+export async function getNews(request: Request, _data: RequestBodyContentType, env: any): Promise<Response> {
 
     try {
         if (_data.vendor === "RNZ") {
