@@ -138,5 +138,5 @@ export default async function respond(request, data, env) {
         return getWordList(data, env);
     }
     return getEmptyRes('POST');
-
+}
 
