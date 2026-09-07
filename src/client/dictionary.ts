@@ -152,7 +152,9 @@ export default class Dictionary extends EventTarget {
             const _data = event.detail;
             if (_data) {
                 if (_data.success) {
-                    const _detail = _detailCacher.get(_data.word) as Detail;
+                    const _detail: Detail | undefined = _detailCacher.get(_data.word);
+                    if (!_detail) return;
+
                     const word: string = _detail.word;
                     const _parseLinks = (str: string): string[] => {
                         if (!str) return [];
@@ -178,7 +180,9 @@ export default class Dictionary extends EventTarget {
             if (_data) {
                 if (_data.success) {
                     const word = _data.word;
-                    const _oldDetail = _detailCacher.get(word) as Detail;
+                    const _oldDetail: Detail | undefined = _detailCacher.get(word);
+                    if (!_oldDetail) return;
+
                     this.#_updateLink(word, _oldDetail.links, _data.serverDetail.links)
                     _detailCacher.set(word, _data.serverDetail);
                     if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
@@ -198,9 +202,9 @@ export default class Dictionary extends EventTarget {
             const _cr = (e as CustomEvent).detail as CompareResult;
             const word: string = _cr.word;
             const _detail = _cr.detail;
-            const _oldDetail = _detailCacher.get(word) as Detail;
+            const _oldDetail: Detail | undefined = _detailCacher.get(word);
             _detailCacher.set(word, _detail);
-            this.#_updateLink(word, _oldDetail.links, _detail.links);
+            this.#_updateLink(word, _oldDetail?.links, _detail.links);
             this.#_dispWordEvt(word, "modify");
             if (_cr.prefer === "client") {
                 serverProxy.putDetail(_detail);
@@ -213,9 +217,9 @@ export default class Dictionary extends EventTarget {
                 serverProxy.deleteWord(_detail);
             } else if (_cr.prefer === "modify") {
                 const word: string = _cr.word;
-                const _oldDetail = _detailCacher.get(word) as Detail;
+                const _oldDetail: Detail | undefined = _detailCacher.get(word);
                 _detailCacher.set(word, _detail);
-                this.#_updateLink(word, _oldDetail.links, _detail.links);
+                this.#_updateLink(word, _oldDetail?.links, _detail.links);
                 this.#_dispWordEvt(word, "modify");
             }
         });
@@ -391,18 +395,18 @@ export default class Dictionary extends EventTarget {
         serverProxy.putDetail(_detail);
     }
 
-    #_updateLink(word: string, oldLink: string, newlink: string): void {
+    #_updateLink(word: string, oldLink: string | undefined, newlink: string | undefined): void {
         if (newlink != oldLink) {
             const parseLinks = (str: string) => str.split(',').map(w => w.trim()).filter(w => w.length > 0);
 
-            if (oldLink?.length > 0) {
+            if (oldLink && oldLink.length > 0) {
                 const arrOldLink = parseLinks(oldLink);
                 arrOldLink.forEach(w => {
                     this.#_removeLink(w, word);
                 });
             }
 
-            if (newlink?.length > 0) {
+            if (newlink && newlink.length > 0) {
                 const arrNewLink = parseLinks(newlink);
                 arrNewLink.forEach(w => {
                     this.#_addLink(w, word);

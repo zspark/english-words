@@ -120,6 +120,8 @@ class Dictionary extends EventTarget {
             if (_data) {
                 if (_data.success) {
                     const _detail = _detailCacher.get(_data.word);
+                    if (!_detail)
+                        return;
                     const word = _detail.word;
                     const _parseLinks = (str) => {
                         if (!str)
@@ -146,6 +148,8 @@ class Dictionary extends EventTarget {
                 if (_data.success) {
                     const word = _data.word;
                     const _oldDetail = _detailCacher.get(word);
+                    if (!_oldDetail)
+                        return;
                     this.#_updateLink(word, _oldDetail.links, _data.serverDetail.links);
                     _detailCacher.set(word, _data.serverDetail);
                     if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
@@ -168,7 +172,7 @@ class Dictionary extends EventTarget {
             const _detail = _cr.detail;
             const _oldDetail = _detailCacher.get(word);
             _detailCacher.set(word, _detail);
-            this.#_updateLink(word, _oldDetail.links, _detail.links);
+            this.#_updateLink(word, _oldDetail?.links, _detail.links);
             this.#_dispWordEvt(word, "modify");
             if (_cr.prefer === "client") {
                 serverProxy.putDetail(_detail);
@@ -184,7 +188,7 @@ class Dictionary extends EventTarget {
                 const word = _cr.word;
                 const _oldDetail = _detailCacher.get(word);
                 _detailCacher.set(word, _detail);
-                this.#_updateLink(word, _oldDetail.links, _detail.links);
+                this.#_updateLink(word, _oldDetail?.links, _detail.links);
                 this.#_dispWordEvt(word, "modify");
             }
         });
@@ -348,13 +352,13 @@ class Dictionary extends EventTarget {
     #_updateLink(word, oldLink, newlink) {
         if (newlink != oldLink) {
             const parseLinks = (str) => str.split(',').map(w => w.trim()).filter(w => w.length > 0);
-            if (oldLink?.length > 0) {
+            if (oldLink && oldLink.length > 0) {
                 const arrOldLink = parseLinks(oldLink);
                 arrOldLink.forEach(w => {
                     this.#_removeLink(w, word);
                 });
             }
-            if (newlink?.length > 0) {
+            if (newlink && newlink.length > 0) {
                 const arrNewLink = parseLinks(newlink);
                 arrNewLink.forEach(w => {
                     this.#_addLink(w, word);
