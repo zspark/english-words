@@ -1,4 +1,4 @@
-import { CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
+import { CSKey, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
 import { getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 
 type DBResultType<T> = {
@@ -59,12 +59,12 @@ async function _getWordList<T>(env: any): Promise<DBResultType<T>> {
     return result;
 }
 
-async function getWordList<T>(data: CSType['wordList']['C'], env: any): Promise<Response> {
+async function getWordList(data: RequestBody<"wordList">, env: any): Promise<Response> {
     type S = CSType['wordList']['S'];
     const detail = await _getWordList<Detail>(env);
     if (detail.success) {
         const content = detail.results?.map(({ word }) => word) as string[];
-        return getJSONResponse<S>({
+        return getJSONResponse<"wordList">({
             info: "Succeeded.",
             content,
         });
@@ -73,12 +73,12 @@ async function getWordList<T>(data: CSType['wordList']['C'], env: any): Promise<
     }
 }
 
-async function getDetail(data: CSType['wordDetail']['C'], env: any): Promise<Response> {
+async function getDetail(data: RequestBody<"wordDetail">, env: any): Promise<Response> {
     type S = CSType['wordDetail']['S'];
     const detail = await _getDetail(data.content.word, env);
     if (detail.success) {
         const d = detail.results[0];
-        return getJSONResponse<S>({
+        return getJSONResponse<"wordDetail">({
             info: "Succeeded.",
             content: d
         });

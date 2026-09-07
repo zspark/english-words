@@ -28,6 +28,7 @@ const _localProxy = cacher.localProxy;
 const _metaProxy = cacher.metaProxy;
 const _recordsProxy = cacher.recordsProxy;
 const _detailCacher = cacher.wordsProxy;
+const _listCacher = new StorageCacher('__listCache__');
 
 class SearchHelper {
 
@@ -35,7 +36,7 @@ class SearchHelper {
 
     constructor() {
         this.#_flexSearch = this.#_create();
-        this.addWords(_detailCacher.data() as Words)
+        this.addWords(_listCacher.data() as Record<string, boolean>)
     }
 
     #_create() {
@@ -51,11 +52,9 @@ class SearchHelper {
         this.#_flexSearch.add(word, word);
     }
 
-    addWords(words: Words) {
-        const _arr = Object.entries(words);
-        for (let i = 0, N = _arr.length; i < N; ++i) {
-            this.#_flexSearch.add(_arr[i][0], _arr[i][0]);
-        }
+    addWords(words: Record<string, boolean>) {
+        const _arr = Object.keys(words);
+        _arr.forEach(w => this.#_flexSearch.add(w, w))
     }
 
     search(query: string) {
@@ -104,7 +103,6 @@ export default class Dictionary extends EventTarget {
     static EVT_DICT = "EVT_DICT";
     static DICT_EVT_DETAIL_RECEIVED = "DICT_EVT_DETAIL_RECEIVED";
 
-    #_listCacher = new StorageCacher('__listCache__');
     #_arr: Action[] = [];
     #_syncTimer: number | undefined;
     #_searchAPI: SearchHelper;
@@ -115,29 +113,29 @@ export default class Dictionary extends EventTarget {
         this.#_searchAPI = new SearchHelper();
 
         this.setSyncInterval(_localProxy.get("sec_setting", {})["syncInterval"] || 10);
-        serverProxy.addEventListener<CSType['syncAll']['S']['content']>(serverProxy.EVT_SYNC_ALL, (event) => {
+        serverProxy.addEventListener<'syncAll'>(serverProxy.EVT_SYNC_ALL, (event) => {
             const _data = event.detail;
             if (_data) {
                 _detailCacher.clear();
                 this.importDictionaryByContent(_data);
             }
         });
-        serverProxy.addEventListener<CSType['wordDetail']['S']['content']>(serverProxy.EVT_GET_DETAIL, (event) => {
+        serverProxy.addEventListener<'wordDetail'>(serverProxy.EVT_GET_DETAIL, (event) => {
             const _data = event.detail;
             if (_data) {
                 _detailCacher.set(_data.word as string, _data);
                 this.#_dispEvt(Dictionary.DICT_EVT_DETAIL_RECEIVED, _data);
             }
         });
-        serverProxy.addEventListener<CSType['wordList']['S']['content']>(serverProxy.EVT_GET_WORDLIST, (event) => {
+        serverProxy.addEventListener<'wordList'>(serverProxy.EVT_GET_WORDLIST, (event) => {
             const _data = event.detail;
             if (_data) {
                 _data.forEach(w => {
-                    this.#_listCacher.set(w, true);
+                    _listCacher.set(w, true);
                 });
             }
         });
-        serverProxy.addEventListener<CSType['sync']['S']['content']>(serverProxy.EVT_SYNC, (event) => {
+        serverProxy.addEventListener<'sync'>(serverProxy.EVT_SYNC, (event) => {
             const _data = event.detail;
             if (_data) {
                 this.assignWords((_data as DictSyncData).dict);
@@ -238,7 +236,7 @@ export default class Dictionary extends EventTarget {
             this.#_fillDetailInfosIfMissing(detail);
         }
         _detailCacher.append(_words);
-        this.#_searchAPI.addWords(_words)
+        //this.#_searchAPI.addWords(_words)
     };
 
     // Import JSON
@@ -414,7 +412,7 @@ export default class Dictionary extends EventTarget {
     }
 
     getWordsCount(): number {
-        return Object.keys(this.#_listCacher.data()).length;
+        return Object.keys(_listCacher.data()).length;
     }
 
     getWords(searchQuery: string, level: WordLevelType, tag: string): Words {
@@ -443,7 +441,7 @@ export default class Dictionary extends EventTarget {
 
     hasWord(word: string): boolean {
         if ((!word) || (word.length <= 0)) return false;
-        return this.#_listCacher.has(word);
+        return _listCacher.has(word);
     }
 
     getWord(word: string): Detail | undefined {

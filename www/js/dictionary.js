@@ -12,11 +12,12 @@ const _localProxy = cacher.localProxy;
 const _metaProxy = cacher.metaProxy;
 const _recordsProxy = cacher.recordsProxy;
 const _detailCacher = cacher.wordsProxy;
+const _listCacher = new StorageCacher('__listCache__');
 class SearchHelper {
     #_flexSearch;
     constructor() {
         this.#_flexSearch = this.#_create();
-        this.addWords(_detailCacher.data());
+        this.addWords(_listCacher.data());
     }
     #_create() {
         return new FlexSearch.Index({
@@ -30,10 +31,8 @@ class SearchHelper {
         this.#_flexSearch.add(word, word);
     }
     addWords(words) {
-        const _arr = Object.entries(words);
-        for (let i = 0, N = _arr.length; i < N; ++i) {
-            this.#_flexSearch.add(_arr[i][0], _arr[i][0]);
-        }
+        const _arr = Object.keys(words);
+        _arr.forEach(w => this.#_flexSearch.add(w, w));
     }
     search(query) {
         if (query.length <= 0)
@@ -74,7 +73,6 @@ class Dictionary extends EventTarget {
     static EVT_WORD = "EVT_WORD";
     static EVT_DICT = "EVT_DICT";
     static DICT_EVT_DETAIL_RECEIVED = "DICT_EVT_DETAIL_RECEIVED";
-    #_listCacher = new StorageCacher('__listCache__');
     #_arr = [];
     #_syncTimer;
     #_searchAPI;
@@ -100,7 +98,7 @@ class Dictionary extends EventTarget {
             const _data = event.detail;
             if (_data) {
                 _data.forEach(w => {
-                    this.#_listCacher.set(w, true);
+                    _listCacher.set(w, true);
                 });
             }
         });
@@ -198,7 +196,7 @@ class Dictionary extends EventTarget {
             this.#_fillDetailInfosIfMissing(detail);
         }
         _detailCacher.append(_words);
-        this.#_searchAPI.addWords(_words);
+        //this.#_searchAPI.addWords(_words)
     }
     ;
     // Import JSON
@@ -357,7 +355,7 @@ class Dictionary extends EventTarget {
         this.dispatchEvent(new CustomEvent(eventName, { detail: data }));
     }
     getWordsCount() {
-        return Object.keys(this.#_listCacher.data()).length;
+        return Object.keys(_listCacher.data()).length;
     }
     getWords(searchQuery, level, tag) {
         tag = tag.toUpperCase();
@@ -382,7 +380,7 @@ class Dictionary extends EventTarget {
     hasWord(word) {
         if ((!word) || (word.length <= 0))
             return false;
-        return this.#_listCacher.has(word);
+        return _listCacher.has(word);
     }
     getWord(word) {
         if ((!word) || (word.length <= 0))

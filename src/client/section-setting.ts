@@ -242,8 +242,8 @@ export default class SectionSetting extends SectionBase {
             }
         });
 
-        serverProxy.addEventListener<CSType['sync']['S']>(serverProxy.EVT_SYNC, (e) => {
-            const _data: DictSyncDataSC = e.detail?.content as DictSyncDataSC
+        serverProxy.addEventListener<'sync'>(serverProxy.EVT_SYNC, (e) => {
+            const _data: any = e.detail;
             if (_data) {
                 this.#_saveTags(_data.tags);
                 this.#_ele_lemmaArea.value = _data.lemmatize;

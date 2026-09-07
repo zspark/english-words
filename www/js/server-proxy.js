@@ -46,47 +46,40 @@ const Response = {
  */
 import logger from "./logger.js";
 import cacher from "./cacher.js";
-const _connectionBreakRes = Object.freeze({
-    info: 'Internet Disconnected.',
-    content: undefined,
-});
 const _localProxy = cacher.localProxy;
 const _data = _localProxy.get("sec_setting", {});
-async function _toServer(url, data) {
-    logger.log(`C -> S request type: ${data.requestType}`);
-    const _response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data, null, 4),
-    });
-    try {
-        logger.log(`S -> C ${_response.url}: ${_response.status}: ${_response.statusText}`);
-        const _responseData = await _response.json();
-        logger.log(`S -> C ${_responseData}`);
-        if (_response.ok) {
-            if (_responseData.syncTime) {
-                _data['syncTime'] = _responseData.syncTime;
-                _localProxy.save();
-            }
-            // logger.debug(`${_responseData}`);
-            return _responseData.content;
-        }
-        return _connectionBreakRes;
-    }
-    catch (err) {
-        logger.vital(`To server: ${err}`);
-        return _connectionBreakRes;
-    }
-}
-function _composeRquestData(requestType, content) {
-    return {
+async function _toServer(url, requestType, content) {
+    const req = {
         accessToken: _data["userID"] || "",
         syncTime: _data['syncTime'] || 1,
         requestType,
         content
     };
+    logger.log(`C -> S request type: ${req.requestType}`);
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(req),
+    });
+    try {
+        logger.log(`S -> C ${response.url}: ${response.status}: ${response.statusText}`);
+        const responseData = await response.json();
+        if (response.ok) {
+            if (responseData.syncTime) {
+                _data["syncTime"] = responseData.syncTime;
+                _localProxy.save();
+            }
+            return responseData.content;
+        }
+        logger.error(`S -> C respnse info: ${responseData.info}`);
+        return null;
+    }
+    catch (err) {
+        logger.vital(`S -> C ${err}`);
+        return null;
+    }
 }
 class ServerProxy {
     EVT_NEWS = "EVT_NEWS";
@@ -99,29 +92,29 @@ class ServerProxy {
         this.#_et.addEventListener(type, cb);
     }
     async sync(content) {
-        const detail = await _toServer("../api/data", _composeRquestData("sync", content));
+        const detail = await _toServer("../api/data", "sync", content);
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC, { detail }));
         }
     }
     async syncAll() {
-        const detail = await _toServer("../api/data", _composeRquestData("sync-all", {}));
+        const detail = await _toServer("../api/data", "sync-all", {});
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_SYNC_ALL, { detail }));
     }
     async getWordList() {
-        const detail = await _toServer("../api/word", _composeRquestData("get-word-list", undefined));
+        const detail = await _toServer("../api/word", "get-word-list", undefined);
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_WORDLIST, { detail }));
         }
     }
     async getDetail(word) {
-        const detail = await _toServer("../api/word", _composeRquestData("get-detail", { word }));
+        const detail = await _toServer("../api/word", "get-detail", { word });
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }
     }
     async getNews(vendor) {
-        const detail = await _toServer("../api/word", _composeRquestData("get-news", { vendor }));
+        const detail = await _toServer("../api/word", "get-news", { vendor });
         this.#_et.dispatchEvent(new CustomEvent(this.EVT_NEWS, { detail }));
     }
 }

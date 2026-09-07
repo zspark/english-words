@@ -40,8 +40,11 @@ type CSType = {
         S: ResponseBodyContentType<{}>,
     },
 }
-
-
+type CSKey = keyof CSType;
+type RequestBody<K extends CSKey> = CSType[K]["C"];
+type ResponseBody<K extends CSKey> = CSType[K]["S"];
+type RequestData<K extends CSKey> = CSType[K]["C"]['content'];
+type ResponseData<K extends CSKey> = CSType[K]["S"]['content'];
 
 type WordLevelType = "ALL" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 
@@ -102,5 +105,5 @@ type SectionID = "dictionary" | "article" | "test" | "result" | "setting";
 
 type ChildMode = "append-first" | "append-last" | "removeall"
 
-export { CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
+export { CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
 

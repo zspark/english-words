@@ -1,6 +1,6 @@
-import { SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
+import { SyncRecordType, ResponseData, ResponseBody, CSKey, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
 
-export function getJSONResponse<T>(data: T, status = 200): Response {
+export function getJSONResponse<K extends CSKey>(data: ResponseBody<K>, status = 200): Response {
     return Response.json(
         data,
         {

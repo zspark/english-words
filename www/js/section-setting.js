@@ -199,7 +199,7 @@ export default class SectionSetting extends SectionBase {
             }
         });
         serverProxy.addEventListener(serverProxy.EVT_SYNC, (e) => {
-            const _data = e.detail?.content;
+            const _data = e.detail;
             if (_data) {
                 this.#_saveTags(_data.tags);
                 this.#_ele_lemmaArea.value = _data.lemmatize;
