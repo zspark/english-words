@@ -270,6 +270,12 @@ class Card extends EventTarget {
         }
         dict.addEventListener(Dictionary.EVT_WORD, e => {
             // logger.log(e);
+            const data = e.detail;
+            if (data.action === "modify") {
+                this.#renderWord(data.word);
+            }
+            else {
+            }
             this.#_handleSearchInputStyle(ele_searchInput);
         });
         this.#_updateTagList([]);
@@ -277,15 +283,18 @@ class Card extends EventTarget {
         this.ele_card_edit = ui.remove("#card-edit");
         dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
             const data = e.detail;
-            if (this.currentWord === data.word) {
-                if (this._currentMode === MODE_EDIT) {
-                    this.#_renderEditPanel(data.word, data);
-                }
-                else if (this._currentMode === MODE_READ) {
-                    this.renderCard(data.word, data);
-                }
-            }
+            this.#renderWord(data.word, data);
         });
+    }
+    #renderWord(word, detail) {
+        if (this.currentWord === word) {
+            if (this._currentMode === MODE_EDIT) {
+                this.#_renderEditPanel(word, detail);
+            }
+            else if (this._currentMode === MODE_READ) {
+                this.renderCard(word, detail);
+            }
+        }
     }
     setParent(p) {
         this.#_ui.setParent(p);
