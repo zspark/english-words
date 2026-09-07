@@ -109,7 +109,7 @@ class ServerProxy {
         }
     }
     async getDetail(word) {
-        const detail = await _toServer("../api/word", "wordDetail", { word });
+        const detail = await _toServer("../api/word", "getDetail", { word });
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }

@@ -138,9 +138,9 @@ class ServerProxy {
         }
     }
     async getDetail(word: string): Promise<void> {
-        const detail = await _toServer<"wordDetail">(
+        const detail = await _toServer<"getDetail">(
             "../api/word",
-            "wordDetail",
+            "getDetail",
             { word }
         );
         if (detail) {

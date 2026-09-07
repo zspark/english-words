@@ -122,7 +122,7 @@ export default class Dictionary extends EventTarget {
                 this.importDictionaryByContent(_data);
             }
         });
-        serverProxy.addEventListener<'wordDetail'>(serverProxy.EVT_GET_DETAIL, (event) => {
+        serverProxy.addEventListener<'getDetail'>(serverProxy.EVT_GET_DETAIL, (event) => {
             const _data = event.detail;
             if (_data) {
                 _detailCacher.set(_data.word as string, _data);
@@ -332,7 +332,7 @@ export default class Dictionary extends EventTarget {
             _oldLink = _detail.links;
             _detail.ipa = ipa;
             _detail.meaning = meaning;
-            _detail.level = level;
+            _detail.level = level ?? _detail.level;
             _detail.note = note;
             _detail.links = links;
             _detail.tags = tags;
@@ -341,7 +341,7 @@ export default class Dictionary extends EventTarget {
                 word,
                 ipa: ipa || '',
                 meaning: meaning || '',
-                level: level || '',
+                level: level || 'ALL',
                 note: note || '',
                 links: links || '',
                 tags: tags || '',

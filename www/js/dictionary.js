@@ -287,7 +287,7 @@ class Dictionary extends EventTarget {
             _oldLink = _detail.links;
             _detail.ipa = ipa;
             _detail.meaning = meaning;
-            _detail.level = level;
+            _detail.level = level ?? _detail.level;
             _detail.note = note;
             _detail.links = links;
             _detail.tags = tags;
@@ -297,7 +297,7 @@ class Dictionary extends EventTarget {
                 word,
                 ipa: ipa || '',
                 meaning: meaning || '',
-                level: level || '',
+                level: level || 'ALL',
                 note: note || '',
                 links: links || '',
                 tags: tags || '',

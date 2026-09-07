@@ -54,11 +54,11 @@ async function getWordList(data: RequestBody<"wordList">, env: any): Promise<Res
     }
 }
 
-async function getDetail(data: RequestBody<"wordDetail">, env: any): Promise<Response> {
+async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Response> {
     const detail = await _getDetail(data.content.word, env);
     if (detail.success) {
         const d = detail.results[0];
-        return getJSONResponse<"wordDetail">({
+        return getJSONResponse<"getDetail">({
             info: "Succeeded.",
             content: d
         });
@@ -114,7 +114,7 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: any):
 */
 
 export default async function respond(request: Request, data: RequestBodyContentType<any>, env: any): Promise<Response> {
-    if (data.requestType === "wordDetail") {
+    if (data.requestType === "getDetail") {
         return getDetail(data, env);
     } else if (data.requestType === "wordList") {
         return getWordList(data, env);

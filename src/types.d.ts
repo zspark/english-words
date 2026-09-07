@@ -23,7 +23,7 @@ type CSType = {
         C: RequestBodyContentType<undefined>,
         S: ResponseBodyContentType<string[]>,
     },
-    wordDetail: {
+    getDetail: {
         C: RequestBodyContentType<{ word: string }>,
         S: ResponseBodyContentType<Detail>,
     },

@@ -97,7 +97,7 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: any):
 }
 */
 export default async function respond(request, data, env) {
-    if (data.requestType === "wordDetail") {
+    if (data.requestType === "getDetail") {
         return getDetail(data, env);
     }
     else if (data.requestType === "wordList") {
