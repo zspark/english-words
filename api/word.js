@@ -49,7 +49,6 @@ async function _getWordList(env) {
             FROM dictionary
         `)
         .all()
-        .run()
 
     return result;
 }
