@@ -68,13 +68,6 @@ async function getDetail(data, env) {
         return getEmptyRes(`No such word: ${data.content.word}.`);
     }
 }
-function updateWordlist(word) {
-    const _index = _wordlist.indexOf(word);
-    if (_index !== -1) {
-        _wordlist.splice(_index, 1);
-        _time_sync_wordlist = Date.now();
-    }
-}
 async function deleteWord(data, env) {
     const detail = data.content.detail;
     const word = detail.word;
@@ -83,7 +76,11 @@ async function deleteWord(data, env) {
         return getEmptyRes(`delete word (${word}) failed.`);
     }
     if (result.meta.changes > 0) {
-        updateWordlist(word);
+        const _index = _wordlist.indexOf(word);
+        if (_index !== -1) {
+            _wordlist.splice(_index, 1);
+            _time_sync_wordlist = Date.now();
+        }
         return getJSONResponse({
             info: "Succeeded.",
             content: {
@@ -126,7 +123,8 @@ async function putDetail(data, env) {
     }
     const _newestDetail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
-        updateWordlist(word);
+        _wordlist.push(word);
+        _time_sync_wordlist = Date.now();
         return getJSONResponse({
             info: "Succeeded.",
             content: {

@@ -83,14 +83,6 @@ async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Resp
     }
 }
 
-function updateWordlist(word: string) {
-    const _index = _wordlist.indexOf(word)
-    if (_index !== -1) {
-        _wordlist.splice(_index, 1);
-        _time_sync_wordlist = Date.now();
-    }
-}
-
 async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Response> {
     const detail = data.content.detail;
     const word: string = detail.word;
@@ -101,7 +93,11 @@ async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Re
     }
 
     if (result.meta.changes > 0) {
-        updateWordlist(word);
+        const _index = _wordlist.indexOf(word)
+        if (_index !== -1) {
+            _wordlist.splice(_index, 1);
+            _time_sync_wordlist = Date.now();
+        }
         return getJSONResponse<"deleteWord">({
             info: "Succeeded.",
             content: {
@@ -148,7 +144,8 @@ async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Resp
 
     const _newestDetail: Detail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
-        updateWordlist(word);
+        _wordlist.push(word);
+        _time_sync_wordlist = Date.now();
         return getJSONResponse<"putDetail">({
             info: "Succeeded.",
             content: {
