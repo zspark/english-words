@@ -281,8 +281,10 @@ class Dictionary extends EventTarget {
     updateWord(word, ipa, meaning, level, note, links, tags) {
         if (!word)
             return;
+        let _oldLink = '';
         let _detail = _detailCacher.get(word);
         if (_detail) {
+            _oldLink = _detail.links;
             _detail.ipa = ipa;
             _detail.meaning = meaning;
             _detail.level = level;
@@ -303,7 +305,7 @@ class Dictionary extends EventTarget {
                 time_modify: -1,
             };
         }
-        this.#_updateLink(word, _detail.links, links);
+        this.#_updateLink(word, _oldLink, links);
         _detailCacher.set(word, _detail);
         serverProxy.putDetail(_detail);
     }
