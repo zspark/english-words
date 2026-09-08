@@ -190,7 +190,6 @@ class Dictionary extends EventTarget {
                 this.#_dispWordEvt(word, "modify");
             }
         });
-        serverProxy.getWordList();
     }
     #_push(wordsStr, action) {
         this.#_arr.push({ wordsStr, action });

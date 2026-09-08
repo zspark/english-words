@@ -170,7 +170,8 @@ export default class SectionSetting extends SectionBase {
                 this._dict.sync();
             }
             else if (_target.dataset.index == "1") {
-                this._dict.syncAll();
+                //this._dict.syncAll();
+                serverProxy.getWordList();
             }
         });
         this.ui.get("#btn-modal-submit").addEventListener("click", async (e) => {

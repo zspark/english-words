@@ -221,8 +221,6 @@ export default class Dictionary extends EventTarget {
                 this.#_dispWordEvt(word, "modify");
             }
         });
-
-        serverProxy.getWordList();
     }
 
     #_push(wordsStr: string, action: ActionType): void {

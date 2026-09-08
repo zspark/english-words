@@ -4,10 +4,10 @@ import chatGPT from "./ai/chatGPT.js";
 import deepseek from "./ai/deepseek.js";
 const _localProxy = cacher.localProxy;
 function _getAIKey() {
-    return _localProxy.get("sec_setting", {})['ai_key'] || "";
+    return _localProxy.get("sec_setting,ai_key", "");
 }
 function _getAIProvider() {
-    return _localProxy.get("sec_setting", {})['ai_provider'] || "";
+    return _localProxy.get("sec_setting.ai_provider", "");
 }
 function _getAI() {
     const _apiKey = _getAIKey();
@@ -60,28 +60,35 @@ async function genMeaning(wordsString) {
     }
 }
 function getAIMeaningQuestion(wordsString) {
-    const _question = `你是一个优秀的英语单词大师。将以下指定的英语单词或者短语以json格式输出。
+    const _question = `You are absolutely an English word master, please provide the json format of the following words:
 
-这些单词或者短语是（用逗号分开）:
+words are:
+
 ${wordsString}
 
-json格式如下：
+JSON format:
+
 {
     "generic": {
         "ipa": "/dʒəˈnerɪk/",
-        "level": "A1~C2",
+        "level": "B1",
         "meaning": "adj. 一般的；普通的",
         "links": "generically,genericity",
         "note": "This is a generic solution that can be applied to many different problems. 这是一个通用的解决方案，可以应用于许多不同的问题。\n\n"
     }
 }
 
-要求：
-2. 以上json内容中的generic单词只是示例；
-3. 所有单词作为JSON键时全部小写；
-4. links去重，英文逗号分隔，不要出现常规复数、副词形式，不要出现常规动名词形式；
-6. 严格使用提供的json字段，不多也不少，所有的value都是字符串，且是正确格式的JSON；
-7. note字段提供至少2个使用不同意思的例句，意思多的单词可以提供3个例句，附带汉语翻译。例句之间用'\n\n'（两个\n）分开`;
+Requirements：
+
+1. The above json content is just a mock sample;
+2. All keys in the json must be lower case english, and all values are strings instead of numbers or arrays or objects;
+3. Only provide American pronunciation for "ipa";
+4. Choose only one proper value from "A1,A2,B1,B2,C1,C2" for "level";
+5. Chinese characters for meanings, short form (adj. n. v. ad. prep. etc.) for the part of speech;
+6. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
+7. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
+8. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
+`;
     logger.log(_question);
     return _question;
 }

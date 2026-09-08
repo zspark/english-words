@@ -212,7 +212,8 @@ export default class SectionSetting extends SectionBase {
             if (_target.dataset.index == "0") {
                 this._dict.sync();
             } else if (_target.dataset.index == "1") {
-                this._dict.syncAll();
+                //this._dict.syncAll();
+                serverProxy.getWordList();
             }
         });
 
