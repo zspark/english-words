@@ -81,20 +81,17 @@ async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Resp
                 info: "Succeeded.",
                 content: d
             });
-        } else {
-            const d = await genDetail(data.content.aiProvider, data.content.apiKey, word);
-            if (d) {
-                await genInsertSQL2(d, d.time_modify, d.time_modify, env).all() as DBResultType<undefined>;
-                return getJSONResponse<"getDetail">({
-                    info: "Succeeded.",
-                    content: d
-                });
-            } else {
-                return getEmptyRes(`No such word: ${word}.`);
-            }
         }
+    }
+    const d = await genDetail(data.content.aiProvider, data.content.apiKey, word);
+    if (d) {
+        await genInsertSQL2(d, d.time_modify, d.time_modify, env).all() as DBResultType<undefined>;
+        return getJSONResponse<"getDetail">({
+            info: "Succeeded.",
+            content: d
+        });
     } else {
-        return getEmptyRes(`No such word: ${word}.`);
+        return getEmptyRes(`Failed to get word's detail: ${word}.`);
     }
 }
 
