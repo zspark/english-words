@@ -501,12 +501,18 @@ export default class Dictionary extends EventTarget {
             return _out;
         }
 
-        if (fetchIfMissing && this.hasWord(word)) {
-            serverProxy.getDetail(word);
-            return _MOCK_DETAIL_;
-        } else {
-            return undefined;
+        if (fetchIfMissing) {
+            if (this.hasWord(word)) {
+                serverProxy.getDetail(word);
+                return _MOCK_DETAIL_;
+            } else {
+                const _autoAskAI: boolean = _localProxy.get('sec_setting.autoAsk', false);
+                if (_autoAskAI) {
+                    logger.debug(`auto ask AI is on`);
+                }
+            }
         }
+        return undefined;
     }
 
     getNRandomWords(n: number, out: string[] = []): string[] {

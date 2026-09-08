@@ -144,12 +144,11 @@ export default class Card extends EventTarget {
         ele_searchInput.addEventListener('keydown', (event) => {
             if (event.key === "Enter") {
                 const _w = ele_searchInput.value;
-                if (dict.hasWord(_w)) {
-                    this.renderCard(_w);
-                }
                 if (event.ctrlKey) {
                     this.#_renderEditPanel(_w);
                     this.#_enterEditMode();
+                } else {
+                    this.renderCard(_w);
                 }
 
                 ele_searchInput.blur();

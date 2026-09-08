@@ -14,6 +14,7 @@ type LocalSettingCacheType = {
     ai_provider: string,
     userID: string,
     theme: boolean,
+    autoAsk: boolean,
 }
 const _metaProxy = Cacher.metaProxy;
 const _localProxy = Cacher.localProxy;
@@ -49,13 +50,11 @@ ${cmp.inputSource("id-syncInterval", "Sync Interval (seconds)", "<= 0 means stop
     ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
     ${cmp.dropdownSource("id-provider", null, ["ChatGPT", "DeepSeek"], 0)}
 </div>
-${cmp.switcherSource("id-theme", "Dark Theme?", false)}
+${cmp.switcherSource("id-theme", "Dark Theme", false)}
+${cmp.switcherSource("id-auto-gen-detail", "Auto Ask AI For Detail", true)}
 <div class="mt20px bs-flex-between">
     <div class="bs-left-align">
-        ${cmp.buttonGroupSource(
-    'btn-modal-sync',
-    ['Sync', 'Sync All']
-)}
+        ${cmp.buttonGroupSource('btn-modal-sync', ['Sync', 'Sync All'])}
     </div>
     <div class="bs-right-align">
         ${cmp.buttonGroupSource('btn-config-submit', ['Save'])}
@@ -116,6 +115,7 @@ export default class SectionSetting extends SectionBase {
         elem_key.type = 'password';
         const elem_provider = this.ui.get<HTMLSelectElement>("#id-provider select");
         const elem_theme = this.ui.get<HTMLInputElement>("#id-theme input");
+        const elem_askAI = this.ui.get<HTMLInputElement>("#id-auto-gen-detail input");
         this.#_ele_lemmaArea = this.ui.get<HTMLTextAreaElement>("#id-tab-body #id-lemmatizer textarea");
         const _ele_importByJSON = this.ui.get<HTMLTextAreaElement>("#id-tab-body #import-text textarea");
         const _ele_importByAI = this.ui.get<HTMLTextAreaElement>("#id-tab-body #import-ai textarea");
@@ -127,7 +127,8 @@ export default class SectionSetting extends SectionBase {
         elem_key.value = _localData.ai_key || "";
         elem_provider.value = _localData.ai_provider || "";
         elem_user.value = _localData.userID || "";
-        elem_theme.checked = _localData.theme;
+        elem_theme.checked = !!_localData.theme;
+        elem_askAI.checked = !!_localData.autoAsk;
 
         this.ui.getAll('.tab-btn').forEach(btn => {
             btn.addEventListener("click", () => {
@@ -169,6 +170,7 @@ export default class SectionSetting extends SectionBase {
                     ai_provider: elem_provider.value,
                     userID: elem_user.value,
                     theme: elem_theme.checked,
+                    autoAsk: elem_askAI.checked,
                 };
                 _localProxy.set('sec_setting', _value);
 

@@ -441,13 +441,19 @@ class Dictionary extends EventTarget {
         if (_out) {
             return _out;
         }
-        if (fetchIfMissing && this.hasWord(word)) {
-            serverProxy.getDetail(word);
-            return _MOCK_DETAIL_;
+        if (fetchIfMissing) {
+            if (this.hasWord(word)) {
+                serverProxy.getDetail(word);
+                return _MOCK_DETAIL_;
+            }
+            else {
+                const _autoAskAI = _localProxy.get('sec_setting.autoAsk', false);
+                if (_autoAskAI) {
+                    logger.debug(`auto ask AI is on`);
+                }
+            }
         }
-        else {
-            return undefined;
-        }
+        return undefined;
     }
     getNRandomWords(n, out = []) {
         const N = n + out.length;
