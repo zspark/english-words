@@ -47,7 +47,7 @@ class SearchHelper {
         this.#_flexSearch = this.#_create();
     }
 }
-const _MOCK_DETAIL_ = Object.freeze({
+const _MOCK_FETCH_DETAIL_ = Object.freeze({
     word: '',
     ipa: "fetching from the server ...",
     meaning: "",
@@ -442,16 +442,10 @@ class Dictionary extends EventTarget {
             return _out;
         }
         if (fetchIfMissing) {
-            if (this.hasWord(word)) {
-                serverProxy.getDetail(word);
-                return _MOCK_DETAIL_;
-            }
-            else {
-                const _autoAskAI = _localProxy.get('sec_setting.autoAsk', false);
-                if (_autoAskAI) {
-                    logger.debug(`auto ask AI is on`);
-                }
-            }
+            const aiProvider = _localProxy.get("sec_setting.ai_provider", "");
+            const apiKey = _localProxy.get("sec_setting.ai_key", "");
+            serverProxy.getDetail(word, aiProvider, apiKey);
+            return _MOCK_FETCH_DETAIL_;
         }
         return undefined;
     }

@@ -1,10 +1,14 @@
-function _stripJsonMarkdown(text) {
+import { Detail, AIProvider } from "../types.d.js"
+import { cloneDetail } from "./server-utils.js"
+
+function _stripJsonMarkdown(text: string): string {
     return text
         .replace(/^```(?:json)?\s*\n?/i, "")
         .replace(/\n?```$/, "")
         .trim();
 }
-async function askChatGPT(api, question) {
+
+async function askChatGPT(api: string, question: string): Promise<string> {
     const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
@@ -16,15 +20,18 @@ async function askChatGPT(api, question) {
             input: question
         })
     });
+
     if (!response.ok) {
         throw new Error(await response.text());
     }
+
     const json = await response.json();
-    return json.output.find((item) => item.type === "message")
-        ?.content.find((c) => c.type === "output_text")
+    return json.output.find((item: any) => item.type === "message")
+        ?.content.find((c: any) => c.type === "output_text")
         ?.text;
 }
-async function askDeepseek(apiKey, question) {
+
+async function askDeepseek(apiKey: string, question: string): Promise<string> {
     const response = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
         headers: {
@@ -41,34 +48,41 @@ async function askDeepseek(apiKey, question) {
             ]
         })
     });
+
     if (!response.ok) {
         throw new Error(await response.text());
     }
+
     const json = await response.json();
+
     const _out = json.choices?.[0]?.message?.content ?? "";
     return _stripJsonMarkdown(_out);
 }
-const _providerMap = new Map();
-_providerMap.set("deepseek", askDeepseek);
-_providerMap.set("chatGPT", askChatGPT);
-export default async function genDetailByAI(aiProvider, apiKey, word) {
+
+type _T = (apiKey: string, question: string) => Promise<string>;
+const _providerMap: Map<AIProvider, _T> = new Map();
+_providerMap.set("DeepSeek", askDeepseek);
+_providerMap.set("ChatGPT", askChatGPT);
+
+export default async function genDetailByAI(aiProvider: AIProvider, apiKey: string, word: string): Promise<Detail | undefined> {
     const question = getAIMeaningQuestion(word);
     const _fn = _providerMap.get(aiProvider);
     if (_fn) {
         const rawContent = await _fn(apiKey, question);
         try {
-            const detail = JSON.parse(rawContent)[word];
+            const _t = Date.now();
+            const detail = JSON.parse(rawContent)[word] as Detail;
             detail.word = word;
-            return detail;
-        }
-        catch (e) {
+            return cloneDetail(detail, _t, _t);
+        } catch (e) {
             //logger.error(`parse word detail string error: ${e}`);
             return undefined;
         }
     }
     return undefined;
 }
-function getAIMeaningQuestion(wordsString) {
+
+function getAIMeaningQuestion(wordsString: string): string {
     const _question = `You are absolutely an English word master, please provide the json format of the following words:
 
 words are:
@@ -98,6 +112,8 @@ Requirements：
 7. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
 8. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
 `;
+
     // logger.log(_question);
     return _question;
 }
+

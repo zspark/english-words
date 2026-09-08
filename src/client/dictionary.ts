@@ -3,12 +3,11 @@
 // ===============================
 
 
+import { AIProvider, ActionWord, Detail, Words, Results, Result, Dict, DictSyncData, WordLevelType } from "../types.d.js"
 import { cloneDetail, readOnly } from "./utils.js"
 import logger from "./logger.js"
 import cacher, { StorageCacher } from "./cacher.js"
 import serverProxy from "./server-proxy.js"
-import { ActionWord, Detail, Words, Results, Result, Dict, DictSyncData, WordLevelType } from "../types.d.js"
-import cmp from "./components.js"
 import Compare, { compareET, EVT_CMP_MODIFY, EVT_CMP_DELETE, CompareResult } from "./compare.js"
 
 declare const FlexSearch: any;
@@ -72,7 +71,7 @@ class SearchHelper {
     }
 }
 
-const _MOCK_DETAIL_: Detail = Object.freeze({
+const _MOCK_FETCH_DETAIL_: Detail = Object.freeze({
     word: '',
     ipa: "fetching from the server ...",
     meaning: "",
@@ -502,15 +501,10 @@ export default class Dictionary extends EventTarget {
         }
 
         if (fetchIfMissing) {
-            if (this.hasWord(word)) {
-                serverProxy.getDetail(word);
-                return _MOCK_DETAIL_;
-            } else {
-                const _autoAskAI: boolean = _localProxy.get('sec_setting.autoAsk', false);
-                if (_autoAskAI) {
-                    logger.debug(`auto ask AI is on`);
-                }
-            }
+            const aiProvider = _localProxy.get("sec_setting.ai_provider", "") as AIProvider;
+            const apiKey = _localProxy.get("sec_setting.ai_key", "");
+            serverProxy.getDetail(word, aiProvider, apiKey);
+            return _MOCK_FETCH_DETAIL_;
         }
         return undefined;
     }

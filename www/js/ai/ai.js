@@ -1,25 +1,15 @@
-import { AI_API, AIProvider } from "./utils.js"
-import logger from "./logger.js"
-import cacher from "./cacher.js"
-import chatGPT from "./ai/chatGPT.js"
-import deepseek from "./ai/deepseek.js"
-
+import logger from "../logger.js";
+import cacher from "../cacher.js";
+import chatGPT from "./chatGPT.js";
+import deepseek from "./deepseek.js";
 const _localProxy = cacher.localProxy;
-
-function _getAIKey(): AI_API {
+function _getAIKey() {
     return _localProxy.get("sec_setting,ai_key", "");
 }
-
-function _getAIProvider(): string {
+function _getAIProvider() {
     return _localProxy.get("sec_setting.ai_provider", "");
 }
-
-type output = {
-    api: AI_API,
-    provider: AIProvider,
-} | null;
-
-function _getAI(): output {
+function _getAI() {
     const _apiKey = _getAIKey();
     if (_apiKey == "") {
         const _s = `You do not config ChatGPT API KEY.`;
@@ -27,7 +17,6 @@ function _getAI(): output {
         logger.log(_s);
         return null;
     }
-
     const _provider = _getAIProvider().toLowerCase();
     switch (_provider) {
         case "chatgpt":
@@ -38,10 +27,19 @@ function _getAI(): output {
             return null;
     }
 }
-
-async function genArticle(wordsString: string): Promise<string> {
-    const _ai = _getAI();
-    if (_ai) {
+class AIProxy extends EventTarget {
+    constructor() {
+        super();
+    }
+    async #_askAI(p, question) {
+        if (!p) {
+            logger.log(`you do not have a AI provider.`);
+            return '';
+        }
+        // logger.log(question);
+        return await p.provider.ask(p.api, question);
+    }
+    async genArticle(wordsString) {
         const question = `你是一个优秀的英语创意写作导师。
 
 请使用以下指定的英语单词串联编写一篇简短、流畅且富有创意的英语短文或小故事。
@@ -54,25 +52,43 @@ async function genArticle(wordsString: string): Promise<string> {
 4. 必要的时候用\\n开启新的段落。
 5. 没有废话，比如重复我的问题，直接给出短文即可。
 `;
-        logger.log(question);
-        return await _ai.provider.ask(_ai.api, question);
-    } else {
-        return "";
+        const rawContent = await this.#_askAI(_getAI(), question);
+        try {
+            const detail = JSON.parse(rawContent);
+            this.dispatchEvent(new CustomEvent(EVT_AI_RESPOND_ARTICLE, {
+                detail: {
+                    success: true,
+                    word: "",
+                    detail
+                }
+            }));
+        }
+        catch (e) {
+            logger.error(`parse article string error: ${e}`);
+            return;
+        }
     }
-}
-
-async function genMeaning(wordsString: string): Promise<string> {
-    const _ai = _getAI();
-    if (_ai) {
-        const _question = getAIMeaningQuestion(wordsString);
-        return await _ai.provider.ask(_ai.api, _question);
-    } else {
-        return "";
+    async genMeaning(word) {
+        const question = this.getAIMeaningQuestion(word);
+        const rawContent = await this.#_askAI(_getAI(), question);
+        try {
+            const detail = JSON.parse(rawContent)[word];
+            detail.word = word;
+            this.dispatchEvent(new CustomEvent(EVT_AI_RESPOND_MEANING, {
+                detail: {
+                    success: true,
+                    word,
+                    detail
+                }
+            }));
+        }
+        catch (e) {
+            logger.error(`parse word detail string error: ${e}`);
+            return;
+        }
     }
-}
-
-function getAIMeaningQuestion(wordsString: string): string {
-    const _question = `You are absolutely an English word master, please provide the json format of the following words:
+    getAIMeaningQuestion(wordsString) {
+        const _question = `You are absolutely an English word master, please provide the json format of the following words:
 
 words are:
 
@@ -101,26 +117,21 @@ Requirements：
 7. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
 8. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
 `;
-
-    logger.log(_question);
-    return _question;
-}
-
-function getQuestionAboutWord(word: string): string {
-    const _question = `详细用汉语解释这个英语单词：${word} 
+        // logger.log(_question);
+        return _question;
+    }
+    getQuestionAboutWord(word) {
+        const _question = `详细用汉语解释这个英语单词：${word} 
 
 要求：
 1. 要有汉语意思与音标；
 2. 要有例句；`;
-
-    logger.log(_question);
-    return _question;
+        // logger.log(_question);
+        return _question;
+    }
 }
-
-export default {
-    genArticle,
-    genMeaning,
-    getAIMeaningQuestion,
-    getQuestionAboutWord,
-}
-
+const _aiProxy = new AIProxy();
+export default _aiProxy;
+const EVT_AI_RESPOND_MEANING = "EVT_AI_RESPOND_MEANING";
+const EVT_AI_RESPOND_ARTICLE = "EVT_AI_RESPOND_ARTICLE";
+export { EVT_AI_RESPOND_MEANING, EVT_AI_RESPOND_ARTICLE };

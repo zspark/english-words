@@ -1,4 +1,5 @@
 import { genDeleteSQL, genInsertSQL2, getJSONResponse, getEmptyRes } from "./server-utils.js";
+import genDetail from "./ai.js";
 async function _getDetail(word, env) {
     const result = await env.DB
         .prepare(`
@@ -56,16 +57,32 @@ async function syncWordlist(env) {
     }
 }
 async function getDetail(data, env) {
-    const detail = await _getDetail(data.content.word, env);
-    if (detail.success) {
-        const d = detail.results[0];
-        return getJSONResponse({
-            info: "Succeeded.",
-            content: d
-        });
+    const word = data.content.word;
+    const result = await _getDetail(word, env);
+    if (result.success) {
+        if (result.results.length > 0) {
+            const d = result.results[0];
+            return getJSONResponse({
+                info: "Succeeded.",
+                content: d
+            });
+        }
+        else {
+            const d = await genDetail(data.content.aiProvider, data.content.apiKey, word);
+            if (d) {
+                await genInsertSQL2(d, d.time_modify, d.time_modify, env).all();
+                return getJSONResponse({
+                    info: "Succeeded.",
+                    content: d
+                });
+            }
+            else {
+                return getEmptyRes(`No such word: ${word}.`);
+            }
+        }
     }
     else {
-        return getEmptyRes(`No such word: ${data.content.word}.`);
+        return getEmptyRes(`No such word: ${word}.`);
     }
 }
 async function deleteWord(data, env) {

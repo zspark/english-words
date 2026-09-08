@@ -1,3 +1,4 @@
+import { cloneDetail } from "./server-utils.js";
 function _stripJsonMarkdown(text) {
     return text
         .replace(/^```(?:json)?\s*\n?/i, "")
@@ -49,17 +50,18 @@ async function askDeepseek(apiKey, question) {
     return _stripJsonMarkdown(_out);
 }
 const _providerMap = new Map();
-_providerMap.set("deepseek", askDeepseek);
-_providerMap.set("chatGPT", askChatGPT);
+_providerMap.set("DeepSeek", askDeepseek);
+_providerMap.set("ChatGPT", askChatGPT);
 export default async function genDetailByAI(aiProvider, apiKey, word) {
     const question = getAIMeaningQuestion(word);
     const _fn = _providerMap.get(aiProvider);
     if (_fn) {
         const rawContent = await _fn(apiKey, question);
         try {
+            const _t = Date.now();
             const detail = JSON.parse(rawContent)[word];
             detail.word = word;
-            return detail;
+            return cloneDetail(detail, _t, _t);
         }
         catch (e) {
             //logger.error(`parse word detail string error: ${e}`);

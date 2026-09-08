@@ -1,16 +1,13 @@
 import logger from "./logger.js"
 import { assertExist } from "./assert.js"
 import { shuffle } from "./utils.js"
-import ai from "./ai.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"
 import cacher from "./cacher.js"
-import serverProxy from "./server-proxy.js"
 import prpc from "./pronunciation.js"
 import cmp from "./components.js"
-import words from "./section-words.js"
 import { HTMLString, Detail, Result } from "../types.d.js"
-import { SectionBase, SectionUIBase } from "./section-base.js"
+import { SectionBase } from "./section-base.js"
 
 
 function _getQuestionStemSource(exclude: string): HTMLString {

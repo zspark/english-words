@@ -1,13 +1,5 @@
 import { Detail } from "../types.d.js"
 
-type AI_API = string;
-
-interface AIProvider {
-    ask: (api: AI_API, question: string) => Promise<string>,
-}
-
-export { AI_API, AIProvider };
-
 export async function fetchJsonData(url: string): Promise<any> {
     try {
         const response = await fetch(url);

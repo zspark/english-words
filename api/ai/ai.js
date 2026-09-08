@@ -4,27 +4,7 @@ function _stripJsonMarkdown(text) {
         .replace(/\n?```$/, "")
         .trim();
 }
-async function askChatGPT(api, question) {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${api}`
-        },
-        body: JSON.stringify({
-            model: "gpt-5.5",
-            input: question
-        })
-    });
-    if (!response.ok) {
-        throw new Error(await response.text());
-    }
-    const json = await response.json();
-    return json.output.find((item) => item.type === "message")
-        ?.content.find((c) => c.type === "output_text")
-        ?.text;
-}
-async function askDeepseek(apiKey, question) {
+async function askAI(apiKey, question) {
     const response = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
         headers: {
@@ -48,25 +28,18 @@ async function askDeepseek(apiKey, question) {
     const _out = json.choices?.[0]?.message?.content ?? "";
     return _stripJsonMarkdown(_out);
 }
-const _providerMap = new Map();
-_providerMap.set("deepseek", askDeepseek);
-_providerMap.set("chatGPT", askChatGPT);
-export default async function genDetailByAI(aiProvider, apiKey, word) {
+export default async function genDetailByAI(apiKey, word) {
     const question = getAIMeaningQuestion(word);
-    const _fn = _providerMap.get(aiProvider);
-    if (_fn) {
-        const rawContent = await _fn(apiKey, question);
-        try {
-            const detail = JSON.parse(rawContent)[word];
-            detail.word = word;
-            return detail;
-        }
-        catch (e) {
-            //logger.error(`parse word detail string error: ${e}`);
-            return undefined;
-        }
+    const rawContent = await askAI(apiKey, question);
+    try {
+        const detail = JSON.parse(rawContent)[word];
+        detail.word = word;
+        return detail;
     }
-    return undefined;
+    catch (e) {
+        //logger.error(`parse word detail string error: ${e}`);
+        return undefined;
+    }
 }
 function getAIMeaningQuestion(wordsString) {
     const _question = `You are absolutely an English word master, please provide the json format of the following words:

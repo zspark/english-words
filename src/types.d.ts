@@ -1,3 +1,6 @@
+type AIProvider = "DeepSeek" | "ChatGPT" | "_NONE_";
+export { AIProvider };
+
 
 type RequestType = keyof CSType;
 type RequestBodyContentType<T> = {
@@ -24,7 +27,7 @@ type CSType = {
         S: ResponseBodyContentType<{ list?: string[] }>,
     },
     getDetail: {
-        C: RequestBodyContentType<{ word: string }>,
+        C: RequestBodyContentType<{ word: string, aiProvider: AIProvider, apiKey: string }>,
         S: ResponseBodyContentType<Detail>,
     },
     putDetail: {

@@ -1,4 +1,4 @@
-import { AI_API, AIProvider } from "../utils.js"
+import { AIProvider } from "../../types.d.js"
 
 function _stripJsonMarkdown(text: string): string {
     return text
@@ -7,7 +7,7 @@ function _stripJsonMarkdown(text: string): string {
         .trim();
 }
 
-async function ask(api: AI_API, question: string): Promise<string> {
+async function ask(api: string, question: string): Promise<string> {
     const response = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
         headers: {

@@ -4,7 +4,6 @@ import logger from "./logger.js"
 import { HTMLString, WordLevelType, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseEvent } from "../types.d.js"
 import cacher from "./cacher.js"
 import cmp from "./components.js"
-import ai from "./ai.js"
 import Dictionary from "./dictionary.js"
 import prpc from "./pronunciation.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
@@ -177,8 +176,9 @@ export default class Card extends EventTarget {
         ele_btn_ai.addEventListener("click", () => {
             const word = ele_voc.textContent.trim();
             if (!word) return;
-            const _q = ai.getQuestionAboutWord(word);
-            window.open(`https://chatgpt.com/?q=${_q}`, "_blank");
+            //TODO: never do
+            // const _q = ai.getQuestionAboutWord(word);
+            // window.open(`https://chatgpt.com/?q=${_q}`, "_blank");
         });
 
         this.ele_ipa = ui.get("#ipa");
@@ -238,7 +238,7 @@ export default class Card extends EventTarget {
             const _index = (e.target as HTMLElement).dataset.index;
             if (_index === "1") {
                 //fill by ai
-                await this.#_fillByAI();
+                //ai.genMeaning(this.ele_new_voc.value.trim());
             } else if (_index === "0") {
                 //canel
                 this.renderCard(this.currentWord);
@@ -300,6 +300,15 @@ export default class Card extends EventTarget {
             }
             this.#_handleSearchInputStyle(ele_searchInput);
         });
+        /*
+        ai.addEventListener(EVT_AI_RESPOND_MEANING, (e) => {
+            const _res = (e as CustomEvent).detail as AIRespondMeaning;
+            if (!_res.success) return;
+
+            this.#renderWord(_res.word, _res.detail);
+            this.ele_btnSave.classList.add('bs-bg-twinkle');
+        });
+        */
 
         this.#_updateTagList([]);
         this.renderCard('');
@@ -358,9 +367,13 @@ export default class Card extends EventTarget {
                 this.#_enterReadMode();
             } else if (event.key === 'Enter') {
 
+                /*
                 if (event.altKey) {
-                    await this.#_fillByAI()
+                    const word = this.ele_new_voc.value.trim();
+                    ai.genMeaning(word);
+                    return;
                 }
+                */
                 if (event.ctrlKey) {
                     this.#_save();
                 }
@@ -480,21 +493,6 @@ export default class Card extends EventTarget {
 
         this.ele_linkedWords.innerHTML = _detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0).map(s => `<a>${s}</a>`).join('') ?? "";
     };
-
-    async #_fillByAI() {
-        const word = this.ele_new_voc.value.trim();
-        const resultText = await ai.genMeaning(word);
-        // logger.debug(`AI content: ${resultText}`);
-        if (!resultText) return;
-        try {
-            const _detail = JSON.parse(resultText)[word];
-            this.#_updateCardContentInEditMode(word, _detail);
-            this.ele_btnSave.classList.add('bs-bg-twinkle');
-        } catch (e) {
-            logger.error(`parse error: ${e}`);
-            return;
-        }
-    }
 
     #_save(): void {
         const word = this.ele_new_voc.value.trim();

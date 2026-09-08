@@ -1,5 +1,4 @@
 import logger from "./logger.js"
-import ai from "./ai.js"
 import Dictionary from "./dictionary.js"
 import Cacher from "./cacher.js"
 import serverProxy from "./server-proxy.js"
@@ -41,6 +40,8 @@ export default class SectionArticle extends SectionBase {
                     return;
                 }
 
+                ele_article.innerHTML = "use AI to generate article is currently WIP.";
+                /*
                 _tar.disabled = true;
                 ele_article.innerHTML = "AI is generating articles ...";
                 const resultText = await ai.genArticle(pickedArray.join(', '));
@@ -50,6 +51,7 @@ export default class SectionArticle extends SectionBase {
                 this._renderArticle();
 
                 _tar.disabled = false;
+                */
             }
         });
 

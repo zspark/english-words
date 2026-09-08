@@ -1,5 +1,6 @@
 import { RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
 import { genDeleteSQL, cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import genDetail from "./ai.js"
 
 type DBResultType<T> = {
     success: boolean,
@@ -71,15 +72,29 @@ async function syncWordlist(env: any): Promise<void> {
 }
 
 async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Response> {
-    const detail = await _getDetail(data.content.word, env);
-    if (detail.success) {
-        const d = detail.results[0];
-        return getJSONResponse<"getDetail">({
-            info: "Succeeded.",
-            content: d
-        });
+    const word = data.content.word;
+    const result = await _getDetail(word, env);
+    if (result.success) {
+        if (result.results.length > 0) {
+            const d = result.results[0];
+            return getJSONResponse<"getDetail">({
+                info: "Succeeded.",
+                content: d
+            });
+        } else {
+            const d = await genDetail(data.content.aiProvider, data.content.apiKey, word);
+            if (d) {
+                await genInsertSQL2(d, d.time_modify, d.time_modify, env).all() as DBResultType<undefined>;
+                return getJSONResponse<"getDetail">({
+                    info: "Succeeded.",
+                    content: d
+                });
+            } else {
+                return getEmptyRes(`No such word: ${word}.`);
+            }
+        }
     } else {
-        return getEmptyRes(`No such word: ${data.content.word}.`);
+        return getEmptyRes(`No such word: ${word}.`);
     }
 }
 

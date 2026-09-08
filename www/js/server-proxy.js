@@ -112,8 +112,8 @@ class ServerProxy {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_DELETE_WORD, { detail: out }));
         }
     }
-    async getDetail(word) {
-        const detail = await _toServer("../api/word", "getDetail", { word });
+    async getDetail(word, aiProvider = "_NONE_", apiKey = "") {
+        const detail = await _toServer("../api/word", "getDetail", { word, aiProvider, apiKey });
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
         }

@@ -1,5 +1,4 @@
 import logger from "./logger.js"
-import ai from "./ai.js"
 import Cacher from "./cacher.js"
 import serverProxy from "./server-proxy.js"
 import { CSType, Words, Dict, DictSyncDataSC, ResponseEvent } from "../types.d.js"
@@ -48,7 +47,7 @@ ${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
 ${cmp.inputSource("id-syncInterval", "Sync Interval (seconds)", "<= 0 means stop auto sync.", false)}
 <div class="form-row">
     ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
-    ${cmp.dropdownSource("id-provider", null, ["ChatGPT", "DeepSeek"], 0)}
+    ${cmp.dropdownSource("id-provider", null, ["_NONE_", "ChatGPT", "DeepSeek"], 0)}
 </div>
 ${cmp.switcherSource("id-theme", "Dark Theme", false)}
 ${cmp.switcherSource("id-auto-gen-detail", "Auto Ask AI For Detail", true)}
@@ -231,8 +230,9 @@ export default class SectionSetting extends SectionBase {
                     return;
                 }
 
-                const _question = ai.getAIMeaningQuestion(_rawData);
-                this.#_copyText(_question);
+                // TODO: never do
+                // const _question = ai.getAIMeaningQuestion(_rawData);
+                // this.#_copyText(_question);
             }
         });
 

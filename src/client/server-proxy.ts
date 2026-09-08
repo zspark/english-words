@@ -47,7 +47,7 @@ const Response = {
  */
 import logger from "./logger.js"
 import cacher from "./cacher.js"
-import { RequestData, ResponseData, RequestBody, ResponseBody, CSKey, CSType, RequestType, Detail, RequestBodyContentType, ResponseBodyContentType, ResponseCallback } from "../types.d.js"
+import { AIProvider, RequestData, ResponseData, RequestBody, ResponseBody, CSKey, CSType, RequestType, Detail, RequestBodyContentType, ResponseBodyContentType, ResponseCallback } from "../types.d.js"
 
 const _localCacher = cacher.localProxy;
 
@@ -143,11 +143,11 @@ class ServerProxy {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_DELETE_WORD, { detail: out }));
         }
     }
-    async getDetail(word: string): Promise<void> {
+    async getDetail(word: string, aiProvider: AIProvider = "_NONE_", apiKey: string = ""): Promise<void> {
         const detail = await _toServer<"getDetail">(
             "../api/word",
             "getDetail",
-            { word }
+            { word, aiProvider, apiKey }
         );
         if (detail) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_DETAIL, { detail }));
