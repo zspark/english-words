@@ -44,14 +44,14 @@ async function getWordList(data: RequestBody<"getWordList">, env: ENV): Promise<
         //@ts-ignore;
         result.results?.map(({ words }) => words).forEach(words => {
             if (words.length > 0) {
-                list.concat(...words.split(','));
+                list.push(...words.split(','));
             }
         });
     }
 
     return getJSONResponse<"getWordList">({
         info: "Succeeded.",
-        syncTime: -1,
+        syncTime: -2,
         content: {
             list,
         },

@@ -32,13 +32,13 @@ async function getWordList(data, env) {
         //@ts-ignore;
         result.results?.map(({ words }) => words).forEach(words => {
             if (words.length > 0) {
-                list.concat(...words.split(','));
+                list.push(...words.split(','));
             }
         });
     }
     return getJSONResponse({
         info: "Succeeded.",
-        syncTime: -1,
+        syncTime: -2,
         content: {
             list,
         },
