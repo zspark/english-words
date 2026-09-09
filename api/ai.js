@@ -94,6 +94,7 @@ Requirements：
 
 *. The above json content is just a mock sample;
 *. All keys in the json must be lower case english, and all values are strings instead of numbers or arrays or objects;
+*. "ipa" is the phonetic transcription, not the word;
 *. Choose only one proper value from "A1,A2,B1,B2,C1,C2" for "level";
 *. Chinese characters for meanings, short form (adj. n. v. ad. prep. etc.) for the part of speech;
 *. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
