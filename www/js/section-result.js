@@ -2,7 +2,6 @@ import cacher from "./cacher.js";
 import cmp from "./components.js";
 import Dictionary from "./dictionary.js";
 import prpc from "./pronunciation.js";
-import Card from "./card.js";
 import { SectionBase } from "./section-base.js";
 const _rts = cacher.localProxy.get('sec_record', {});
 _rts.scrollY = _rts.scrollY || 0;
@@ -39,16 +38,6 @@ export default class SectionResult extends SectionBase {
             if (_tar) {
                 this._activeWord(_tar);
             }
-        });
-        card.addEventListener(Card.CARD_EVT_WORD, (e) => {
-            let _target = null;
-            this.ui.getAll("div.bs-word-result").find(ele => {
-                if (ele.dataset.word === e.detail.currentWord) {
-                    _target = ele;
-                    return;
-                }
-            });
-            this._activeWord(_target);
         });
         this._dict.addEventListener(Dictionary.EVT_RECORD, e => {
             // logger.log(e);

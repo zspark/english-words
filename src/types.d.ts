@@ -1,3 +1,9 @@
+interface ENV {
+    DB: {
+        prepare: (s: string) => any,
+    },
+    AI: any
+}
 type AIProvider = "DeepSeek" | "ChatGPT" | "_NONE_";
 export { AIProvider };
 
@@ -28,7 +34,7 @@ type CSType = {
     },
     getDetail: {
         C: RequestBodyContentType<{ word: string, aiProvider: AIProvider, apiKey: string }>,
-        S: ResponseBodyContentType<Detail>,
+        S: ResponseBodyContentType<{ word: string, detail: Detail, success: boolean }>,
     },
     putDetail: {
         C: RequestBodyContentType<{ detail: Detail }>,
@@ -115,5 +121,5 @@ type SectionID = "dictionary" | "article" | "test" | "result" | "setting";
 
 type ChildMode = "append-first" | "append-last" | "removeall"
 
-export { ActionWord, CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
+export { ENV, ActionWord, CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
 

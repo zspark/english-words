@@ -52,17 +52,6 @@ export default class SectionResult extends SectionBase {
         });
 
 
-        card.addEventListener(Card.CARD_EVT_WORD, (e) => {
-            let _target: HTMLElement | null = null;
-            this.ui.getAll("div.bs-word-result").find(ele => {
-                if (ele.dataset.word === (e as CustomEvent).detail.currentWord) {
-                    _target = ele;
-                    return;
-                }
-            });
-            this._activeWord(_target);
-        });
-
         this._dict.addEventListener(Dictionary.EVT_RECORD, e => {
             // logger.log(e);
             if ((e as CustomEvent).detail.action === "new") {

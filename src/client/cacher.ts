@@ -30,13 +30,13 @@ export class RuntimeCacher {
     /**
      * key will be separated by '.';
      */
-    set(key: string, value: any): void {
+    set<T>(key: string, value: T): void {
         const _arr = key.split('.');
         let _obj = this.#_createObject(_arr);
         _obj[_arr[_arr.length - 1]] = value;
     }
 
-    get(key: string, defaultValue: any = undefined): any {
+    get<T>(key: string, defaultValue: T | undefined = undefined): T {
         const _arr = key.split('.');
         let _obj = this.#_createObject(_arr);
         let _name = _arr[_arr.length - 1];
@@ -105,7 +105,7 @@ export class StorageCacher extends RuntimeCacher {
         this.#_delaySave();
     }
 
-    set(key: string, value: any): void {
+    set<T>(key: string, value: T): void {
         super.set(key, value);
         this.#_delaySave();
     }

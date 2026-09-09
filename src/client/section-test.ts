@@ -224,10 +224,6 @@ export default class SectionTest extends SectionBase {
                 this._setupBeforeText();
             }
         })
-
-        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
-            const data = (e as CustomEvent).detail;
-        });
     }
 
 

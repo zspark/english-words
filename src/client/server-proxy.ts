@@ -51,7 +51,103 @@ import { AIProvider, RequestData, ResponseData, RequestBody, ResponseBody, CSKey
 
 const _localCacher = cacher.localProxy;
 
-async function _toServer<K extends CSKey>(url: string, requestType: RequestType, content: RequestData<K>): Promise<ResponseData<K> | null> {
+type CSFn = <K extends CSKey>(url: string, t: RequestType, c: RequestData<K>) => Promise<ResponseData<K> | null>;
+
+async function _toServer_mock<K extends CSKey>(url: string, requestType: RequestType, content: RequestData<K>): Promise<ResponseData<K> | null> {
+    // clide side;
+    const req: RequestBody<K> = {
+        accessToken: _localCacher.get("sec_setting.userID") || "",
+        syncTime: _localCacher.get("sec_setting.syncTime") || -1,
+        requestType,
+        content
+    }
+    logger.log(`C -> S request type: ${req.requestType}`);
+
+    const request = new Request(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(req),
+    });
+
+
+    /// simulate server side;
+    {
+        function getJSONResponse<K extends CSKey>(data: ResponseBody<K>, status = 200): Response {
+            return Response.json(
+                data,
+                {
+                    status,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*"
+                    }
+                }
+            );
+        }
+
+        let response: Response | null = null;
+        const data = await request.json() as RequestBody<K>;
+        const url = new URL(request.url);
+        if (url.pathname === "/api/rss") {
+            //return getEmptyRes('ROOT');
+            //return getNews(request, _data, env);
+        } else if (url.pathname === "/api/word") {
+            if (data.requestType === "getDetail") {
+                let _data = data as RequestBody<"getDetail">;
+                response = getJSONResponse<"getDetail">({
+                    info: "",
+                    content: {
+                        word: _data.content.word,
+                        success: false,
+                        detail: {
+                            word: _data.content.word,
+                            ipa: "/ɑrˈtɪkjələt/",
+                            level: "C1",
+                            meaning: "adj. 善于表达的；表达清晰的；v. 清楚地表达",
+                            links: "articulately,articulation",
+                            tags: '',
+                            note: "She is very articulate and can explain complex ideas clearly. 她很善于表达，能够清楚地解释复杂的想法。\n\nThe professor articulated his concerns about the new policy. 教授清楚地表达了他对新政策的担忧。\n\nThe two bones articulate at the knee joint. 这两块骨头在膝关节处连接。",
+                            time_create: Date.now(),
+                            time_modify: Date.now()
+                        }
+                    }
+                });
+            } else if (data.requestType === "getWordList") {
+                //return getWordList(data, env);
+            } else if (data.requestType === "putDetail") {
+                //return putDetail(data, env);
+            } else if (data.requestType === "deleteWord") {
+                //return deleteWord(data, env);
+            }
+
+        } else if (url.pathname === "/api/data") {
+        }
+
+
+        try {
+            if (!response) return null;
+
+            const responseData = await response.json() as ResponseBody<K>;
+            logger.log(`S -> C\n\turl: ${response.url}\n\tstatus: ${response.status}\n\tstatus text: ${response.statusText}\n\tinfo: ${responseData.info}`);
+
+            if (response.ok) {
+                if (responseData.syncTime) {
+                    _localCacher.set("sec_setting.syncTime", responseData.syncTime);
+                }
+
+                return responseData.content;
+            }
+
+            return null;
+        } catch (err: any) {
+            logger.vital(`S -> C ${err}`);
+            return null;
+        }
+    }
+}
+async function _toServer_real<K extends CSKey>(url: string, requestType: RequestType, content: RequestData<K>): Promise<ResponseData<K> | null> {
     const req: RequestBody<K> = {
         accessToken: _localCacher.get("sec_setting.userID") || "",
         syncTime: _localCacher.get("sec_setting.syncTime") || -1,
@@ -86,6 +182,8 @@ async function _toServer<K extends CSKey>(url: string, requestType: RequestType,
         return null;
     }
 }
+
+let _toServer: CSFn = window.location.href.includes("localhost") ? _toServer_mock : _toServer_real;
 
 class ServerProxy {
     readonly EVT_NEWS = "EVT_NEWS";

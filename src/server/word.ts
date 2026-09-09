@@ -1,4 +1,4 @@
-import { RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
+import { ENV, RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
 import { genDeleteSQL, cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 import genDetail from "./ai.js"
 
@@ -10,7 +10,7 @@ type DBResultType<T> = {
     },
 }
 
-async function _getDetail(word: string, env: any): Promise<DBResultType<Detail>> {
+async function _getDetail(word: string, env: ENV): Promise<DBResultType<Detail>> {
     const result = await env.DB
         .prepare(`
             SELECT
@@ -31,7 +31,7 @@ async function _getDetail(word: string, env: any): Promise<DBResultType<Detail>>
     return result;
 }
 
-async function _getWordList(env: any): Promise<DBResultType<Detail>> {
+async function getWordList(data: RequestBody<"getWordList">, env: ENV): Promise<Response> {
     const result = await env.DB
         .prepare(`
             SELECT word
@@ -39,13 +39,14 @@ async function _getWordList(env: any): Promise<DBResultType<Detail>> {
         `)
         .all()
 
-    return result;
-}
+    let _wordlist: string[] = [];
+    let _time_sync_wordlist: number = 0;
+    if (result.success) {
+        //@ts-ignore;
+        _wordlist = result.results?.map(({ word }) => word) as string[];
+        _time_sync_wordlist = Date.now();
+    }
 
-let _time_sync_wordlist: number = -1;
-let _wordlist: string[] = [];
-
-async function getWordList(data: RequestBody<"getWordList">, env: any): Promise<Response> {
     if (data.syncTime < _time_sync_wordlist) {
         return getJSONResponse<"getWordList">({
             info: "Succeeded.",
@@ -63,15 +64,7 @@ async function getWordList(data: RequestBody<"getWordList">, env: any): Promise<
     }
 }
 
-async function syncWordlist(env: any): Promise<void> {
-    const detail = await _getWordList(env);
-    if (detail.success) {
-        _wordlist = detail.results?.map(({ word }) => word) as string[];
-        _time_sync_wordlist = Date.now();
-    }
-}
-
-async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Response> {
+async function getDetail(data: RequestBody<"getDetail">, env: ENV): Promise<Response> {
     const word = data.content.word;
     const result = await _getDetail(word, env);
     if (result.success) {
@@ -79,23 +72,29 @@ async function getDetail(data: RequestBody<"getDetail">, env: any): Promise<Resp
             const d = result.results[0];
             return getJSONResponse<"getDetail">({
                 info: "Succeeded.",
-                content: d
+                content: {
+                    detail: d,
+                    word,
+                    success: true,
+                }
             });
         }
     }
     const d = await genDetail(data.content.aiProvider, data.content.apiKey, word);
-    if (d) {
-        await genInsertSQL2(d, d.time_modify, d.time_modify, env).all() as DBResultType<undefined>;
-        return getJSONResponse<"getDetail">({
-            info: "Succeeded.",
-            content: d
-        });
-    } else {
-        return getEmptyRes(`Failed to get word's detail: ${word}.`);
+    if (d.success) {
+        await genInsertSQL2(d.detail, d.detail.time_modify, d.detail.time_modify, env).all() as DBResultType<undefined>;
     }
+    return getJSONResponse<"getDetail">({
+        info: "Succeeded.",
+        content: {
+            detail: d.detail,
+            word,
+            success: d.success,
+        }
+    });
 }
 
-async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Response> {
+async function deleteWord(data: RequestBody<"deleteWord">, env: ENV): Promise<Response> {
     const detail = data.content.detail;
     const word: string = detail.word;
 
@@ -105,11 +104,6 @@ async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Re
     }
 
     if (result.meta.changes > 0) {
-        const _index = _wordlist.indexOf(word)
-        if (_index !== -1) {
-            _wordlist.splice(_index, 1);
-            _time_sync_wordlist = Date.now();
-        }
         return getJSONResponse<"deleteWord">({
             info: "Succeeded.",
             content: {
@@ -137,7 +131,7 @@ async function deleteWord(data: RequestBody<"deleteWord">, env: any): Promise<Re
     }
 }
 
-async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Response> {
+async function putDetail(data: RequestBody<"putDetail">, env: ENV): Promise<Response> {
     const detail = data.content.detail;
     const syncTime: number = Date.now();
     const word: string = detail.word;
@@ -156,8 +150,6 @@ async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Resp
 
     const _newestDetail: Detail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
-        _wordlist.push(word);
-        _time_sync_wordlist = Date.now();
         return getJSONResponse<"putDetail">({
             info: "Succeeded.",
             content: {
@@ -181,7 +173,7 @@ async function putDetail(data: RequestBody<"putDetail">, env: any): Promise<Resp
 }
 
 /*
-function _runMarkSQL(time: number, wordArr: string[], action: number, env: any): any {
+function _runMarkSQL(time: number, wordArr: string[], action: number, env: ENV): any {
     env.DB.prepare(`
         INSERT INTO synchronizer ( time_sync, words, action)
         VALUES (?,?,?)`
@@ -190,10 +182,7 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: any):
 }
 */
 
-export default async function respond(request: Request, data: RequestBodyContentType<any>, env: any): Promise<Response> {
-    if (_time_sync_wordlist === -1) {
-        await syncWordlist(env);
-    }
+export default async function respond(request: Request, data: RequestBodyContentType<any>, env: ENV): Promise<Response> {
     if (data.requestType === "getDetail") {
         return getDetail(data, env);
     } else if (data.requestType === "getWordList") {

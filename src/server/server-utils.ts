@@ -196,3 +196,18 @@ export function cloneDetail(from: Detail, time_modify?: number, time_create?: nu
 }
 
 
+export function createDetail(note: string): Detail {
+    const _t = Date.now();
+    return {
+        word: "word",
+        ipa: "ipa",
+        meaning: "meaning",
+        level: "ALL",
+        tags: "",
+        note,
+        links: "",
+        time_create: _t,
+        time_modify: _t,
+    }
+}
+

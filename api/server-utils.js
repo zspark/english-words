@@ -152,3 +152,17 @@ export function cloneDetail(from, time_modify, time_create) {
         time_modify: time_modify ?? from.time_modify,
     };
 }
+export function createDetail(note) {
+    const _t = Date.now();
+    return {
+        word: "word",
+        ipa: "ipa",
+        meaning: "meaning",
+        level: "ALL",
+        tags: "",
+        note,
+        links: "",
+        time_create: _t,
+        time_modify: _t,
+    };
+}

@@ -76,7 +76,6 @@ const source = `
 const MODE_EDIT = 1;
 const MODE_READ = 2;
 class Card extends EventTarget {
-    static CARD_EVT_WORD = "evt_word";
     static CARD_EVT_MODE_EDIT = "evt_mode_edit";
     static CARD_EVT_MODE_READ = "evt_mode_read";
     #_ui;
@@ -125,11 +124,7 @@ class Card extends EventTarget {
         ele_searchInput.addEventListener('keydown', (event) => {
             if (event.key === "Enter") {
                 const _w = ele_searchInput.value;
-                if (event.ctrlKey) {
-                    this.#_renderEditPanel(_w);
-                    this.#_enterEditMode();
-                }
-                else {
+                if (_w.length > 1) {
                     this.renderCard(_w);
                 }
                 ele_searchInput.blur();
@@ -201,7 +196,7 @@ class Card extends EventTarget {
         const ele_new_voc = this.ele_new_voc = ui.get("#card-edit #id-new-vocab input");
         ele_new_voc.addEventListener('input', (e) => {
             const word = ele_new_voc.value;
-            this.#_updateCardContentInEditMode(word, dict.getWord(word));
+            this.#_updateCardContentInEditMode(word, dict.getWord(word, false));
         });
         this.ele_new_ipa = ui.get("#card-edit #id-new-ipa input");
         this.ele_new_meaning = ui.get("#card-edit #id-new-meaning input");
@@ -267,14 +262,9 @@ class Card extends EventTarget {
             })
             */
         }
-        dict.addEventListener(Dictionary.EVT_WORD, e => {
-            // logger.log(e);
-            const data = e.detail;
-            if (data.action === "modify") {
-                this.#renderWord(data.word);
-            }
-            else {
-            }
+        dict.addEventListener(Dictionary.EVT_WORD_MODIFY, e => {
+            const detail = e.detail;
+            this.#renderWord(detail.word, detail);
             this.#_handleSearchInputStyle(ele_searchInput);
         });
         /*
@@ -287,12 +277,7 @@ class Card extends EventTarget {
         });
         */
         this.#_updateTagList([]);
-        this.renderCard('');
         this.ele_card_edit = ui.remove("#card-edit");
-        dict.addEventListener(Dictionary.DICT_EVT_DETAIL_RECEIVED, (e) => {
-            const data = e.detail;
-            this.#renderWord(data.word, data);
-        });
     }
     #renderWord(word, detail) {
         if (this.currentWord === word) {
@@ -300,7 +285,7 @@ class Card extends EventTarget {
                 this.#_renderEditPanel(word, detail);
             }
             else if (this._currentMode === MODE_READ) {
-                this.renderCard(word, detail);
+                this.#_renderCard(word, detail);
             }
         }
     }
@@ -309,6 +294,10 @@ class Card extends EventTarget {
     }
     #_handleSearchInputStyle(elem) {
         const word = elem.value;
+        if (word.length <= 1) {
+            elem.classList.remove("color-red", "color-yellow");
+            return;
+        }
         const _out = this.#_dict.hasWord(word);
         if (_out) {
             if (this.#_dict.hasWordDetail(word)) {
@@ -436,11 +425,15 @@ class Card extends EventTarget {
         this.dispatchEvent(new CustomEvent(_b.CARD_EVT_MODE_READ, { detail: {} }));
     }
     renderCard(word, detail) {
-        if (word != this.currentWord) {
-            let previousWord = this.currentWord;
-            this.currentWord = word;
-            this.dispatchEvent(new CustomEvent(_b.CARD_EVT_WORD, { detail: { currentWord: this.currentWord, previousWord } }));
-        }
+        if (word === this.currentWord)
+            return;
+        if (this._currentMode === MODE_EDIT)
+            return;
+        const _detail = detail ?? this.#_dict.getWord(word);
+        this.#_renderCard(word, _detail);
+    }
+    #_renderCard(word, detail) {
+        this.currentWord = word;
         if (word) {
             this.#_ui.removeAttrib('#id-body', 'hidden');
         }
@@ -448,18 +441,13 @@ class Card extends EventTarget {
             this.#_ui.addAttrib('#id-body', 'hidden');
         }
         this.ele_voc.textContent = word;
-        const _detail = detail ?? this.#_dict.getWord(word);
-        if (!_detail) {
-            this.ele_ipa.textContent = "no such word.";
-            return;
-        }
-        this.ele_ipa.textContent = _detail.ipa;
-        this.ele_ipa.textContent = _detail.ipa;
-        this.ele_meaning.textContent = _detail.meaning;
-        this.ele_level.textContent = _detail.level;
-        this.ele_tag.textContent = _detail.tags;
-        this.ele_note.innerHTML = _detail.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0).map(s => `<p>${s}</p>`).join('') ?? "";
-        this.ele_linkedWords.innerHTML = _detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0).map(s => `<a>${s}</a>`).join('') ?? "";
+        this.ele_ipa.textContent = detail.ipa;
+        this.ele_ipa.textContent = detail.ipa;
+        this.ele_meaning.textContent = detail.meaning;
+        this.ele_level.textContent = detail.level;
+        this.ele_tag.textContent = detail.tags;
+        this.ele_note.innerHTML = detail.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0).map(s => `<p>${s}</p>`).join('') ?? "";
+        this.ele_linkedWords.innerHTML = detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0).map(s => `<a>${s}</a>`).join('') ?? "";
     }
     ;
     #_save() {

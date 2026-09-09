@@ -20,18 +20,20 @@ async function _getDetail(word, env) {
         .all();
     return result;
 }
-async function _getWordList(env) {
+async function getWordList(data, env) {
     const result = await env.DB
         .prepare(`
             SELECT word
             FROM dictionary
         `)
         .all();
-    return result;
-}
-let _time_sync_wordlist = -1;
-let _wordlist = [];
-async function getWordList(data, env) {
+    let _wordlist = [];
+    let _time_sync_wordlist = 0;
+    if (result.success) {
+        //@ts-ignore;
+        _wordlist = result.results?.map(({ word }) => word);
+        _time_sync_wordlist = Date.now();
+    }
     if (data.syncTime < _time_sync_wordlist) {
         return getJSONResponse({
             info: "Succeeded.",
@@ -49,13 +51,6 @@ async function getWordList(data, env) {
         });
     }
 }
-async function syncWordlist(env) {
-    const detail = await _getWordList(env);
-    if (detail.success) {
-        _wordlist = detail.results?.map(({ word }) => word);
-        _time_sync_wordlist = Date.now();
-    }
-}
 async function getDetail(data, env) {
     const word = data.content.word;
     const result = await _getDetail(word, env);
@@ -64,21 +59,26 @@ async function getDetail(data, env) {
             const d = result.results[0];
             return getJSONResponse({
                 info: "Succeeded.",
-                content: d
+                content: {
+                    detail: d,
+                    word,
+                    success: true,
+                }
             });
         }
     }
     const d = await genDetail(data.content.aiProvider, data.content.apiKey, word);
-    if (d) {
-        await genInsertSQL2(d, d.time_modify, d.time_modify, env).all();
-        return getJSONResponse({
-            info: "Succeeded.",
-            content: d
-        });
+    if (d.success) {
+        await genInsertSQL2(d.detail, d.detail.time_modify, d.detail.time_modify, env).all();
     }
-    else {
-        return getEmptyRes(`Failed to get word's detail: ${word}.`);
-    }
+    return getJSONResponse({
+        info: "Succeeded.",
+        content: {
+            detail: d.detail,
+            word,
+            success: d.success,
+        }
+    });
 }
 async function deleteWord(data, env) {
     const detail = data.content.detail;
@@ -88,11 +88,6 @@ async function deleteWord(data, env) {
         return getEmptyRes(`delete word (${word}) failed.`);
     }
     if (result.meta.changes > 0) {
-        const _index = _wordlist.indexOf(word);
-        if (_index !== -1) {
-            _wordlist.splice(_index, 1);
-            _time_sync_wordlist = Date.now();
-        }
         return getJSONResponse({
             info: "Succeeded.",
             content: {
@@ -135,8 +130,6 @@ async function putDetail(data, env) {
     }
     const _newestDetail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
-        _wordlist.push(word);
-        _time_sync_wordlist = Date.now();
         return getJSONResponse({
             info: "Succeeded.",
             content: {
@@ -160,7 +153,7 @@ async function putDetail(data, env) {
     }
 }
 /*
-function _runMarkSQL(time: number, wordArr: string[], action: number, env: any): any {
+function _runMarkSQL(time: number, wordArr: string[], action: number, env: ENV): any {
     env.DB.prepare(`
         INSERT INTO synchronizer ( time_sync, words, action)
         VALUES (?,?,?)`
@@ -169,9 +162,6 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: any):
 }
 */
 export default async function respond(request, data, env) {
-    if (_time_sync_wordlist === -1) {
-        await syncWordlist(env);
-    }
     if (data.requestType === "getDetail") {
         return getDetail(data, env);
     }

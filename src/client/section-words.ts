@@ -367,22 +367,15 @@ export default class SectionWords extends SectionBase {
             }
             */
         });
-        this._dict.addEventListener(Dictionary.EVT_WORD, e => {
+
+        const _fn = (e: any) => {
             // logger.log(e);
-            const _action = (e as CustomEvent).detail.action as string;
-            if (_action === "modify") {
-            } else if (_action === "delete") {
-                this.#_wordsHandler.updateWordList();
-            } else if (_action === "add") {
-                this.#_wordsHandler.updateWordList();
-            }
+            this.#_wordsHandler.updateWordList();
             this.#_wordsHandler.sortWordList();
             this.#_wordsHandler.renderWords(true);
-        });
-
-        this._card.addEventListener(Card.CARD_EVT_WORD, e => {
-            //logger.log(e);
-        });
+        }
+        this._dict.addEventListener(Dictionary.EVT_WORD_ADD, _fn);
+        this._dict.addEventListener(Dictionary.EVT_WORD_DELETE, _fn);
 
         this.#_wordsHandler.updateWordList();
         this.#_wordsHandler.sortWordList();

@@ -1,5 +1,5 @@
 import { Detail, AIProvider } from "../types.d.js"
-import { cloneDetail } from "./server-utils.js"
+import { createDetail, cloneDetail } from "./server-utils.js"
 
 function _stripJsonMarkdown(text: string): string {
     return text
@@ -64,22 +64,22 @@ const _providerMap: Map<AIProvider, _T> = new Map();
 _providerMap.set("DeepSeek", askDeepseek);
 _providerMap.set("ChatGPT", askChatGPT);
 
-export default async function genDetailByAI(aiProvider: AIProvider, apiKey: string, word: string): Promise<Detail | undefined> {
+export default async function genDetailByAI(aiProvider: AIProvider, apiKey: string, word: string): Promise<{ detail: Detail, success: boolean }> {
     const question = getAIMeaningQuestion(word);
     const _fn = _providerMap.get(aiProvider);
     if (_fn) {
         const rawContent = await _fn(apiKey, question);
         try {
-            const _t = Date.now();
             const detail = JSON.parse(rawContent)[word] as Detail;
             detail.word = word;
-            return cloneDetail(detail, _t, _t);
-        } catch (e) {
+            const _t = Date.now();
+            return { detail: cloneDetail(detail, _t, _t), success: true };
+        } catch (e: any) {
             //logger.error(`parse word detail string error: ${e}`);
-            return undefined;
+            return { detail: createDetail(e.message), success: false };
         }
     }
-    return undefined;
+    return { detail: createDetail("AI provide doesn't exist."), success: false };
 }
 
 function getAIMeaningQuestion(wordsString: string): string {
@@ -97,6 +97,7 @@ JSON format:
         "level": "B1",
         "meaning": "adj. 一般的；普通的",
         "links": "generically,genericity",
+        "tags": "",
         "note": "This is a generic solution that can be applied to many different problems. 这是一个通用的解决方案，可以应用于许多不同的问题。\n\n"
     }
 }
@@ -111,6 +112,7 @@ Requirements：
 6. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
 7. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
 8. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
+9. Just left "tags" as a blank string;
 `;
 
     // logger.log(_question);
