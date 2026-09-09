@@ -121,7 +121,7 @@ export default class SectionSetting extends SectionBase {
 
         this.#_updateTags();
 
-        const _localData: LocalSettingCacheType = _localProxy.get('sec_setting', {});
+        const _localData: LocalSettingCacheType = _localProxy.get<any>('sec_setting', {});
         elem_syncInerval.value = (_localData.syncInterval || 10) + '';
         elem_key.value = _localData.ai_key || "";
         elem_provider.value = _localData.ai_provider || "";

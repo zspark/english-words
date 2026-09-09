@@ -10,7 +10,7 @@ export function lemmatize(word: string): string {
     }
 
     const lower = word.toLowerCase();
-    let _w = _proxy.get(lower);
+    let _w = _proxy.get<string>(lower);
     if (_w) {
         return _w;
     }

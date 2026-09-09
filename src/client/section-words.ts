@@ -24,7 +24,8 @@ type LocalDictCacheType = {
 }
 const _metaProxy = Cacher.metaProxy;
 const _localProxy = Cacher.localProxy;
-const _rts: LocalDictCacheType = _localProxy.get('sec_dict', {});
+
+const _rts: LocalDictCacheType = _localProxy.get<any>('sec_dict', {});
 _rts.activedWord = _rts.activedWord || '';
 _rts.filter = _rts.filter || {
     search: "",

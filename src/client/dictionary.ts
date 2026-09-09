@@ -125,7 +125,7 @@ export default class Dictionary extends EventTarget {
 
         this.#_searchAPI = new SearchHelper();
 
-        this.setSyncInterval(_localProxy.get("sec_setting", {})["syncInterval"] || 10);
+        this.setSyncInterval(_localProxy.get<number>("sec_setting.syncInterval", 10));
         serverProxy.addEventListener<'syncAll'>(serverProxy.EVT_SYNC_ALL, (event) => {
             const _data = event.detail;
             if (_data) {
@@ -359,7 +359,7 @@ export default class Dictionary extends EventTarget {
     }
 
     clearDictionary(): void {
-        _localProxy.get("sec_setting", {})["syncTime"] = 1;
+        _localProxy.set<number>("sec_setting.syncTime", 1);
         _localProxy.save();
         _metaProxy.clear();
         _recordsProxy.clear();
@@ -439,7 +439,7 @@ export default class Dictionary extends EventTarget {
     }
 
     #_removeLink(word: string, linkedWord: string): void {
-        const _detail = _detailCacher.get(word);
+        const _detail = _detailCacher.get<Detail>(word);
         if (!_detail) return;
 
         const regex = new RegExp(`,*\s*\\b${linkedWord}\\b`, "gi");
@@ -506,7 +506,7 @@ export default class Dictionary extends EventTarget {
     getWord(word: string, fetchIfMissing: boolean = true): Detail {
         if ((!word) || (word.length <= 0)) return _MOCK_NO_LOCAL_DETAIL_;
 
-        const _out = _detailCacher.get(word);
+        const _out = _detailCacher.get<Detail>(word);
         if (_out) {
             return _out;
         }

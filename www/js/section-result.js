@@ -3,8 +3,6 @@ import cmp from "./components.js";
 import Dictionary from "./dictionary.js";
 import prpc from "./pronunciation.js";
 import { SectionBase } from "./section-base.js";
-const _rts = cacher.localProxy.get('sec_record', {});
-_rts.scrollY = _rts.scrollY || 0;
 const _source = `
 <div class="bs-panel">
     ${cmp.buttonGroupSource('id-action', ['Delete All'])}
@@ -67,13 +65,13 @@ export default class SectionResult extends SectionBase {
         }
     }
     setSync(scrollY) {
-        _rts.scrollY = scrollY;
+        cacher.localProxy.set('sec_record.scrollY', scrollY);
     }
     deactive() {
-        _rts.scrollY = window.scrollY;
+        cacher.localProxy.set('sec_record.scrollY', window.scrollY);
     }
     active() {
-        window.scrollTo(0, _rts.scrollY);
+        window.scrollTo(0, cacher.localProxy.get('sec_record.scrollY', 0) ?? 0);
         const ele_card = this.ui.get("#id-cardContainer");
         this._card.setParent(ele_card);
     }

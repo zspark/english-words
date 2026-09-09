@@ -36,8 +36,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _currentSection?.keyEvent(event);
     });
 
-    const _localData = Cacher.localProxy.get("sec_setting", {});
-    const _darkTheme = _localData['theme'];
+    const _darkTheme = Cacher.localProxy.get<boolean>("sec_setting.theme", false);
     if (_darkTheme) {
         document.documentElement.setAttribute('data-theme', 'dark');
     } else {

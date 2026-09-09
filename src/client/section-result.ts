@@ -6,9 +6,6 @@ import prpc from "./pronunciation.js"
 import Card from "./card.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
-const _rts = cacher.localProxy.get('sec_record', {});
-_rts.scrollY = _rts.scrollY || 0;
-
 const _source = `
 <div class="bs-panel">
     ${cmp.buttonGroupSource('id-action', ['Delete All'])}
@@ -82,15 +79,15 @@ export default class SectionResult extends SectionBase {
     }
 
     setSync(scrollY: number): void {
-        _rts.scrollY = scrollY;
+        cacher.localProxy.set<number>('sec_record.scrollY', scrollY);
     }
 
     deactive(): void {
-        _rts.scrollY = window.scrollY;
+        cacher.localProxy.set<number>('sec_record.scrollY', window.scrollY);
     }
 
     active(): void {
-        window.scrollTo(0, _rts.scrollY);
+        window.scrollTo(0, cacher.localProxy.get<number>('sec_record.scrollY', 0) ?? 0);
         const ele_card = this.ui.get("#id-cardContainer");
         this._card.setParent(ele_card);
     }

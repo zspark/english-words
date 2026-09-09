@@ -27,7 +27,7 @@ type LocalTestCacheType = {
     answerForm: string,
 }
 
-const _rts: LocalTestCacheType = cacher.localProxy.get('sec_test', {});
+const _rts: LocalTestCacheType = cacher.localProxy.get<any>('sec_test', {});
 _rts.repeat = _rts.repeat ?? 1;
 _rts.timeEach = _rts.timeEach ?? 5;
 _rts.optionCount = _rts.optionCount ?? 4;

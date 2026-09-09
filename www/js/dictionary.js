@@ -93,7 +93,7 @@ class Dictionary extends EventTarget {
     constructor() {
         super();
         this.#_searchAPI = new SearchHelper();
-        this.setSyncInterval(_localProxy.get("sec_setting", {})["syncInterval"] || 10);
+        this.setSyncInterval(_localProxy.get("sec_setting.syncInterval", 10));
         serverProxy.addEventListener(serverProxy.EVT_SYNC_ALL, (event) => {
             const _data = event.detail;
             if (_data) {
@@ -323,7 +323,7 @@ class Dictionary extends EventTarget {
         reader.readAsText(file);
     }
     clearDictionary() {
-        _localProxy.get("sec_setting", {})["syncTime"] = 1;
+        _localProxy.set("sec_setting.syncTime", 1);
         _localProxy.save();
         _metaProxy.clear();
         _recordsProxy.clear();

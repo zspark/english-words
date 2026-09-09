@@ -29,8 +29,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         _card.keyEvent(event);
         _currentSection?.keyEvent(event);
     });
-    const _localData = Cacher.localProxy.get("sec_setting", {});
-    const _darkTheme = _localData['theme'];
+    const _darkTheme = Cacher.localProxy.get("sec_setting.theme", false);
     if (_darkTheme) {
         document.documentElement.setAttribute('data-theme', 'dark');
     }
