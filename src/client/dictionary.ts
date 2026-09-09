@@ -138,6 +138,7 @@ export default class Dictionary extends EventTarget {
             if (_data) {
                 if (_data.success) {
                     _detailCacher.set<Detail>(_data.word as string, _data.detail);
+                    _listCacher.set<boolean>(_data.detail.word, true);
                 }
                 this.#_dispEvt<Detail>(Dictionary.EVT_WORD_MODIFY, _data.detail);
             }
@@ -165,10 +166,12 @@ export default class Dictionary extends EventTarget {
             const _data = event.detail;
             if (_data) {
                 if (_data.success) {
+
                     const _detail: Detail | undefined = _detailCacher.get(_data.word);
                     if (!_detail) return;
 
                     const word: string = _detail.word;
+
                     const _parseLinks = (str: string): string[] => {
                         if (!str) return [];
                         return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
@@ -179,6 +182,7 @@ export default class Dictionary extends EventTarget {
                         this.#_removeLink(_linkedWord, word)
                     });
 
+                    _listCacher.remove(word);
                     _detailCacher.remove(word);
                     this.#_searchAPI.removeWord(word);
                     this.#_dispEvt<Detail>(Dictionary.EVT_WORD_DELETE, _detail);
@@ -197,6 +201,8 @@ export default class Dictionary extends EventTarget {
                     this.#_updateLink(word, _oldDetail?.links, _data.serverDetail.links)
                     _detailCacher.set(word, _data.serverDetail);
                     if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
+                        _listCacher.set(word, true);
+                        _detailCacher.set<Detail>(word, _data.serverDetail);
                         this.#_dispEvt<string>(Dictionary.EVT_WORD_ADD, word);
                         this.#_searchAPI.addWord(word);
                     } else {

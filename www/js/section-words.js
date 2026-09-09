@@ -277,25 +277,15 @@ export default class SectionWords extends SectionBase {
         _currentSortBtn.classList.add("active");
         const _ds = _currentSortBtn.dataset;
         this.#_wordsHandler.chooseSortFunc(_ds.index + "", _ds.order);
-        this._dict.addEventListener(Dictionary.EVT_DICT, e => {
-            // logger.log(e);
-            this.#_wordsHandler.updateWordList();
-            this.#_wordsHandler.sortWordList();
-            this.#_wordsHandler.renderWords(true);
-            /*
-            if (e.detail.action === "imported") {
-            } else if (e.detail.action === "clear") {
-            }
-            */
-        });
         const _fn = (e) => {
             // logger.log(e);
             this.#_wordsHandler.updateWordList();
             this.#_wordsHandler.sortWordList();
             this.#_wordsHandler.renderWords(true);
         };
-        this._dict.addEventListener(Dictionary.EVT_WORD_ADD, _fn);
-        this._dict.addEventListener(Dictionary.EVT_WORD_DELETE, _fn);
+        dict.addEventListener(Dictionary.EVT_WORD_ADD, _fn);
+        dict.addEventListener(Dictionary.EVT_WORD_DELETE, _fn);
+        dict.addEventListener(Dictionary.EVT_WORD_MODIFY, _fn);
         this.#_wordsHandler.updateWordList();
         this.#_wordsHandler.sortWordList();
         this.#_wordsHandler.renderWords(true);

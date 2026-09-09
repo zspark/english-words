@@ -1,8 +1,9 @@
 interface ENV {
     DB: {
         prepare: (s: string) => any,
+        batch: (p: any[]) => any,
     },
-    AI: any
+    AI: any,
 }
 type AIProvider = "DeepSeek" | "ChatGPT" | "_NONE_";
 export { AIProvider };

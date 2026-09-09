@@ -106,6 +106,7 @@ class Dictionary extends EventTarget {
             if (_data) {
                 if (_data.success) {
                     _detailCacher.set(_data.word, _data.detail);
+                    _listCacher.set(_data.detail.word, true);
                 }
                 this.#_dispEvt(_a.EVT_WORD_MODIFY, _data.detail);
             }
@@ -146,6 +147,7 @@ class Dictionary extends EventTarget {
                     _linksArray.forEach(_linkedWord => {
                         this.#_removeLink(_linkedWord, word);
                     });
+                    _listCacher.remove(word);
                     _detailCacher.remove(word);
                     this.#_searchAPI.removeWord(word);
                     this.#_dispEvt(_a.EVT_WORD_DELETE, _detail);
@@ -165,6 +167,8 @@ class Dictionary extends EventTarget {
                     this.#_updateLink(word, _oldDetail?.links, _data.serverDetail.links);
                     _detailCacher.set(word, _data.serverDetail);
                     if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
+                        _listCacher.set(word, true);
+                        _detailCacher.set(word, _data.serverDetail);
                         this.#_dispEvt(_a.EVT_WORD_ADD, word);
                         this.#_searchAPI.addWord(word);
                     }

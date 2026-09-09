@@ -88,7 +88,7 @@ async function _toServer_mock(url, requestType, content) {
                     info: "",
                     content: {
                         word: _data.content.word,
-                        success: false,
+                        success: true,
                         detail: {
                             word: _data.content.word,
                             ipa: "/ɑrˈtɪkjələt/",
