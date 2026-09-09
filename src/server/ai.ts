@@ -104,15 +104,14 @@ JSON format:
 
 Requirements：
 
-1. The above json content is just a mock sample;
-2. All keys in the json must be lower case english, and all values are strings instead of numbers or arrays or objects;
-3. Only provide American pronunciation for "ipa";
-4. Choose only one proper value from "A1,A2,B1,B2,C1,C2" for "level";
-5. Chinese characters for meanings, short form (adj. n. v. ad. prep. etc.) for the part of speech;
-6. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
-7. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
-8. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
-9. Just left "tags" as a blank string;
+*. The above json content is just a mock sample;
+*. All keys in the json must be lower case english, and all values are strings instead of numbers or arrays or objects;
+*. Choose only one proper value from "A1,A2,B1,B2,C1,C2" for "level";
+*. Chinese characters for meanings, short form (adj. n. v. ad. prep. etc.) for the part of speech;
+*. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
+*. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
+*. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
+*. Just left "tags" as a blank string;
 `;
 
     // logger.log(_question);
