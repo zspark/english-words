@@ -19,7 +19,7 @@ type RequestBodyContentType<T> = {
 type ResponseBodyContentType<T> = {
     info: string,
     syncTime?: number,
-    content: T,
+    content: T | undefined,
 }
 
 type ResponseEvent<T> = CustomEvent<T>

@@ -7,14 +7,25 @@ export function getJSONResponse(data, status = 200) {
         }
     });
 }
+export function getRes(info, content) {
+    return getJSONResponse({
+        info,
+        syncTime: Date.now(),
+        content
+    }, 200);
+}
 export function getParseFailureRes() {
     return getJSONResponse({
         info: "Invalid JSON-like format, can not decode from string.",
         content: {}
     }, 400);
 }
-export function getInternalErrorRes(info) {
-    return getJSONResponse({ info, content: {} }, 500);
+export function getInternalErrorRes(info, content = undefined) {
+    return getJSONResponse({
+        info,
+        syncTime: Date.now(),
+        content
+    }, 500);
 }
 export function getEmptyRes(info) {
     return getJSONResponse({ info, content: {} }, 200);

@@ -1,4 +1,4 @@
-import { genDeleteSQL, genInsertSQL2, getJSONResponse, getEmptyRes } from "./server-utils.js";
+import { genDeleteSQL, getRes, genInsertSQL2, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 import genDetail from "./ai.js";
 async function _getDetail(word, env) {
     const result = await env.DB
@@ -35,14 +35,11 @@ async function getWordList(data, env) {
                 list.push(...words.split(','));
             }
         });
+        return getRes("Succeeded.", { list });
     }
-    return getJSONResponse({
-        info: "Succeeded.",
-        syncTime: -2,
-        content: {
-            list,
-        },
-    });
+    else {
+        return getInternalErrorRes("Reading DB failed.");
+    }
 }
 async function getDetail(data, env) {
     const word = data.content.word;
@@ -50,13 +47,10 @@ async function getDetail(data, env) {
     if (result.success) {
         if (result.results.length > 0) {
             const d = result.results[0];
-            return getJSONResponse({
-                info: "Succeeded.",
-                content: {
-                    detail: d,
-                    word,
-                    success: true,
-                }
+            return getRes("Succeeded.", {
+                detail: d,
+                word,
+                success: true,
             });
         }
     }
@@ -64,13 +58,10 @@ async function getDetail(data, env) {
     if (d.success) {
         await genInsertSQL2(d.detail, d.detail.time_modify, d.detail.time_modify, env).all();
     }
-    return getJSONResponse({
-        info: "Succeeded.",
-        content: {
-            detail: d.detail,
-            word,
-            success: d.success,
-        }
+    return getRes("Succeeded.", {
+        detail: d.detail,
+        word,
+        success: d.success,
     });
 }
 async function deleteWord(data, env) {
@@ -81,29 +72,23 @@ async function deleteWord(data, env) {
         return getEmptyRes(`delete word (${word}) failed.`);
     }
     if (result.meta.changes > 0) {
-        return getJSONResponse({
-            info: "Succeeded.",
-            content: {
-                word,
-                clientDetail: detail,
-                success: true,
-            }
+        return getRes("Succeeded.", {
+            word,
+            clientDetail: detail,
+            success: true,
         });
     }
     else {
         const _d = await _getDetail(detail.word, env);
         if (!_d.success) {
-            return getEmptyRes(`delete word (${detail.word}) failed..`);
+            return getInternalErrorRes(`delete word (${detail.word}) failed..`);
         }
         const _newestDetail = _d.results[0];
-        return getJSONResponse({
-            info: "Succeeded.",
-            content: {
-                word,
-                clientDetail: detail,
-                serverDetail: _newestDetail,
-                success: false,
-            }
+        return getRes("Succeeded.", {
+            word,
+            clientDetail: detail,
+            serverDetail: _newestDetail,
+            success: false,
         });
     }
 }
@@ -113,35 +98,29 @@ async function putDetail(data, env) {
     const word = detail.word;
     const result = await genInsertSQL2(detail, detail.time_modify, syncTime, env).all();
     if (!result.success) {
-        return getEmptyRes(`put word (${word}) failed.`);
+        return getInternalErrorRes(`put word (${word}) failed.`);
     }
     // Valid request, but database rejected the update
     // because the incoming version/timestamp was older
     const _d = await _getDetail(word, env);
     if (!_d.success) {
-        return getEmptyRes(`put word (${word}) failed..`);
+        return getInternalErrorRes(`get detail of '${word}' failed.`);
     }
     const _newestDetail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
-        return getJSONResponse({
-            info: "Succeeded.",
-            content: {
-                word,
-                serverDetail: _newestDetail,
-                clientDetail: detail,
-                success: true,
-            }
+        return getRes("Succeeded.", {
+            word,
+            serverDetail: _newestDetail,
+            clientDetail: detail,
+            success: true,
         });
     }
     else {
-        return getJSONResponse({
-            info: "Failed.",
-            content: {
-                word,
-                serverDetail: _newestDetail,
-                clientDetail: detail,
-                success: false,
-            }
+        return getRes("Failed.", {
+            word,
+            serverDetail: _newestDetail,
+            clientDetail: detail,
+            success: false,
         });
     }
 }

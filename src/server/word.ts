@@ -1,5 +1,5 @@
-import { ENV, RequestType, ResponseBody, RequestBody, ResponseData, RequestData, CSType, SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
-import { genDeleteSQL, cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
+import { CSKey, ENV, RequestBody, RequestBodyContentType, Detail } from "../types.d.js"
+import { genDeleteSQL, getRes, cloneDetail, genInsertSQL2, getSyncData, getLatestTime, getValue, getJSONResponse, getEmptyRes, getInternalErrorRes } from "./server-utils.js";
 import genDetail from "./ai.js"
 
 type DBResultType<T> = {
@@ -47,15 +47,11 @@ async function getWordList(data: RequestBody<"getWordList">, env: ENV): Promise<
                 list.push(...words.split(','));
             }
         });
-    }
 
-    return getJSONResponse<"getWordList">({
-        info: "Succeeded.",
-        syncTime: -2,
-        content: {
-            list,
-        },
-    });
+        return getRes<"getWordList">("Succeeded.", { list });
+    } else {
+        return getInternalErrorRes<"getWordList">("Reading DB failed.");
+    }
 }
 
 async function getDetail(data: RequestBody<"getDetail">, env: ENV): Promise<Response> {
@@ -64,13 +60,10 @@ async function getDetail(data: RequestBody<"getDetail">, env: ENV): Promise<Resp
     if (result.success) {
         if (result.results.length > 0) {
             const d = result.results[0];
-            return getJSONResponse<"getDetail">({
-                info: "Succeeded.",
-                content: {
-                    detail: d,
-                    word,
-                    success: true,
-                }
+            return getRes<"getDetail">("Succeeded.", {
+                detail: d,
+                word,
+                success: true,
             });
         }
     }
@@ -78,13 +71,10 @@ async function getDetail(data: RequestBody<"getDetail">, env: ENV): Promise<Resp
     if (d.success) {
         await genInsertSQL2(d.detail, d.detail.time_modify, d.detail.time_modify, env).all() as DBResultType<undefined>;
     }
-    return getJSONResponse<"getDetail">({
-        info: "Succeeded.",
-        content: {
-            detail: d.detail,
-            word,
-            success: d.success,
-        }
+    return getRes<"getDetail">("Succeeded.", {
+        detail: d.detail,
+        word,
+        success: d.success,
     });
 }
 
@@ -98,29 +88,23 @@ async function deleteWord(data: RequestBody<"deleteWord">, env: ENV): Promise<Re
     }
 
     if (result.meta.changes > 0) {
-        return getJSONResponse<"deleteWord">({
-            info: "Succeeded.",
-            content: {
-                word,
-                clientDetail: detail,
-                success: true,
-            }
+        return getRes<"deleteWord">("Succeeded.", {
+            word,
+            clientDetail: detail,
+            success: true,
         });
     } else {
         const _d = await _getDetail(detail.word, env) as DBResultType<Detail>;
         if (!_d.success) {
-            return getEmptyRes(`delete word (${detail.word}) failed..`);
+            return getInternalErrorRes<"deleteWord">(`delete word (${detail.word}) failed..`);
         }
 
         const _newestDetail: Detail = _d.results[0];
-        return getJSONResponse<"deleteWord">({
-            info: "Succeeded.",
-            content: {
-                word,
-                clientDetail: detail,
-                serverDetail: _newestDetail,
-                success: false,
-            }
+        return getRes<"deleteWord">("Succeeded.", {
+            word,
+            clientDetail: detail,
+            serverDetail: _newestDetail,
+            success: false,
         });
     }
 }
@@ -132,36 +116,30 @@ async function putDetail(data: RequestBody<"putDetail">, env: ENV): Promise<Resp
 
     const result = await genInsertSQL2(detail, detail.time_modify, syncTime, env).all() as DBResultType<undefined>;
     if (!result.success) {
-        return getEmptyRes(`put word (${word}) failed.`);
+        return getInternalErrorRes<"putDetail">(`put word (${word}) failed.`);
     }
 
     // Valid request, but database rejected the update
     // because the incoming version/timestamp was older
     const _d = await _getDetail(word, env) as DBResultType<Detail>;
     if (!_d.success) {
-        return getEmptyRes(`put word (${word}) failed..`);
+        return getInternalErrorRes<"putDetail">(`get detail of '${word}' failed.`);
     }
 
     const _newestDetail: Detail = _d.results[0];
     if (_newestDetail.time_modify === syncTime) {
-        return getJSONResponse<"putDetail">({
-            info: "Succeeded.",
-            content: {
-                word,
-                serverDetail: _newestDetail,
-                clientDetail: detail,
-                success: true,
-            }
+        return getRes<"putDetail">("Succeeded.", {
+            word,
+            serverDetail: _newestDetail,
+            clientDetail: detail,
+            success: true,
         });
     } else {
-        return getJSONResponse<"putDetail">({
-            info: "Failed.",
-            content: {
-                word,
-                serverDetail: _newestDetail,
-                clientDetail: detail,
-                success: false,
-            }
+        return getRes<"putDetail">("Failed.", {
+            word,
+            serverDetail: _newestDetail,
+            clientDetail: detail,
+            success: false,
         });
     }
 }
@@ -176,15 +154,15 @@ function _runMarkSQL(time: number, wordArr: string[], action: number, env: ENV):
 }
 */
 
-export default async function respond(request: Request, data: RequestBodyContentType<any>, env: ENV): Promise<Response> {
+export default async function respond<T extends CSKey>(request: Request, data: RequestBody<T>, env: ENV): Promise<Response> {
     if (data.requestType === "getDetail") {
-        return getDetail(data, env);
+        return getDetail(data as RequestBody<"getDetail">, env);
     } else if (data.requestType === "getWordList") {
-        return getWordList(data, env);
+        return getWordList(data as RequestBody<"getWordList">, env);
     } else if (data.requestType === "putDetail") {
-        return putDetail(data, env);
+        return putDetail(data as RequestBody<"putDetail">, env);
     } else if (data.requestType === "deleteWord") {
-        return deleteWord(data, env);
+        return deleteWord(data as RequestBody<"deleteWord">, env);
     }
     return getEmptyRes('POST');
 }

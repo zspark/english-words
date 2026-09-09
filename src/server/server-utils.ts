@@ -1,6 +1,6 @@
 import { SyncRecordType, ResponseData, ResponseBody, CSKey, ResponseBodyContentType, RequestBodyContentType, Detail } from "../types.d.js"
 
-export function getJSONResponse<K extends CSKey>(data: ResponseBody<K>, status = 200): Response {
+export function getJSONResponse<K extends CSKey>(data: ResponseBody<K>, status: number = 200): Response {
     return Response.json(
         data,
         {
@@ -13,6 +13,14 @@ export function getJSONResponse<K extends CSKey>(data: ResponseBody<K>, status =
     );
 }
 
+export function getRes<T extends CSKey>(info: string, content: ResponseData<T>): Response {
+    return getJSONResponse<T>({
+        info,
+        syncTime: Date.now(),
+        content
+    }, 200);
+}
+
 export function getParseFailureRes(): Response {
     return getJSONResponse({
         info: "Invalid JSON-like format, can not decode from string.",
@@ -20,8 +28,12 @@ export function getParseFailureRes(): Response {
     }, 400);
 }
 
-export function getInternalErrorRes(info: string): Response {
-    return getJSONResponse({ info, content: {} }, 500);
+export function getInternalErrorRes<T extends CSKey>(info: string, content: ResponseData<T> = undefined): Response {
+    return getJSONResponse<T>({
+        info,
+        syncTime: Date.now(),
+        content
+    }, 500);
 }
 
 export function getEmptyRes(info: string): Response {
