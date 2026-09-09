@@ -34,34 +34,28 @@ async function _getDetail(word: string, env: ENV): Promise<DBResultType<Detail>>
 async function getWordList(data: RequestBody<"getWordList">, env: ENV): Promise<Response> {
     const result = await env.DB
         .prepare(`
-            SELECT word
-            FROM dictionary
+            SELECT *
+            FROM wordlist
         `)
         .all()
 
-    let _wordlist: string[] = [];
-    let _time_sync_wordlist: number = 0;
+    let list: string[] = [];
     if (result.success) {
         //@ts-ignore;
-        _wordlist = result.results?.map(({ word }) => word) as string[];
-        _time_sync_wordlist = Date.now();
+        result.results?.map(({ words }) => words).forEach(words => {
+            if (words.length > 0) {
+                list.concat(...words.split(','));
+            }
+        });
     }
 
-    if (data.syncTime < _time_sync_wordlist) {
-        return getJSONResponse<"getWordList">({
-            info: "Succeeded.",
-            syncTime: _time_sync_wordlist,
-            content: {
-                list: _wordlist,
-            },
-        });
-    } else {
-        return getJSONResponse<"getWordList">({
-            info: "your word list is already up to date.",
-            syncTime: _time_sync_wordlist,
-            content: {},
-        });
-    }
+    return getJSONResponse<"getWordList">({
+        info: "Succeeded.",
+        syncTime: -1,
+        content: {
+            list,
+        },
+    });
 }
 
 async function getDetail(data: RequestBody<"getDetail">, env: ENV): Promise<Response> {

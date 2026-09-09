@@ -23,33 +23,26 @@ async function _getDetail(word, env) {
 async function getWordList(data, env) {
     const result = await env.DB
         .prepare(`
-            SELECT word
-            FROM dictionary
+            SELECT *
+            FROM wordlist
         `)
         .all();
-    let _wordlist = [];
-    let _time_sync_wordlist = 0;
+    let list = [];
     if (result.success) {
         //@ts-ignore;
-        _wordlist = result.results?.map(({ word }) => word);
-        _time_sync_wordlist = Date.now();
-    }
-    if (data.syncTime < _time_sync_wordlist) {
-        return getJSONResponse({
-            info: "Succeeded.",
-            syncTime: _time_sync_wordlist,
-            content: {
-                list: _wordlist,
-            },
+        result.results?.map(({ words }) => words).forEach(words => {
+            if (words.length > 0) {
+                list.concat(...words.split(','));
+            }
         });
     }
-    else {
-        return getJSONResponse({
-            info: "your word list is already up to date.",
-            syncTime: _time_sync_wordlist,
-            content: {},
-        });
-    }
+    return getJSONResponse({
+        info: "Succeeded.",
+        syncTime: -1,
+        content: {
+            list,
+        },
+    });
 }
 async function getDetail(data, env) {
     const word = data.content.word;

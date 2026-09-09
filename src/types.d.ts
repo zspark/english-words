@@ -30,7 +30,7 @@ type SyncRecordType = { id: number, time_sync: number, words: string, action: nu
 type CSType = {
     getWordList: {
         C: RequestBodyContentType<{}>,
-        S: ResponseBodyContentType<{ list?: string[] }>,
+        S: ResponseBodyContentType<{ list: string[] }>,
     },
     getDetail: {
         C: RequestBodyContentType<{ word: string, aiProvider: AIProvider, apiKey: string }>,
