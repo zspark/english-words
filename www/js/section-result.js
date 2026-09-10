@@ -13,8 +13,8 @@ const _source = `
 `;
 export default class SectionResult extends SectionBase {
     _activedWordElem = null;
-    constructor(dict, card) {
-        super("container", _source, dict, card);
+    constructor(dict, nb, card) {
+        super("container", _source, dict, nb, card);
         this.ui.get("#id-action").addEventListener("click", async (e) => {
             const _tar = e.target;
             if (_tar.dataset.index === "0") {

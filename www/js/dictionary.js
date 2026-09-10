@@ -454,7 +454,7 @@ class Dictionary extends EventTarget {
             return _MOCK_NO_LOCAL_DETAIL_;
         const _out = _detailCacher.get(word);
         if (_out) {
-            return _out;
+            return readOnly(_out);
         }
         if (fetchIfMissing) {
             const aiProvider = _localProxy.get("sec_setting.ai_provider", "");

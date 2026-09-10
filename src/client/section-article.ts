@@ -4,6 +4,7 @@ import Cacher from "./cacher.js"
 import serverProxy from "./server-proxy.js"
 import cmp from "./components.js"
 import Card from "./card.js"
+import Notebook from "./notebook.js"
 import { lemmatize } from "./lemmatize.js"
 import { ArticleContentType } from "../types.d.js"
 import { SectionBase } from "./section-base.js"
@@ -27,8 +28,8 @@ const articleSource = `
 
 export default class SectionArticle extends SectionBase {
 
-    constructor(dict: Dictionary, card: Card) {
-        super("container", articleSource, dict, card);
+    constructor(dict: Dictionary, notebook: Notebook, card: Card) {
+        super("container", articleSource, dict, notebook, card);
 
         this.ui.get("#id-action").addEventListener("click", async (e) => {
             const _tar = e.target as HTMLButtonElement;

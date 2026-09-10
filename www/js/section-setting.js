@@ -43,7 +43,7 @@ ${cmp.switcherSource("id-auto-gen-detail", "Auto Ask AI For Detail", true)}
     </div>
 </div>`;
 const _notebooks = `
-${cmp.dropdownSource("id-notebook", "Select Notebook.", ['notebook A', 'notebook B', 'notebook C'])}
+${cmp.dropdownSource("id-notebook", "Select Notebook.", ['default', 'jerry-casual'])}
 <div class="bs-right-align mt20px">
     ${cmp.buttonGroupSource('btn-notebook-confirm', ['Create', 'Switch'])}
 </div>`;
@@ -75,8 +75,8 @@ export default class SectionSetting extends SectionBase {
     #_elem_tags;
     #_ele_lemmaArea;
     _activeTab = "file-tab";
-    constructor(dict, card) {
-        super("container-col-1", source, dict, card);
+    constructor(dict, notebook, card) {
+        super("container-col-1", source, dict, notebook, card);
         this.#_elem_tags = this.ui.get("#id-tags input");
         const elem_user = this.ui.get("#id-userID input");
         elem_user.type = 'password';
@@ -122,7 +122,9 @@ export default class SectionSetting extends SectionBase {
             }
         });
         this.ui.get("#id-notebook").addEventListener("change", (e) => {
+            const _name = e.target.value;
             logger.debug("Selected value:", e.target.value);
+            this._nb.changeNotebook(_name);
         });
         this.ui.get("#btn-config-submit").addEventListener("click", async (e) => {
             const _target = e.target;

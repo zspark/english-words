@@ -53,6 +53,14 @@ type CSType = {
         C: RequestBodyContentType<{}>,
         S: ResponseBodyContentType<{}>,
     },
+    putNotebook: {
+        C: RequestBodyContentType<{ name: string, list: string[] }>,
+        S: ResponseBodyContentType<{ success: boolean, list: string[], timeSync: number }>,
+    },
+    getNotebook: {
+        C: RequestBodyContentType<{ name: string }>,
+        S: ResponseBodyContentType<{ success: boolean, list: string[], timeSync: number }>,
+    },
     getNews: {
         C: RequestBodyContentType<{ vendor: string }>,
         S: ResponseBodyContentType<{}>,

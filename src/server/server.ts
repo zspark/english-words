@@ -2,6 +2,7 @@ import { SyncRecordType, ResponseBodyContentType, RequestBodyContentType, Detail
 import { getInternalErrorRes, getValue, getParseFailureRes, getEmptyRes, parseJSONString } from "./server-utils.js";
 import respond_POST from "./data.js";
 import respond from "./word.js";
+import respondNotebook from "./notebook.js";
 //import { getNews } from "./rss/rss.js";
 
 export default {
@@ -84,6 +85,8 @@ export default {
             if (url.pathname === "/api/rss") {
                 return getEmptyRes('ROOT');
                 //return getNews(request, _data, env);
+            } else if (url.pathname === "/api/notebook") {
+                return respondNotebook(request, _data, env);
             } else if (url.pathname === "/api/word") {
                 return respond(request, _data, env);
             } else if (url.pathname === "/api/data") {

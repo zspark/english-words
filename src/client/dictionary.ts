@@ -514,7 +514,7 @@ export default class Dictionary extends EventTarget {
 
         const _out = _detailCacher.get<Detail>(word);
         if (_out) {
-            return _out;
+            return readOnly(_out);
         }
 
         if (fetchIfMissing) {

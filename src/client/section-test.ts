@@ -3,6 +3,7 @@ import { assertExist } from "./assert.js"
 import { shuffle } from "./utils.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"
+import Notebook from "./notebook.js"
 import cacher from "./cacher.js"
 import prpc from "./pronunciation.js"
 import cmp from "./components.js"
@@ -109,8 +110,8 @@ export default class SectionTest extends SectionBase {
     ele_test: HTMLElement;
     ele_result: HTMLElement;
 
-    constructor(dict: Dictionary, card: Card) {
-        super("container-col-1", _source, dict, card);
+    constructor(dict: Dictionary, nb: Notebook, card: Card) {
+        super("container-col-1", _source, dict, nb, card);
 
         const ele_form = this.ele_form = this.ui.get("#id-form");
         const ele_test = this.ele_test = this.ui.get("#id-test");

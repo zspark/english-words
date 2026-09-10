@@ -79,8 +79,8 @@ export default class SectionTest extends SectionBase {
     ele_form;
     ele_test;
     ele_result;
-    constructor(dict, card) {
-        super("container-col-1", _source, dict, card);
+    constructor(dict, nb, card) {
+        super("container-col-1", _source, dict, nb, card);
         const ele_form = this.ele_form = this.ui.get("#id-form");
         const ele_test = this.ele_test = this.ui.get("#id-test");
         ele_test.remove();

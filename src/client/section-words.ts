@@ -8,6 +8,7 @@ import cmp from "./components.js"
 import Dictionary from "./dictionary.js"
 import prpc from "./pronunciation.js"
 import Card from "./card.js"
+import Notebook from "./notebook.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
 type SortOrder = "N" | "R";
@@ -76,7 +77,7 @@ const sort1R: _sortFnType = (r) => { r.sort((a, b) => { return b[0].localeCompar
 
 class WordsHandler {
 
-    #_dict: Dictionary;
+    #_nb: Notebook;
     #_sortFn: _sortFnType;
     #_filteredCount: number = 0;
     #_words: [string, Detail][] = [];
@@ -91,8 +92,14 @@ class WordsHandler {
     #_tagFilter: HTMLInputElement;
     #_ele_wordList: HTMLElement;
 
-    constructor(dict: Dictionary, ui: SectionUIBase, wordList: HTMLElement) {
-        this.#_dict = dict;
+    constructor(nb: Notebook, ui: SectionUIBase, wordList: HTMLElement) {
+        this.#_nb = nb;
+        this.#_nb.addEventListener(Notebook.EVT_LIST_CHANGED, () => {
+            that.#_updateStatus();
+            this.updateWordList();
+            this.sortWordList();
+            this.renderWords();
+        });
         this.#_levelFilter = ui.get<HTMLInputElement>('#id-levelFilter select');
         this.#_tagFilter = ui.get<HTMLInputElement>('#id-tagFilter select');
 
@@ -130,8 +137,9 @@ class WordsHandler {
 
     #_updateStatus(): void {
         // this.selectedCountSpan.textContent = selectedWords.length + "";
-        this.filteredCountSpan.textContent = this.#_filteredCount + "";
-        this.totalCountSpan.textContent = this.#_dict.getWordsCount() + "";
+        // this.filteredCountSpan.textContent = this.#_filteredCount + "";
+        this.filteredCountSpan.textContent = this.#_nb.name;
+        this.totalCountSpan.textContent = this.#_nb.getWordsCount() + "";
     }
 
     #_clearSelection(): void {
@@ -173,7 +181,7 @@ class WordsHandler {
     updateWordList(): void {
         let level = this.#_levelFilter.value as WordLevelType;
         let tag = this.#_tagFilter.value;
-        this.#_words = Object.entries(this.#_dict.getWords('', level, tag));
+        this.#_words = Object.entries(this.#_nb.getWords('', level, tag));
         this.#_filteredCount = this.#_words.length;
         this.#_ele_wordList.style.height = `${this.#_filteredCount * _ITEM_HEIGHT}px`;
     }
@@ -263,12 +271,12 @@ export default class SectionWords extends SectionBase {
     ele_cardContainer: HTMLElement;
     ele_wordList: HTMLElement;
 
-    constructor(dict: Dictionary, card: Card) {
-        super("container", wordListSource, dict, card);
+    constructor(dict: Dictionary, nb: Notebook, card: Card) {
+        super("container", wordListSource, dict, nb, card);
 
         this.ele_cardContainer = this.ui.get("#id-cardContainer");
         this.ele_wordList = this.ui.get('#id-wordList');
-        this.#_wordsHandler = new WordsHandler(dict, this.ui, this.ele_wordList);
+        this.#_wordsHandler = new WordsHandler(this._nb, this.ui, this.ele_wordList);
 
         let _timeStart = 0;
         let _timeEnd = 0;

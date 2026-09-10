@@ -76,10 +76,12 @@ export class SectionBase {
     #_ui;
     _card;
     _dict;
-    constructor(cls, source, dict, card) {
+    _nb;
+    constructor(cls, source, dict, notebook, card) {
         this.#_ui = new SectionUIBase(cls, source);
         this._card = card;
         this._dict = dict;
+        this._nb = notebook;
     }
     get ui() { return this.#_ui; }
     active() { }

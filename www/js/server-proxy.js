@@ -81,6 +81,31 @@ async function _toServer_mock(url, requestType, content) {
             //return getEmptyRes('ROOT');
             //return getNews(request, _data, env);
         }
+        else if (url.pathname === "/api/notebook") {
+            if (data.requestType === "getNotebook") {
+                const _data = data;
+                if (_data.content.name === 'default') {
+                    response = getJSONResponse({
+                        info: "",
+                        content: {
+                            success: true,
+                            list: ['a', 'jjjj', 'mother'],
+                            timeSync: -11,
+                        }
+                    });
+                }
+                else {
+                    response = getJSONResponse({
+                        info: "",
+                        content: {
+                            success: true,
+                            list: ['this', 'is', 'another', 'notebook'],
+                            timeSync: -11,
+                        }
+                    });
+                }
+            }
+        }
         else if (url.pathname === "/api/word") {
             if (data.requestType === "getDetail") {
                 let _data = data;
@@ -170,6 +195,8 @@ class ServerProxy {
     EVT_NEWS = "EVT_NEWS";
     EVT_SYNC_ALL = "EVT_SYNC_ALL";
     EVT_SYNC = "EVT_SYNC";
+    EVT_GET_NOTEBOOK = "EVT_GET_NOTEBOOK";
+    EVT_PUT_NOTEBOOK = "EVT_PUT_NOTEBOOK";
     EVT_GET_DETAIL = "EVT_GET_DETAIL";
     EVT_PUT_DETAIL = "EVT_PUT_DETAIL";
     EVT_DELETE_WORD = "EVT_DELETE_WORD";
@@ -210,6 +237,18 @@ class ServerProxy {
         const out = await _toServer("../api/word", "putDetail", { detail });
         if (out) {
             this.#_et.dispatchEvent(new CustomEvent(this.EVT_PUT_DETAIL, { detail: out }));
+        }
+    }
+    async putNotebook(name, list) {
+        const detail = await _toServer("../api/notebook", "putNotebook", { name, list });
+        if (detail) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_PUT_NOTEBOOK, { detail }));
+        }
+    }
+    async getNotebook(name) {
+        const detail = await _toServer("../api/notebook", "getNotebook", { name });
+        if (detail) {
+            this.#_et.dispatchEvent(new CustomEvent(this.EVT_GET_NOTEBOOK, { detail }));
         }
     }
     async getNews(vendor) {

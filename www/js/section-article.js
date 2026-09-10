@@ -22,8 +22,8 @@ const articleSource = `
 <div id="id-cardContainer"> </div>
 </div>`;
 export default class SectionArticle extends SectionBase {
-    constructor(dict, card) {
-        super("container", articleSource, dict, card);
+    constructor(dict, notebook, card) {
+        super("container", articleSource, dict, notebook, card);
         this.ui.get("#id-action").addEventListener("click", async (e) => {
             const _tar = e.target;
             if (_tar.dataset.index === "0") {

@@ -5,6 +5,7 @@ import Navigator, { NAV_EVT_SECTION } from "./navigator.js";
 import Dictionary from "./dictionary.js";
 import cmp from "./components.js";
 import Card from "./card.js";
+import Notebook from "./notebook.js";
 import Words from "./section-words.js";
 import Article from "./section-article.js";
 import Test from "./section-test.js";
@@ -16,12 +17,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
     let _dictionary = new Dictionary();
     let _navigator = new Navigator(_dictionary).setParent(document.body, "append-first");
     let _card = new Card(_dictionary);
+    let _notebook = new Notebook(_dictionary);
     let _currentSection = null;
-    let _words = new Words(_dictionary, _card);
-    let _article = new Article(_dictionary, _card);
-    let _test = new Test(_dictionary, _card);
-    let _result = new Result(_dictionary, _card);
-    let _setting = new Setting(_dictionary, _card);
+    let _words = new Words(_dictionary, _notebook, _card);
+    let _article = new Article(_dictionary, _notebook, _card);
+    let _test = new Test(_dictionary, _notebook, _card);
+    let _result = new Result(_dictionary, _notebook, _card);
+    let _setting = new Setting(_dictionary, _notebook, _card);
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key)
         if (isEditing(event))

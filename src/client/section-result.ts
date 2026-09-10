@@ -4,6 +4,7 @@ import cmp from "./components.js"
 import Dictionary from "./dictionary.js"
 import prpc from "./pronunciation.js"
 import Card from "./card.js"
+import Notebook from "./notebook.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
 const _source = `
@@ -19,9 +20,9 @@ export default class SectionResult extends SectionBase {
 
     _activedWordElem: Element | null = null;
 
-    constructor(dict: Dictionary, card: Card) {
+    constructor(dict: Dictionary, nb: Notebook, card: Card) {
 
-        super("container", _source, dict, card);
+        super("container", _source, dict, nb, card);
 
         this.ui.get("#id-action").addEventListener("click", async e => {
             const _tar = e.target as HTMLElement;

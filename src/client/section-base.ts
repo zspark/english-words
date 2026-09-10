@@ -2,6 +2,7 @@ import { ChildMode } from "../types.d.js"
 import { HTMLString } from "./components.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"
+import Notebook from "./notebook.js"
 
 export class SectionUIBase {
     #ele_root: HTMLDivElement;
@@ -89,11 +90,13 @@ export class SectionBase {
     #_ui: SectionUIBase;
     protected _card: Card;
     protected _dict: Dictionary;
+    protected _nb: Notebook;
 
-    constructor(cls: string, source: HTMLString, dict: Dictionary, card: Card) {
+    constructor(cls: string, source: HTMLString, dict: Dictionary, notebook: Notebook, card: Card) {
         this.#_ui = new SectionUIBase(cls, source);
         this._card = card;
         this._dict = dict;
+        this._nb = notebook;
     }
 
     get ui(): SectionUIBase { return this.#_ui; }

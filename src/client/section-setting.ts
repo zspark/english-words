@@ -5,6 +5,7 @@ import { CSType, Words, Dict, DictSyncDataSC, ResponseEvent } from "../types.d.j
 import cmp from "./components.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"
+import Notebook from "./notebook.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
 type LocalSettingCacheType = {
@@ -61,7 +62,7 @@ ${cmp.switcherSource("id-auto-gen-detail", "Auto Ask AI For Detail", true)}
 </div>`;
 
 const _notebooks = `
-${cmp.dropdownSource("id-notebook", "Select Notebook.", ['notebook A', 'notebook B', 'notebook C'])}
+${cmp.dropdownSource("id-notebook", "Select Notebook.", ['default', 'jerry-casual'])}
 <div class="bs-right-align mt20px">
     ${cmp.buttonGroupSource('btn-notebook-confirm', ['Create', 'Switch'])}
 </div>`;
@@ -100,9 +101,9 @@ export default class SectionSetting extends SectionBase {
 
     _activeTab: string = "file-tab";
 
-    constructor(dict: Dictionary, card: Card) {
+    constructor(dict: Dictionary, notebook: Notebook, card: Card) {
 
-        super("container-col-1", source, dict, card);
+        super("container-col-1", source, dict, notebook, card);
 
         this.#_elem_tags = this.ui.get<HTMLInputElement>("#id-tags input");
         const elem_user = this.ui.get<HTMLInputElement>("#id-userID input");
@@ -155,7 +156,9 @@ export default class SectionSetting extends SectionBase {
         });
 
         this.ui.get("#id-notebook").addEventListener("change", (e) => {
+            const _name: string = (e.target as HTMLInputElement).value;
             logger.debug("Selected value:", (e.target as HTMLInputElement).value);
+            this._nb.changeNotebook(_name);
         });
 
         this.ui.get("#btn-config-submit").addEventListener("click", async (e: Event) => {

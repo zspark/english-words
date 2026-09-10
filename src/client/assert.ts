@@ -5,3 +5,9 @@ export function assertExist(target: any): void {
         logger.vital(`[Assert Failed] ${target} should exist, but NOT!`);
     }
 }
+
+export function assertTrue(target: boolean): void {
+    if (!target) {
+        logger.vital(`[Assert Failed] ${target} should be TRUE, but NOT!`);
+    }
+}
