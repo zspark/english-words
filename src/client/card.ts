@@ -1,7 +1,8 @@
 
 import { isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
+import { genMeaning } from "./ai.js"
 import logger from "./logger.js"
-import { ResponseData, HTMLString, WordLevelType, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseEvent } from "../types.d.js"
+import { AIProvider, ResponseData, HTMLString, WordLevelType, Detail, Words, Results, Result, Dict, DictSyncDataSC, DictSyncData, ResponseEvent } from "../types.d.js"
 import cacher from "./cacher.js"
 import cmp from "./components.js"
 import Dictionary from "./dictionary.js"
@@ -48,6 +49,7 @@ const source = `
                 </div>
             </div>
             <div class="vocab-header mt10px">
+                <div id="id_dragger" class="tag word-level">Da</div>
                 <div id="level" class="tag word-level"></div>
                 <div id="tags" class="tag word-tag"></div>
             </div>
@@ -86,6 +88,7 @@ export default class Card extends EventTarget {
 
     static CARD_EVT_MODE_EDIT = "evt_mode_edit";
     static CARD_EVT_MODE_READ = "evt_mode_read";
+    static EVT_DROPPED = "EVT_DROPPED";
 
     #_ui: SectionUIBase;
     #_dict: Dictionary;
@@ -150,7 +153,6 @@ export default class Card extends EventTarget {
                 event.stopImmediatePropagation()
             }
         });
-
 
         this.ele_card_content = ui.get('#card-content');
         this.ele_card_display = ui.get("#card-display");
@@ -234,7 +236,12 @@ export default class Card extends EventTarget {
             const _index = (e.target as HTMLElement).dataset.index;
             if (_index === "1") {
                 //fill by ai
-                //ai.genMeaning(this.ele_new_voc.value.trim());
+                const _ai_api = cacher.localProxy.get<string>('sec_setting.ai_key', '');
+                const _ai_provider = cacher.localProxy.get<AIProvider>('sec_setting.ai_provider', "_NONE_");
+                const result = await genMeaning(_ai_provider, _ai_api, this.ele_new_voc.value.trim());
+                if (result.success) {
+                    this.#_renderEditPanel(result.detail.word, result.detail);
+                }
             } else if (_index === "0") {
                 //canel
                 this.renderCard(this.currentWord);
@@ -329,43 +336,39 @@ export default class Card extends EventTarget {
         }
         const _out = this.#_dict.hasWord(word);
         if (_out) {
-            if (this.#_dict.hasWordDetail(word)) {
-                elem.classList.remove("color-red", "color-yellow");
-            } else {
-                elem.classList.remove("color-red");
-                elem.classList.add("color-yellow");
-            }
+            elem.classList.remove("color-red");
         } else {
             elem.classList.add("color-red");
-            elem.classList.remove("color-yellow");
         }
     }
 
-    async keyEvent(event: KeyboardEvent): Promise<void> {
-        const c = this.#_ui.isConnected;
-        if (!c) return;
+    async keyEvent(event: KeyboardEvent, isKeyDown: boolean): Promise<void> {
+        if (isKeyDown) {
+            const c = this.#_ui.isConnected;
+            if (!c) return;
 
-        if (this._currentMode == MODE_READ) {
-            if (event.key === 'Enter') {
-                this.ele_searchInput.focus();
-            } else if (event.key === "t") {
-                this.#_renderEditPanel(this.currentWord);
-                this.#_enterEditMode();
-            }
-        } else if (this._currentMode == MODE_EDIT) {
-            if (event.key === "Escape") {
-                this.#_enterReadMode();
-            } else if (event.key === 'Enter') {
-
-                /*
-                if (event.altKey) {
-                    const word = this.ele_new_voc.value.trim();
-                    ai.genMeaning(word);
-                    return;
+            if (this._currentMode == MODE_READ) {
+                if (event.key === 'Enter') {
+                    this.ele_searchInput.focus();
+                } else if (event.key === "t") {
+                    this.#_renderEditPanel(this.currentWord);
+                    this.#_enterEditMode();
                 }
-                */
-                if (event.ctrlKey) {
-                    this.#_save();
+            } else if (this._currentMode == MODE_EDIT) {
+                if (event.key === "Escape") {
+                    this.#_enterReadMode();
+                } else if (event.key === 'Enter') {
+
+                    /*
+                    if (event.altKey) {
+                        const word = this.ele_new_voc.value.trim();
+                        ai.genMeaning(word);
+                        return;
+                    }
+                    */
+                    if (event.ctrlKey) {
+                        this.#_save();
+                    }
                 }
             }
         }
@@ -473,12 +476,10 @@ export default class Card extends EventTarget {
 
         this.ele_voc.textContent = word;
         this.ele_ipa.textContent = detail.ipa;
-        this.ele_ipa.textContent = detail.ipa;
         this.ele_meaning.textContent = detail.meaning;
         this.ele_level.textContent = detail.level;
         this.ele_tag.textContent = detail.tags;
         this.ele_note.innerHTML = detail.note?.split('\n\n').map(line => line.trim()).filter(line => line.length > 0).map(s => `<p>${s}</p>`).join('') ?? "";
-
         this.ele_linkedWords.innerHTML = detail?.links?.split(',').map(line => line.trim()).filter(line => line.length > 0).map(s => `<a>${s}</a>`).join('') ?? "";
     };
 

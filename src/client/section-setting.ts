@@ -1,24 +1,16 @@
 import logger from "./logger.js"
 import Cacher from "./cacher.js"
-import serverProxy from "./server-proxy.js"
-import { CSType, Words, Dict, DictSyncDataSC, ResponseEvent } from "../types.d.js"
+import { LocalSettingCacheType, TConfig, Words, Dict, DictSyncDataSC, ResponseEvent } from "../types.d.js"
 import cmp from "./components.js"
 import Dictionary from "./dictionary.js"
 import Card from "./card.js"
 import Notebook from "./notebook.js"
+import serverProxy from "./server-proxy.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
-type LocalSettingCacheType = {
-    syncInterval: number,
-    ai_key: string,
-    ai_provider: string,
-    userID: string,
-    theme: boolean,
-    autoAsk: boolean,
-}
-const _metaProxy = Cacher.metaProxy;
 const _localProxy = Cacher.localProxy;
-const _proxy = Cacher.lemmatizerProxy;
+const _proxy = Cacher.configProxy;
+const _meta = Cacher.metaProxy;;
 
 
 const _jsonSource = `
@@ -29,23 +21,10 @@ ${cmp.textareaSource("import-text", null, 'h300px', "Paste your JSON database co
 </div>`;
 
 
-const _fileSource = `
-<input type="file" id="import-file" accept=".json" class="bs-file-input" style="display:none;">
-
-<label for="import-file" class="bs-file-box h300px">
-    <div class="bs-file-icon">📁</div>
-    <div class="bs-file-title">Click to Select File</div>
-    <div class="bs-file-desc"> Only Supports .json</div>
-</label>
-
-<div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-file-submit', ['Export', 'Delete'])}
-</div>`;
-
 const _configSource = `
-${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
-${cmp.inputSource("id-userID", "User Account", "input user account.", false)}
-${cmp.inputSource("id-syncInterval", "Sync Interval (seconds)", "<= 0 means stop auto sync.", false)}
+${cmp.inputSource("id-userID", "User Account:", "input user account.", false)}
+${cmp.inputSource("id-syncInterval", "Sync Interval (seconds):", "<= 0 means stop auto sync.", false)}
+${cmp.inputSource("id-githubToken", "Github Token:", "", false)}
 <div class="form-row">
     ${cmp.inputSource("id-APIKEY", "", "input ChatGPT API KEY.", false)}
     ${cmp.dropdownSource("id-provider", null, ["_NONE_", "ChatGPT", "DeepSeek"], 0)}
@@ -54,7 +33,7 @@ ${cmp.switcherSource("id-theme", "Dark Theme", false)}
 ${cmp.switcherSource("id-auto-gen-detail", "Auto Ask AI For Detail", true)}
 <div class="mt20px bs-flex-between">
     <div class="bs-left-align">
-        ${cmp.buttonGroupSource('btn-modal-sync', ['Sync', 'Sync All'])}
+        ${cmp.buttonGroupSource('btn-modal-sync', ['Push', 'Pull'])}
     </div>
     <div class="bs-right-align">
         ${cmp.buttonGroupSource('btn-config-submit', ['Save'])}
@@ -62,15 +41,16 @@ ${cmp.switcherSource("id-auto-gen-detail", "Auto Ask AI For Detail", true)}
 </div>`;
 
 const _notebooks = `
-${cmp.dropdownSource("id-notebook", "Select Notebook.", ['default', 'jerry-casual'])}
+${cmp.dropdownSource("id-notebook", "Select Notebook.", [])}
 <div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-notebook-confirm', ['Create', 'Switch'])}
+    ${cmp.buttonGroupSource('btn-notebook-confirm', ['Create', 'Push'])}
 </div>`;
 
 const _lemmatizer = `
+${cmp.inputSource("id-tags", "Tags", "input tags, separate with ','", false)}
 ${cmp.textareaSource("id-lemmatizer", null, 'h300px', "men:man,running:run,...")}
 <div class="bs-right-align mt20px">
-    ${cmp.buttonGroupSource('btn-lemmatizer-submit', ['Save'])}
+    ${cmp.buttonGroupSource('btn-lemmatizer-submit', ['Push'])}
 </div>`;
 
 const source = `
@@ -78,8 +58,7 @@ const source = `
 
     <div class="tab-header">
         <button class="tab-btn active" data-tab="json-tab">AI Support</button>
-        <button class="tab-btn" data-tab="file-tab">Local File</button>
-        <button class="tab-btn" data-tab="lemmatizer-tab">Lemmatizer</button>
+        <button class="tab-btn" data-tab="lemmatizer-tab">Custom</button>
         <button class="tab-btn" data-tab="notebook">Notebook</button>
         <button class="tab-btn" data-tab="config-tab">Config</button>
     </div>
@@ -88,7 +67,6 @@ const source = `
         <div id="json-tab" class="tab-content active"> ${_jsonSource} </div>
         <div id="notebook" class="tab-content"> ${_notebooks} </div>
         <div id="lemmatizer-tab" class="tab-content"> ${_lemmatizer} </div>
-        <div id="file-tab" class="tab-content"> ${_fileSource} </div>
         <div id="config-tab" class="tab-content"> ${_configSource} </div>
     </div>
 </div>`;
@@ -116,14 +94,15 @@ export default class SectionSetting extends SectionBase {
         const elem_provider = this.ui.get<HTMLSelectElement>("#id-provider select");
         const elem_theme = this.ui.get<HTMLInputElement>("#id-theme input");
         const elem_askAI = this.ui.get<HTMLInputElement>("#id-auto-gen-detail input");
+        const elem_github = this.ui.get<HTMLInputElement>("#id-githubToken input");
+        elem_github.type = 'password';
         this.#_ele_lemmaArea = this.ui.get<HTMLTextAreaElement>("#id-tab-body #id-lemmatizer textarea");
         const _ele_importByJSON = this.ui.get<HTMLTextAreaElement>("#id-tab-body #import-text textarea");
         const _ele_importByAI = this.ui.get<HTMLTextAreaElement>("#id-tab-body #import-ai textarea");
 
-        this.#_updateTags();
-
         const _localData: LocalSettingCacheType = _localProxy.get<any>('sec_setting', {});
         elem_syncInerval.value = (_localData.syncInterval || 10) + '';
+        elem_github.value = _localData.githubToken || "";
         elem_key.value = _localData.ai_key || "";
         elem_provider.value = _localData.ai_provider || "";
         elem_user.value = _localData.userID || "";
@@ -141,32 +120,19 @@ export default class SectionSetting extends SectionBase {
             });
         });
 
-        this.ui.get("#id-tab-body #import-file").addEventListener("change", (event: Event) => {
-            const _files = (event.target as HTMLInputElement).files;
-            if (_files && _files.length > 0) {
-
-                //const fileName = _file.name;
-                //const extension = fileName.split(".").pop();
-                this.#_importData(_files[0], true);
-            } else {
-                alert("Choose a Json file!");
-                logger.error("Choose a Json file!");
-                return;
-            }
-        });
-
-        this.ui.get("#id-notebook").addEventListener("change", (e) => {
-            const _name: string = (e.target as HTMLInputElement).value;
-            logger.debug("Selected value:", (e.target as HTMLInputElement).value);
-            this._nb.changeNotebook(_name);
-        });
-
         this.ui.get("#btn-config-submit").addEventListener("click", async (e: Event) => {
             const _target = e.target as HTMLInputElement;
             if (_target.dataset.index === "0") {//save
-                this.#_saveTags(this.#_elem_tags.value);
+                const _obj: TConfig = { tags: [], lemmatizer: {} }
+                _obj.tags = this.#_elem_tags.value.split(',');
+
+                this.#_ele_lemmaArea.value.split(',').forEach(s => {
+                    let a = s.split(':');
+                    _obj.lemmatizer[a[0]] = a[1];
+                });
 
                 const _value: LocalSettingCacheType = {
+                    githubToken: elem_github.value,
                     syncInterval: Number(elem_syncInerval.value),
                     ai_key: elem_key.value,
                     ai_provider: elem_provider.value,
@@ -186,6 +152,12 @@ export default class SectionSetting extends SectionBase {
             }
         });
 
+        this.ui.get("#id-notebook").addEventListener("change", (e) => {
+            const _name: string = (e.target as HTMLInputElement).value;
+            logger.debug("Selected value:", (e.target as HTMLInputElement).value);
+            this._nb.changeNotebook(_name === "default" ? undefined : _name);
+        });
+
         this.ui.get("#btn-notebook-confirm").addEventListener("click", async (e) => {
             const _target = e.target as HTMLInputElement;
             if (_target.dataset.index === "0") {// create
@@ -194,20 +166,31 @@ export default class SectionSetting extends SectionBase {
                     "Create", (maskElem) => {
                         const _eleInput = maskElem.querySelector("#id-name input") as HTMLInputElement;
                         logger.debug(`Create clicked, name is: ${_eleInput.value}`);
+                        notebook.createNotebook(_eleInput.value);
                     },
                     "Cancel", () => { logger.debug('Cancel clicked') },
                 );
                 (_m.querySelector("#id-name input") as HTMLInputElement).focus();
-            } else if (_target.dataset.index === "1") {
-                // logger.debug("WIP");
-                cmp.showMask(`<p> Switch notebook WIP.</p> `, "Got It", () => { },);
+            } else if (_target.dataset.index === "1") {// push notebook to Github
+                //this.#_dispDictEvt(`begin:sync`);
+                await notebook.upload();
+                //this.#_dispDictEvt(`end:sync`);
             }
         });
 
         this.ui.get("#btn-lemmatizer-submit").addEventListener("click", async (e) => {
             const _target = e.target as HTMLInputElement;
             if (_target.dataset.index === "0") {// save
-                this.#_saveLemma(this.#_ele_lemmaArea.value);
+                const _data = {
+                    tags: this.#_elem_tags.value.split(","),
+                    lemmatizer: Object.fromEntries(this.#_ele_lemmaArea.value.split(",").map(item => item.split(":")))
+                };
+                await serverProxy.pushToGithub(_data, 'config.json');
+
+                // store;
+                _meta.set<string[]>('tags', _data.tags);
+                _meta.set<Record<string, string>>('lemmatizer', _data.lemmatizer);
+                _meta.broadcast();
             }
         });
 
@@ -216,8 +199,7 @@ export default class SectionSetting extends SectionBase {
             if (_target.dataset.index == "0") {
                 this._dict.sync();
             } else if (_target.dataset.index == "1") {
-                //this._dict.syncAll();
-                serverProxy.getWordList();
+                this._dict.syncAll();
             }
         });
 
@@ -239,22 +221,30 @@ export default class SectionSetting extends SectionBase {
             }
         });
 
-        this.ui.get("#btn-file-submit").addEventListener("click", async (e) => {
-            const _target = e.target as HTMLInputElement;
-            if (_target.dataset.index == "0") {
-                this._dict.exportDatabase();
-            } else if (_target.dataset.index === "1") {
-                this._dict.clearDictionary();
-            }
-        });
+        const _updateNotebookList = () => {
+            const _tagFilter = this.ui.get<HTMLInputElement>('#id-notebook select');
+            const _names = notebook.getNotebookNames();
+            const _name = notebook.name ?? Notebook.defaultName;
+            _tagFilter.innerHTML = cmp.dropdownOptionSource(["default", ..._names], _name);
+        }
+        notebook.addEventListener(Notebook.EVT_CREATED, _updateNotebookList)
+        notebook.addEventListener(Notebook.EVT_CONTENT_FETCHED, _updateNotebookList);
 
-        serverProxy.addEventListener<'sync'>(serverProxy.EVT_SYNC, (e) => {
-            const _data: any = e.detail;
-            if (_data) {
-                this.#_saveTags(_data.tags);
-                this.#_ele_lemmaArea.value = _data.lemmatize;
-                this.#_elem_tags.value = _data.tags;
-                this.#_saveLemma(_data.lemmatize);
+        serverProxy.addEventListener<'getConfig'>(serverProxy.EVT_GET_CONFIG, (event) => {
+            logger.debug(`config got. in settings`);
+            const _data = event.detail;
+            if (_data?.content) {
+                this.#_elem_tags.value = _data.content.tags.join(',');
+                let tmp: string[] = [];
+                Object.entries(_data.content.lemmatizer).forEach((v: any) => {
+                    tmp.push(`${v[0]}:${v[1]}`);
+                });
+                this.#_ele_lemmaArea.value = tmp.join(',');
+
+                // store;
+                _meta.set<string[]>('tags', _data.content.tags);
+                _meta.set<Record<string, string>>('lemmatizer', _data.content.lemmatizer);
+                _meta.broadcast();
             }
         });
     }
@@ -286,13 +276,10 @@ export default class SectionSetting extends SectionBase {
         }
     }
 
-    #_saveTags(tagsStr: string): void {
-        _metaProxy.set('tags', tagsStr.split(',').map(s => s.trim()).filter(s => s.length > 0));
-    }
-
     #_saveLemma(str: string): void {
+        /*
         _proxy.clear();
-
+    
         str.split(',')
             .map(s => s.trim())
             .filter(s => !!s)
@@ -300,11 +287,7 @@ export default class SectionSetting extends SectionBase {
                 let _t = p.split(":");
                 _proxy.set(_t[0], _t[1]);
             });
-    }
-
-    #_updateTags(): void {
-        this.#_elem_tags.value = _metaProxy.get('tags', []).join(',') ?? '';
-        this.#_ele_lemmaArea.value = Object.entries(_proxy.data()).map(([a, b]) => `${a}: ${b}`).join(',');
+            */
     }
 
 }

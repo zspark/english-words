@@ -1,5 +1,5 @@
 import { Detail, AIProvider } from "../types.d.js"
-import { createDetail, cloneDetail } from "./server-utils.js"
+import { createDetail, cloneDetail } from "./utils.js"
 
 function _stripJsonMarkdown(text: string): string {
     return text
@@ -42,10 +42,15 @@ async function askDeepseek(apiKey: string, question: string): Promise<string> {
             model: "deepseek-chat",
             messages: [
                 {
+                    role: "system",
+                    content: "Return only valid JSON. Do not use Markdown or code fences."
+                },
+                {
                     role: "user",
                     content: question
                 }
-            ]
+            ],
+            response_format: { type: "json_object" }
         })
     });
 
@@ -55,7 +60,7 @@ async function askDeepseek(apiKey: string, question: string): Promise<string> {
 
     const json = await response.json();
 
-    const _out = json.choices?.[0]?.message?.content ?? "";
+    const _out = json.choices[0].message.content ?? "";
     return _stripJsonMarkdown(_out);
 }
 
@@ -64,13 +69,14 @@ const _providerMap: Map<AIProvider, _T> = new Map();
 _providerMap.set("DeepSeek", askDeepseek);
 _providerMap.set("ChatGPT", askChatGPT);
 
-export default async function genDetailByAI(aiProvider: AIProvider, apiKey: string, word: string): Promise<{ detail: Detail, success: boolean }> {
+export async function genMeaning(aiProvider: AIProvider, apiKey: string, word: string): Promise<{ detail: Detail, success: boolean }> {
     const question = getAIMeaningQuestion(word);
     const _fn = _providerMap.get(aiProvider);
     if (_fn) {
         const rawContent = await _fn(apiKey, question);
         try {
-            const detail = JSON.parse(rawContent)[word] as Detail;
+            const _tmp = JSON.parse(rawContent)
+            const detail = _tmp[word] as Detail;
             detail.word = word;
             const _t = Date.now();
             return { detail: cloneDetail(detail, _t, _t), success: true };
@@ -92,7 +98,7 @@ ${wordsString}
 JSON format:
 
 {
-    "generic": {
+    "this is the word that you are going to use": {
         "ipa": "/dʒəˈnerɪk/",
         "level": "B1",
         "meaning": "adj. 一般的；普通的",

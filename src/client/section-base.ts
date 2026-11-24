@@ -105,5 +105,5 @@ export class SectionBase {
     deactive(): void { }
 
     setSync(y: number) { }
-    keyEvent(event: KeyboardEvent): void { }
+    keyEvent(event: KeyboardEvent, isKeyDown: boolean): void { }
 }

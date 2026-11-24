@@ -77,19 +77,14 @@ export function isEditing(event) {
     }
     return _r;
 }
-export function findNearestElementWithTag(fromElem, tagName) {
-    tagName = tagName.toUpperCase();
-    while (fromElem) {
-        if (fromElem.tagName === tagName)
-            return fromElem;
-        fromElem = fromElem.parentElement;
-    }
-    return null;
+export function findNearestElement(fromElem, selector) {
+    const elem = fromElem instanceof Element ? fromElem : fromElem.parentElement;
+    return elem ? elem.closest(selector) : null;
 }
 export function cloneDetail(from, time_modify, time_create) {
     return {
         word: from.word,
-        ipa: from.word,
+        ipa: from.ipa,
         meaning: from.meaning,
         level: from.level,
         tags: from.tags,
@@ -97,5 +92,33 @@ export function cloneDetail(from, time_modify, time_create) {
         links: from.links,
         time_create: time_create ?? from.time_create,
         time_modify: time_modify ?? from.time_modify,
+    };
+}
+export function objectToBase64(obj) {
+    const bytes = new TextEncoder().encode(JSON.stringify(obj));
+    let binary = "";
+    for (const byte of bytes) {
+        binary += String.fromCharCode(byte);
+    }
+    return btoa(binary);
+}
+export function base64ToObject(base64) {
+    const binary = atob(base64.replace(/\s/g, ""));
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    const text = new TextDecoder().decode(bytes);
+    return JSON.parse(text);
+}
+export function createDetail(note) {
+    const _t = Date.now();
+    return {
+        word: "word",
+        ipa: "ipa",
+        meaning: "meaning",
+        level: "ALL",
+        tags: "",
+        note,
+        links: "",
+        time_create: _t,
+        time_modify: _t,
     };
 }

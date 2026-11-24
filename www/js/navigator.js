@@ -1,4 +1,4 @@
-import { findNearestElementWithTag } from "./utils.js";
+import { findNearestElement } from "./utils.js";
 import Dictionary from "./dictionary.js";
 import { SectionUIBase } from "./section-base.js";
 const _svgSetting = `<svg viewBox="0 0 36 36">
@@ -27,7 +27,7 @@ export default class Navigator extends EventTarget {
         super();
         const ui = this.#_ui = new SectionUIBase("navigator", _source);
         ui.get("#top-bar-left").addEventListener('click', (e) => {
-            const _tar = findNearestElementWithTag(e.target, 'div');
+            const _tar = findNearestElement(e.target, 'div');
             if (_tar) {
                 this.highlightSection(_tar.id);
                 this.dispatchEvent(new CustomEvent(NAV_EVT_SECTION, { detail: { id: _tar.id } }));

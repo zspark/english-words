@@ -443,8 +443,6 @@ ${JSON.stringify(_requirement, null, 4)}`);
 
     setSync(scrollY: number): void { }
 
-    keyEvent(event: Event): void { }
-
 }
 
 

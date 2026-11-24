@@ -1,3 +1,4 @@
+import { TUser } from "../types.d.js"
 import { isEditing, isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
 import logger from "./logger.js"
 import Cacher from "./cacher.js"
@@ -6,7 +7,7 @@ import Dictionary from "./dictionary.js"
 import cmp from "./components.js"
 import { SectionBase } from "./section-base.js"
 import Card from "./card.js"
-import Notebook from "./notebook.js"
+import NotebookManager from "./notebook.js"
 import Words from "./section-words.js"
 import Article from "./section-article.js"
 import Test from "./section-test.js"
@@ -22,7 +23,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     let _dictionary = new Dictionary();
     let _navigator = new Navigator(_dictionary).setParent(document.body, "append-first");
     let _card = new Card(_dictionary);
-    let _notebook = new Notebook(_dictionary);
+    let _notebook = new NotebookManager(_dictionary);
 
     let _currentSection: SectionBase | null = null;
     let _words = new Words(_dictionary, _notebook, _card);
@@ -34,8 +35,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
     document.addEventListener("keydown", (event) => {
         // logger.debug(event.key)
         if (isEditing(event)) return;
-        _card.keyEvent(event);
-        _currentSection?.keyEvent(event);
+        _card.keyEvent(event, true);
+        _currentSection?.keyEvent(event, true);
+    });
+    document.addEventListener("keyup", (event) => {
+        // logger.debug(event.key)
+        if (isEditing(event)) return;
+        _card.keyEvent(event, false);
+        _currentSection?.keyEvent(event, false);
     });
 
     const _darkTheme = Cacher.localProxy.get<boolean>("sec_setting.theme", false);
@@ -99,13 +106,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
     //     }
     // });
 
-
-    if (Cacher.wordsProxy.isEmpty()) {
-        cmp.showMask(`
-<p>This website is still under developing, more patience and tolerance would be much appriciated.</p>`,
-            "Got It, Close", () => { },
-        );
-    }
 
     _navigator.addEventListener(NAV_EVT_SECTION, (e) => {
         const _d = (e as CustomEvent).detail;

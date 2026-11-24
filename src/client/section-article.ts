@@ -1,10 +1,10 @@
 import logger from "./logger.js"
 import Dictionary from "./dictionary.js"
 import Cacher from "./cacher.js"
-import serverProxy from "./server-proxy.js"
 import cmp from "./components.js"
 import Card from "./card.js"
 import Notebook from "./notebook.js"
+import {genMeaning} from "./ai.js"
 import { lemmatize } from "./lemmatize.js"
 import { ArticleContentType } from "../types.d.js"
 import { SectionBase } from "./section-base.js"
@@ -42,9 +42,9 @@ export default class SectionArticle extends SectionBase {
                 }
 
                 ele_article.innerHTML = "use AI to generate article is currently WIP.";
-                /*
                 _tar.disabled = true;
                 ele_article.innerHTML = "AI is generating articles ...";
+                /*
                 const resultText = await ai.genArticle(pickedArray.join(', '));
                 if (resultText) {
                     this.#_setArticle(resultText);
@@ -61,22 +61,12 @@ export default class SectionArticle extends SectionBase {
             if ((e.target as HTMLElement)?.dataset.index === "0") {
                 const ele_RSSVendor = this.ui.get<HTMLInputElement>('#id-tagRSS select');
                 const _vendor = ele_RSSVendor.value;
-                serverProxy.getNews(_vendor);
             }
         });
 
         this._dict.addEventListener(Dictionary.EVT_DICT, (e) => {
             // logger.debug("[article]");
         });
-
-        serverProxy.addEventListener(serverProxy.EVT_NEWS, (e) => {
-            //@ts-ignore
-            const _v = e?.detail?.data as ArticleContentType;
-            // logger.debug(_v);
-            if (_v) {
-                this._renderNews(_v);
-            }
-        })
 
         const _renderWord = (e: MouseEvent): void => {
             let _w = this.#_getWordUnderCursor(e);
@@ -240,7 +230,5 @@ export default class SectionArticle extends SectionBase {
         const ele_card = this.ui.get("#id-cardContainer");
         this._card.setParent(ele_card);
     }
-
-    keyEvent(event: Event): void { }
 }
 

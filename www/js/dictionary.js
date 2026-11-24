@@ -2,23 +2,21 @@
 // Word Cache Management
 // ===============================
 var _a;
-import { cloneDetail, readOnly } from "./utils.js";
+import { createDetail, readOnly } from "./utils.js";
 import logger from "./logger.js";
-import cacher, { StorageCacher } from "./cacher.js";
+import cacher, { RuntimeCacher } from "./cacher.js";
 import serverProxy from "./server-proxy.js";
-import Compare, { compareET, EVT_CMP_MODIFY, EVT_CMP_DELETE } from "./compare.js";
+import { compareET, EVT_CMP_MODIFY, EVT_CMP_DELETE } from "./compare.js";
 const __VERSION__ = "0.3.0";
 let _needToUpload = false;
 const _localProxy = cacher.localProxy;
 const _metaProxy = cacher.metaProxy;
 const _recordsProxy = cacher.recordsProxy;
-const _detailCacher = cacher.wordsProxy;
-const _listCacher = new StorageCacher('__listCache__');
+const _detailCacher = new RuntimeCacher('__detailCache__');
 class SearchHelper {
     #_flexSearch;
     constructor() {
         this.#_flexSearch = this.#_create();
-        this.addWords(_listCacher.data());
     }
     #_create() {
         return new FlexSearch.Index({
@@ -34,6 +32,7 @@ class SearchHelper {
     addWords(words) {
         const _arr = Object.keys(words);
         _arr.forEach(w => this.#_flexSearch.add(w, w));
+        logger.debug(`Words in dictionary has added to FlexSearch.`);
     }
     search(query) {
         if (query.length <= 0)
@@ -84,6 +83,7 @@ const _SYMBOLIC_LOGIC_ = Object.freeze({
 class Dictionary extends EventTarget {
     static EVT_RECORD = "EVT_RECORD";
     static EVT_DICT = "EVT_DICT";
+    static EVT_DICT_FETCHED = "EVT_DICT_FETCHED";
     static EVT_WORD_MODIFY = "EVT_WORD_MODIFY";
     static EVT_WORD_ADD = "EVT_WORD_ADD";
     static EVT_WORD_DELETE = "EVT_WORD_DELETE";
@@ -93,95 +93,14 @@ class Dictionary extends EventTarget {
     constructor() {
         super();
         this.#_searchAPI = new SearchHelper();
+        serverProxy.addEventListener(serverProxy.EVT_GET_DICTIONARY, (event) => {
+            logger.debug(`dictionary got.`);
+            const _data = event.detail;
+            if (_data?.content) {
+                this.importDictionaryByContent(_data.content);
+            }
+        });
         this.setSyncInterval(_localProxy.get("sec_setting.syncInterval", 10));
-        serverProxy.addEventListener(serverProxy.EVT_SYNC_ALL, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                _detailCacher.clear();
-                this.importDictionaryByContent(_data);
-            }
-        });
-        serverProxy.addEventListener(serverProxy.EVT_GET_DETAIL, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                if (_data.success) {
-                    _detailCacher.set(_data.word, _data.detail);
-                    _listCacher.set(_data.detail.word, true);
-                }
-                this.#_dispEvt(_a.EVT_WORD_MODIFY, _data.detail);
-            }
-        });
-        serverProxy.addEventListener(serverProxy.EVT_GET_WORDLIST, (event) => {
-            const _data = event.detail;
-            if (_data?.list) {
-                _listCacher.clear();
-                _data.list.forEach(w => {
-                    _listCacher.set(w, true);
-                });
-            }
-        });
-        /*
-        serverProxy.addEventListener<'sync'>(serverProxy.EVT_SYNC, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                this.assignWords((_data as DictSyncData).dict);
-                (_data as DictSyncData).lists.dellist.forEach(w => this.deleteWord(w, false));
-                this.#_dispDictEvt("delete");
-            }
-        });
-        */
-        serverProxy.addEventListener(serverProxy.EVT_DELETE_WORD, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                if (_data.success) {
-                    const _detail = _detailCacher.get(_data.word);
-                    if (!_detail)
-                        return;
-                    const word = _detail.word;
-                    const _parseLinks = (str) => {
-                        if (!str)
-                            return [];
-                        return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
-                    };
-                    const _linksArray = _parseLinks(_detail.links);
-                    _linksArray.forEach(_linkedWord => {
-                        this.#_removeLink(_linkedWord, word);
-                    });
-                    _listCacher.remove(word);
-                    _detailCacher.remove(word);
-                    this.#_searchAPI.removeWord(word);
-                    this.#_dispEvt(_a.EVT_WORD_DELETE, _detail);
-                }
-                else {
-                    /// show different panel;
-                    new Compare(_data.clientDetail, _data.serverDetail, "modify");
-                }
-            }
-        });
-        serverProxy.addEventListener(serverProxy.EVT_PUT_DETAIL, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                if (_data.success) {
-                    const word = _data.word;
-                    const _oldDetail = _detailCacher.get(word);
-                    this.#_updateLink(word, _oldDetail?.links, _data.serverDetail.links);
-                    _detailCacher.set(word, _data.serverDetail);
-                    if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
-                        _listCacher.set(word, true);
-                        _detailCacher.set(word, _data.serverDetail);
-                        this.#_dispEvt(_a.EVT_WORD_ADD, word);
-                        this.#_searchAPI.addWord(word);
-                    }
-                    else {
-                        this.#_dispEvt(_a.EVT_WORD_MODIFY, _data.serverDetail);
-                    }
-                }
-                else {
-                    /// show different panel;
-                    new Compare(_data.clientDetail, _data.serverDetail, "modify");
-                }
-            }
-        });
         compareET.addEventListener(EVT_CMP_MODIFY, (e) => {
             const _cr = e.detail;
             const word = _cr.word;
@@ -191,14 +110,12 @@ class Dictionary extends EventTarget {
             this.#_updateLink(word, _oldDetail?.links, _detail.links);
             this.#_dispEvt(_a.EVT_WORD_MODIFY, _cr.detail);
             if (_cr.prefer === "client") {
-                serverProxy.putDetail(_detail);
             }
         });
         compareET.addEventListener(EVT_CMP_DELETE, (e) => {
             const _cr = e.detail;
             const _detail = _cr.detail;
             if (_cr.prefer === "delete") {
-                serverProxy.deleteWord(_detail);
             }
             else if (_cr.prefer === "modify") {
                 const word = _cr.word;
@@ -208,6 +125,7 @@ class Dictionary extends EventTarget {
                 this.#_dispEvt(_a.EVT_WORD_MODIFY, _cr.detail);
             }
         });
+        serverProxy.getDictionary();
     }
     #_push(wordsStr, action) {
         this.#_arr.push({ wordsStr, action });
@@ -290,13 +208,14 @@ class Dictionary extends EventTarget {
             _words = data;
         }
         _detailCacher.append(_words);
-        //this.#_searchAPI.addWords(_words)
+        this.#_searchAPI.addWords(_words);
     }
     ;
     // Import JSON
     importDictionaryByContent(data) {
+        _detailCacher.clear();
         this.#_addToDic(data);
-        this.#_dispDictEvt("imported");
+        this.dispatchEvent(new CustomEvent(_a.EVT_DICT_FETCHED));
     }
     ;
     assignWords(dict) {
@@ -341,7 +260,6 @@ class Dictionary extends EventTarget {
             return;
         let _detail = _detailCacher.get(word);
         if (_detail) {
-            _detail = cloneDetail(_detail);
             _detail.ipa = ipa;
             _detail.meaning = meaning;
             _detail.level = level ?? _detail.level;
@@ -350,19 +268,16 @@ class Dictionary extends EventTarget {
             _detail.tags = tags;
         }
         else {
-            _detail = {
-                word,
-                ipa: ipa || '',
-                meaning: meaning || '',
-                level: level || 'ALL',
-                note: note || '',
-                links: links || '',
-                tags: tags || '',
-                time_create: -1,
-                time_modify: -1,
-            };
+            _detail = createDetail(note ?? '');
+            _detail.word = word;
+            _detail.ipa = ipa ?? "";
+            _detail.meaning = meaning ?? "";
+            _detail.level = level ?? "ALL";
+            _detail.links = links ?? "";
+            _detail.tags = tags ?? "";
+            _detailCacher.set(word, _detail);
+            this.#_searchAPI.addWord(word);
         }
-        serverProxy.putDetail(_detail);
     }
     #_updateLink(word, oldLink, newlink) {
         if (newlink != oldLink) {
@@ -403,10 +318,7 @@ class Dictionary extends EventTarget {
         _detail.links.replace(regex, "");
     }
     deleteWord(word) {
-        if (!word || !_detailCacher.has(word))
-            return;
-        const _detail = _detailCacher.get(word);
-        serverProxy.deleteWord(_detail);
+        _detailCacher.remove(word);
     }
     #_dispDictEvt(action, msg = '') {
         this.dispatchEvent(new CustomEvent(_a.EVT_DICT, { detail: { action, message: msg } }));
@@ -418,7 +330,7 @@ class Dictionary extends EventTarget {
         this.dispatchEvent(new CustomEvent(eventName, { detail: data }));
     }
     getWordsCount() {
-        return Object.keys(_listCacher.data()).length;
+        return Object.keys(_detailCacher.data()).length;
     }
     searchWords(searchQuery) {
         const _selected = this.#_searchAPI.search(searchQuery) ?? [];
@@ -439,15 +351,10 @@ class Dictionary extends EventTarget {
         }
         return readOnly(out);
     }
-    hasWordDetail(word) {
-        if ((!word) || (word.length <= 0))
-            return false;
-        return _detailCacher.has(word);
-    }
     hasWord(word) {
         if ((!word) || (word.length <= 0))
             return false;
-        return _listCacher.has(word);
+        return _detailCacher.has(word);
     }
     getWord(word, fetchIfMissing = true) {
         if ((!word) || (word.length <= 0))
@@ -459,7 +366,6 @@ class Dictionary extends EventTarget {
         if (fetchIfMissing) {
             const aiProvider = _localProxy.get("sec_setting.ai_provider", "");
             const apiKey = _localProxy.get("sec_setting.ai_key", "");
-            serverProxy.getDetail(word, aiProvider, apiKey);
             return _MOCK_FETCH_DETAIL_;
         }
         return _MOCK_NO_LOCAL_DETAIL_;
@@ -504,8 +410,7 @@ class Dictionary extends EventTarget {
         }
         this.#_syncTimer = window.setInterval(async () => {
             if (_needToUpload) {
-                _needToUpload = false;
-                await this.sync();
+                this.sync();
             }
         }, second * 1000);
     }
@@ -519,17 +424,18 @@ class Dictionary extends EventTarget {
         return _out;
     }
     markUpload() {
-        _needToUpload = true;
+        // _needToUpload = true;
     }
     async sync() {
         this.#_dispDictEvt(`begin:sync`);
+        //checkUsers();
+        await serverProxy.pushToGithub(_detailCacher.data(), 'dictionary.json');
         _needToUpload = false;
-        await serverProxy.sync(this.#_getSyncData());
         this.#_dispDictEvt(`end:sync`);
     }
     async syncAll() {
         this.#_dispDictEvt(`begin:sync`);
-        await serverProxy.syncAll();
+        serverProxy.getDictionary();
         this.#_dispDictEvt(`end:sync`);
     }
 }

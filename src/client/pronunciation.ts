@@ -1,10 +1,11 @@
 
 import { fetchJsonData } from "./utils.js"
 import logger from "./logger.js"
-import cacher from "./cacher.js"
 
 const MP3_PATH = "./audio/";
 
+/*
+import cacher from "./cacher.js"
 function printMissings() {
     const _missingWords = Object.keys(cacher.wordsProxy.data())
         .filter(word => !Object.hasOwn(_existingAudios, word))
@@ -20,6 +21,7 @@ ${_missingWords}
 
 //@ts-ignore
 window.printWrodsMissingPronunciations = printMissings;
+*/
 
 let _existingAudios: Record<string, boolean>;
 let _currentAudio: HTMLAudioElement | null = null;

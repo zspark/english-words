@@ -1,3 +1,15 @@
+
+type TUser = {
+    id: string,
+    name: string,
+    notebooks: string[],
+    priority: number,// 1: only read; 2: read and write; 99: administrator
+    time_sync: number,
+}
+
+type TNotebook = Record<string, { tested: number, passed: boolean }>;
+type TNotebooks = Record<string, TNotebook>;
+
 interface ENV {
     DB: {
         prepare: (s: string) => any,
@@ -8,6 +20,21 @@ interface ENV {
 type AIProvider = "DeepSeek" | "ChatGPT" | "_NONE_";
 export { AIProvider };
 
+type TGithubPull = {
+    token: string;
+    rep: string,
+    path: string,
+    branch?: string;// default to main;
+};
+type TGithubPush = {
+    token: string;
+    rep: string,
+    path: string,
+    content: string;// JSON.stringify()
+    message?: string; // autofill with time stamp;
+    branch?: string;// default: main;
+    sha?: string;//auto fetch from github if undefined;
+};
 
 type RequestType = keyof CSType;
 type RequestBodyContentType<T> = {
@@ -21,6 +48,11 @@ type ResponseBodyContentType<T> = {
     info: string,
     syncTime?: number,
     content: T | undefined,
+}
+
+type TConfig = {
+    tags: string[],
+    lemmatizer: Record<string, string>,
 }
 
 type ResponseEvent<T> = CustomEvent<T>
@@ -54,16 +86,28 @@ type CSType = {
         S: ResponseBodyContentType<{}>,
     },
     putNotebook: {
-        C: RequestBodyContentType<{ name: string, list: string[] }>,
-        S: ResponseBodyContentType<{ success: boolean, list: string[], timeSync: number }>,
+        C: RequestBodyContentType<{ notebook: TNotebooks }>,
+        S: ResponseBodyContentType<{ notebook?: TNotebooks }>,
     },
     getNotebook: {
         C: RequestBodyContentType<{ name: string }>,
-        S: ResponseBodyContentType<{ success: boolean, list: string[], timeSync: number }>,
+        S: ResponseBodyContentType<{ content: TNotebooks, sha: string }>,
+    },
+    getConfig: {
+        C: RequestBodyContentType<{ name: string }>,
+        S: ResponseBodyContentType<{ content: TConfig, sha: string }>,
     },
     getNews: {
         C: RequestBodyContentType<{ vendor: string }>,
         S: ResponseBodyContentType<{}>,
+    },
+    push: {
+        C: RequestBodyContentType<TGithubPush>,
+        S: ResponseBodyContentType<{ commit: any, content: any }>,
+    },
+    pull: {
+        C: RequestBodyContentType<TGithubPull>,
+        S: ResponseBodyContentType<{ content: Words, sha: string }>,
     },
 }
 type CSKey = keyof CSType;
@@ -130,5 +174,15 @@ type SectionID = "dictionary" | "article" | "test" | "result" | "setting";
 
 type ChildMode = "append-first" | "append-last" | "removeall"
 
-export { ENV, ActionWord, CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
+type LocalSettingCacheType = {
+    githubToken: string,
+    syncInterval: number,
+    ai_key: string,
+    ai_provider: string,
+    userID: string,
+    theme: boolean,
+    autoAsk: boolean,
+}
+
+export { LocalSettingCacheType, TConfig, TGithubPull, TGithubPush, TUser, TNotebook, TNotebooks, ENV, ActionWord, CSKey, RequestData, ResponseData, RequestBody, ResponseBody, CSType, SyncRecordType, RequestBodyContentType, ResponseBodyContentType, ChildMode, SectionID, ArticleContentType, HTMLString, Detail, Words, Result, Results, Dict, DictSyncData, DictSyncDataSC, RequestType, ResponseEvent, ResponseCallback, WordLevelType }
 

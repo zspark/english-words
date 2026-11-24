@@ -93,15 +93,17 @@ export default class SectionResult extends SectionBase {
         this._card.setParent(ele_card);
     }
 
-    keyEvent(event: KeyboardEvent): void {
-        if (!this._activedWordElem) return;
+    keyEvent(event: KeyboardEvent, isKeyDown: boolean): void {
+        if (isKeyDown) {
+            if (!this._activedWordElem) return;
 
-        if (event.key === "d") {
-            this._activeWord(this._activedWordElem.nextElementSibling);
-        } else if (event.key === "e") {
-            this._activeWord(this._activedWordElem.previousElementSibling);
-        } else if (event.key === "a") {
-            prpc.pronounce((this._activedWordElem as HTMLElement).dataset.word as string)
+            if (event.key === "d") {
+                this._activeWord(this._activedWordElem.nextElementSibling);
+            } else if (event.key === "e") {
+                this._activeWord(this._activedWordElem.previousElementSibling);
+            } else if (event.key === "a") {
+                prpc.pronounce((this._activedWordElem as HTMLElement).dataset.word as string)
+            }
         }
     }
 

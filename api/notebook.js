@@ -1,19 +1,22 @@
-import { getRes, getEmptyRes } from "./server-utils.js";
-function _genPutSQL(data, syncTime, env) {
+import { getEmptyRes } from "./server-utils.js";
+function _genPutSQL(data, timeSync, currentTime, env) {
     return env.DB.prepare(`
         INSERT INTO notebook ( name, words, time_sync)
         VALUES (?,?,?)
         ON CONFLICT(name) DO UPDATE SET
             words = excluded.words,
             time_sync = ?
-        WHERE ? >= dictionary.time_sync`).bind(data.name, data.words, syncTime, syncTime, data.time_sync);
+        WHERE ? >= dictionary.time_sync`).bind(data.name, JSON.stringify(data.words), currentTime, currentTime, timeSync);
 }
 async function _getNotebook(name, env) {
-    const result = await env.DB.prepare(`
+    const _nb = await env.DB.prepare(`
             SELECT *
             FROM notebook
             WHERE name = ?`).bind(name).first();
-    return result;
+    if (_nb) {
+        return { name: _nb.name, words: JSON.parse(_nb.words), time_sync: _nb.time_sync };
+    }
+    return null;
 }
 async function _insertNotebook(name, nb, env) {
     const result = await env.DB.prepare(`
@@ -23,45 +26,31 @@ async function _insertNotebook(name, nb, env) {
     return result;
 }
 async function putNotebook(data, env) {
-    const name = data.content.name;
+    /*
+    const cnb = data.content.notebook;
     const _t = Date.now();
-    await _genPutSQL({ name, words: data.content.list.join(','), time_sync: _t }, _t, env).run();
-    const nb = await _getNotebook(name, env);
-    if (!nb) {
-        return getRes("notebook does not exist.", {
-            success: false,
-            list: [],
-            timeSync: -1,
-        });
+    await _genPutSQL(cnb, cnb.time_sync, _t, env).run();
+    const notebook = await _getNotebook(cnb.name, env);
+    if (!notebook) {
+        return getInternalErrorRes<"putNotebook">("notebook does not exist.", undefined);
     }
-    if (_t === nb.time_sync) {
-        return getRes("Succeeded.", {
-            success: true,
-            list: [],
-            timeSync: _t,
-        });
+
+    if (_t === notebook.time_sync) {
+        return getRes<"getNotebook">("Succeeded.", { notebook: undefined });
     }
-    return getRes("Succeeded.", {
-        success: false,
-        list: JSON.parse(nb.words),
-        timeSync: _t,
-    });
+
+    return getRes<"getNotebook">("Failed.", { notebook });
+   */
 }
 async function getNotebook(data, env) {
+    /*
     const name = data.content.name;
-    const nb = await _getNotebook(name, env);
-    if (!nb) {
-        return getRes("notebook does not exist.", {
-            success: false,
-            list: [],
-            timeSync: -1,
-        });
+    const notebook = await _getNotebook(name, env);
+    if (!notebook) {
+        return getRes<"getNotebook">("notebook does not exist.", { notebook: undefined });
     }
-    return getRes("Succeeded.", {
-        success: true,
-        list: JSON.parse(nb.words),
-        timeSync: nb.time_sync,
-    });
+    return getRes<"getNotebook">("Succeeded.", { notebook });
+    */
 }
 export default async function respond(request, data, env) {
     if (data.requestType === "getNotebook") {

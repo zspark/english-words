@@ -1,5 +1,5 @@
 
-import { findNearestElementWithTag } from "./utils.js"
+import { findNearestElement} from "./utils.js"
 import logger from "./logger.js"
 import { ChildMode } from "../types.d.js"
 import cacher from "./cacher.js"
@@ -46,7 +46,7 @@ export default class Navigator extends EventTarget {
         const ui = this.#_ui = new SectionUIBase("navigator", _source);
 
         ui.get("#top-bar-left").addEventListener('click', (e) => {
-            const _tar = findNearestElementWithTag(e.target as HTMLElement, 'div');
+            const _tar = findNearestElement(e.target as HTMLElement, 'div');
             if (_tar) {
                 this.highlightSection(_tar.id);
                 this.dispatchEvent(new CustomEvent<nav_evt_data_type>(NAV_EVT_SECTION, { detail: { id: _tar.id } }));

@@ -3,10 +3,11 @@
 // ===============================
 
 
+import { fetchJsonData } from "./utils.js"
 import { AIProvider, ActionWord, Detail, Words, Results, Result, Dict, DictSyncData, WordLevelType } from "../types.d.js"
-import { cloneDetail, readOnly } from "./utils.js"
+import { objectToBase64, createDetail, cloneDetail, readOnly } from "./utils.js"
 import logger from "./logger.js"
-import cacher, { StorageCacher } from "./cacher.js"
+import cacher, { RuntimeCacher } from "./cacher.js"
 import serverProxy from "./server-proxy.js"
 import Compare, { compareET, EVT_CMP_MODIFY, EVT_CMP_DELETE, CompareResult } from "./compare.js"
 
@@ -27,8 +28,7 @@ let _needToUpload = false;
 const _localProxy = cacher.localProxy;
 const _metaProxy = cacher.metaProxy;
 const _recordsProxy = cacher.recordsProxy;
-const _detailCacher = cacher.wordsProxy;
-const _listCacher = new StorageCacher('__listCache__');
+const _detailCacher = new RuntimeCacher('__detailCache__');
 
 class SearchHelper {
 
@@ -36,7 +36,6 @@ class SearchHelper {
 
     constructor() {
         this.#_flexSearch = this.#_create();
-        this.addWords(_listCacher.data() as Record<string, boolean>)
     }
 
     #_create() {
@@ -52,9 +51,10 @@ class SearchHelper {
         this.#_flexSearch.add(word, word);
     }
 
-    addWords(words: Record<string, boolean>) {
+    addWords(words: Record<string, Detail>) {
         const _arr = Object.keys(words);
         _arr.forEach(w => this.#_flexSearch.add(w, w))
+        logger.debug(`Words in dictionary has added to FlexSearch.`);
     }
 
     search(query: string) {
@@ -112,6 +112,7 @@ export default class Dictionary extends EventTarget {
 
     static EVT_RECORD = "EVT_RECORD";
     static EVT_DICT = "EVT_DICT";
+    static EVT_DICT_FETCHED = "EVT_DICT_FETCHED";
     static EVT_WORD_MODIFY = "EVT_WORD_MODIFY";
     static EVT_WORD_ADD = "EVT_WORD_ADD";
     static EVT_WORD_DELETE = "EVT_WORD_DELETE";
@@ -125,96 +126,15 @@ export default class Dictionary extends EventTarget {
 
         this.#_searchAPI = new SearchHelper();
 
+        serverProxy.addEventListener<'pull'>(serverProxy.EVT_GET_DICTIONARY, (event) => {
+            logger.debug(`dictionary got.`);
+            const _data = event.detail;
+            if (_data?.content) {
+                this.importDictionaryByContent(_data.content);
+            }
+        });
+
         this.setSyncInterval(_localProxy.get<number>("sec_setting.syncInterval", 10));
-        serverProxy.addEventListener<'syncAll'>(serverProxy.EVT_SYNC_ALL, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                _detailCacher.clear();
-                this.importDictionaryByContent(_data);
-            }
-        });
-        serverProxy.addEventListener<'getDetail'>(serverProxy.EVT_GET_DETAIL, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                if (_data.success) {
-                    _detailCacher.set<Detail>(_data.word as string, _data.detail);
-                    _listCacher.set<boolean>(_data.detail.word, true);
-                }
-                this.#_dispEvt<Detail>(Dictionary.EVT_WORD_MODIFY, _data.detail);
-            }
-        });
-        serverProxy.addEventListener<'getWordList'>(serverProxy.EVT_GET_WORDLIST, (event) => {
-            const _data = event.detail;
-            if (_data?.list) {
-                _listCacher.clear();
-                _data.list.forEach(w => {
-                    _listCacher.set(w, true);
-                });
-            }
-        });
-        /*
-        serverProxy.addEventListener<'sync'>(serverProxy.EVT_SYNC, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                this.assignWords((_data as DictSyncData).dict);
-                (_data as DictSyncData).lists.dellist.forEach(w => this.deleteWord(w, false));
-                this.#_dispDictEvt("delete");
-            }
-        });
-        */
-        serverProxy.addEventListener<'deleteWord'>(serverProxy.EVT_DELETE_WORD, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                if (_data.success) {
-
-                    const _detail: Detail | undefined = _detailCacher.get(_data.word);
-                    if (!_detail) return;
-
-                    const word: string = _detail.word;
-
-                    const _parseLinks = (str: string): string[] => {
-                        if (!str) return [];
-                        return str.split(',').map(w => w.trim()).filter(w => w.length > 0);
-                    };
-
-                    const _linksArray = _parseLinks(_detail.links);
-                    _linksArray.forEach(_linkedWord => {
-                        this.#_removeLink(_linkedWord, word)
-                    });
-
-                    _listCacher.remove(word);
-                    _detailCacher.remove(word);
-                    this.#_searchAPI.removeWord(word);
-                    this.#_dispEvt<Detail>(Dictionary.EVT_WORD_DELETE, _detail);
-                } else {
-                    /// show different panel;
-                    new Compare(_data.clientDetail, _data.serverDetail as Detail, "modify");
-                }
-            }
-        });
-        serverProxy.addEventListener<'putDetail'>(serverProxy.EVT_PUT_DETAIL, (event) => {
-            const _data = event.detail;
-            if (_data) {
-                if (_data.success) {
-                    const word = _data.word;
-                    const _oldDetail: Detail | undefined = _detailCacher.get(word);
-                    this.#_updateLink(word, _oldDetail?.links, _data.serverDetail.links)
-                    _detailCacher.set(word, _data.serverDetail);
-                    if (_data.serverDetail.time_modify === _data.serverDetail.time_create) {
-                        _listCacher.set(word, true);
-                        _detailCacher.set<Detail>(word, _data.serverDetail);
-                        this.#_dispEvt<string>(Dictionary.EVT_WORD_ADD, word);
-                        this.#_searchAPI.addWord(word);
-                    } else {
-                        this.#_dispEvt<Detail>(Dictionary.EVT_WORD_MODIFY, _data.serverDetail);
-                    }
-                } else {
-                    /// show different panel;
-                    new Compare(_data.clientDetail, _data.serverDetail, "modify");
-                }
-            }
-        });
-
         compareET.addEventListener(EVT_CMP_MODIFY, (e) => {
             const _cr = (e as CustomEvent).detail as CompareResult;
             const word: string = _cr.word;
@@ -224,14 +144,12 @@ export default class Dictionary extends EventTarget {
             this.#_updateLink(word, _oldDetail?.links, _detail.links);
             this.#_dispEvt<Detail>(Dictionary.EVT_WORD_MODIFY, _cr.detail);
             if (_cr.prefer === "client") {
-                serverProxy.putDetail(_detail);
             }
         });
         compareET.addEventListener(EVT_CMP_DELETE, (e) => {
             const _cr = (e as CustomEvent).detail as CompareResult;
             const _detail = _cr.detail;
             if (_cr.prefer === "delete") {
-                serverProxy.deleteWord(_detail);
             } else if (_cr.prefer === "modify") {
                 const word: string = _cr.word;
                 const _oldDetail: Detail | undefined = _detailCacher.get(word);
@@ -240,6 +158,8 @@ export default class Dictionary extends EventTarget {
                 this.#_dispEvt<Detail>(Dictionary.EVT_WORD_MODIFY, _cr.detail);
             }
         });
+
+        serverProxy.getDictionary();
     }
 
     #_push(wordsStr: string, action: ActionType): void {
@@ -328,13 +248,14 @@ export default class Dictionary extends EventTarget {
             _words = data as Words;
         }
         _detailCacher.append(_words);
-        //this.#_searchAPI.addWords(_words)
+        this.#_searchAPI.addWords(_words)
     };
 
     // Import JSON
     importDictionaryByContent(data: Dict | Words): void {
+        _detailCacher.clear();
         this.#_addToDic(data);
-        this.#_dispDictEvt("imported");
+        this.dispatchEvent(new CustomEvent(Dictionary.EVT_DICT_FETCHED));
     };
 
     assignWords(dict: Words): void {
@@ -387,7 +308,6 @@ export default class Dictionary extends EventTarget {
 
         let _detail = _detailCacher.get(word) as Detail | null;
         if (_detail) {
-            _detail = cloneDetail(_detail);
             _detail.ipa = ipa;
             _detail.meaning = meaning;
             _detail.level = level ?? _detail.level;
@@ -395,19 +315,16 @@ export default class Dictionary extends EventTarget {
             _detail.links = links;
             _detail.tags = tags;
         } else {
-            _detail = {
-                word,
-                ipa: ipa || '',
-                meaning: meaning || '',
-                level: level || 'ALL',
-                note: note || '',
-                links: links || '',
-                tags: tags || '',
-                time_create: -1,
-                time_modify: -1,
-            };
+            _detail = createDetail(note ?? '');
+            _detail.word = word;
+            _detail.ipa = ipa ?? "";
+            _detail.meaning = meaning ?? "";
+            _detail.level = level ?? "ALL";
+            _detail.links = links ?? "";
+            _detail.tags = tags ?? "";
+            _detailCacher.set(word, _detail);
+            this.#_searchAPI.addWord(word);
         }
-        serverProxy.putDetail(_detail);
     }
 
     #_updateLink(word: string, oldLink: string | undefined, newlink: string | undefined): void {
@@ -453,10 +370,7 @@ export default class Dictionary extends EventTarget {
     }
 
     deleteWord(word: string): void {
-        if (!word || !_detailCacher.has(word)) return;
-
-        const _detail = _detailCacher.get(word) as Detail;
-        serverProxy.deleteWord(_detail);
+        _detailCacher.remove(word);
     }
 
     #_dispDictEvt(action: ActionDict, msg = ''): void {
@@ -472,7 +386,7 @@ export default class Dictionary extends EventTarget {
     }
 
     getWordsCount(): number {
-        return Object.keys(_listCacher.data()).length;
+        return Object.keys(_detailCacher.data()).length;
     }
 
     searchWords(searchQuery: string): string[] {
@@ -499,14 +413,9 @@ export default class Dictionary extends EventTarget {
         return readOnly(out);
     }
 
-    hasWordDetail(word: string): boolean {
-        if ((!word) || (word.length <= 0)) return false;
-        return _detailCacher.has(word);
-    }
-
     hasWord(word: string): boolean {
         if ((!word) || (word.length <= 0)) return false;
-        return _listCacher.has(word);
+        return _detailCacher.has(word);
     }
 
     getWord(word: string, fetchIfMissing: boolean = true): Detail {
@@ -520,7 +429,6 @@ export default class Dictionary extends EventTarget {
         if (fetchIfMissing) {
             const aiProvider = _localProxy.get("sec_setting.ai_provider", "") as AIProvider;
             const apiKey = _localProxy.get("sec_setting.ai_key", "");
-            serverProxy.getDetail(word, aiProvider, apiKey);
             return _MOCK_FETCH_DETAIL_;
         }
         return _MOCK_NO_LOCAL_DETAIL_;
@@ -572,8 +480,7 @@ export default class Dictionary extends EventTarget {
 
         this.#_syncTimer = window.setInterval(async () => {
             if (_needToUpload) {
-                _needToUpload = false;
-                await this.sync();
+                this.sync();
             }
         }, second * 1000);
     };
@@ -589,19 +496,20 @@ export default class Dictionary extends EventTarget {
     }
 
     markUpload() {
-        _needToUpload = true;
+        // _needToUpload = true;
     }
 
     async sync(): Promise<void> {
         this.#_dispDictEvt(`begin:sync`);
+        //checkUsers();
+        await serverProxy.pushToGithub(_detailCacher.data(), 'dictionary.json');
         _needToUpload = false;
-        await serverProxy.sync(this.#_getSyncData());
         this.#_dispDictEvt(`end:sync`);
     }
 
     async syncAll(): Promise<void> {
         this.#_dispDictEvt(`begin:sync`);
-        await serverProxy.syncAll();
+        serverProxy.getDictionary();
         this.#_dispDictEvt(`end:sync`);
     }
 

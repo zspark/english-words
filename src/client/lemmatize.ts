@@ -1,7 +1,19 @@
-//import logger from "./logger.js"
-import cacher from "./cacher.js"
+import logger from "./logger.js"
+import serverProxy from "./server-proxy.js"
+import Cacher from "./cacher.js"
+const _proxy = Cacher.configProxy;
 
-const _proxy = cacher.lemmatizerProxy;
+serverProxy.addEventListener<'getConfig'>(serverProxy.EVT_GET_CONFIG, (event) => {
+    logger.debug(`config got in lemmatize.`);
+    const _data = event.detail;
+    if (_data?.content) {
+        Object.entries(_data.content.lemmatizer).forEach((v: any) => {
+            _proxy.set<string>(v[0], v[1]);
+        });
+    }
+});
+
+serverProxy.getConfig();
 
 export function lemmatize(word: string): string {
 

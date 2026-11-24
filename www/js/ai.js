@@ -1,3 +1,4 @@
+import { createDetail, cloneDetail } from "./utils.js";
 function _stripJsonMarkdown(text) {
     return text
         .replace(/^```(?:json)?\s*\n?/i, "")
@@ -35,38 +36,45 @@ async function askDeepseek(apiKey, question) {
             model: "deepseek-chat",
             messages: [
                 {
+                    role: "system",
+                    content: "Return only valid JSON. Do not use Markdown or code fences."
+                },
+                {
                     role: "user",
                     content: question
                 }
-            ]
+            ],
+            response_format: { type: "json_object" }
         })
     });
     if (!response.ok) {
         throw new Error(await response.text());
     }
     const json = await response.json();
-    const _out = json.choices?.[0]?.message?.content ?? "";
+    const _out = json.choices[0].message.content ?? "";
     return _stripJsonMarkdown(_out);
 }
 const _providerMap = new Map();
-_providerMap.set("deepseek", askDeepseek);
-_providerMap.set("chatGPT", askChatGPT);
-export default async function genDetailByAI(aiProvider, apiKey, word) {
+_providerMap.set("DeepSeek", askDeepseek);
+_providerMap.set("ChatGPT", askChatGPT);
+export async function genMeaning(aiProvider, apiKey, word) {
     const question = getAIMeaningQuestion(word);
     const _fn = _providerMap.get(aiProvider);
     if (_fn) {
         const rawContent = await _fn(apiKey, question);
         try {
-            const detail = JSON.parse(rawContent)[word];
+            const _tmp = JSON.parse(rawContent);
+            const detail = _tmp[word];
             detail.word = word;
-            return detail;
+            const _t = Date.now();
+            return { detail: cloneDetail(detail, _t, _t), success: true };
         }
         catch (e) {
             //logger.error(`parse word detail string error: ${e}`);
-            return undefined;
+            return { detail: createDetail(e.message), success: false };
         }
     }
-    return undefined;
+    return { detail: createDetail("AI provide doesn't exist."), success: false };
 }
 function getAIMeaningQuestion(wordsString) {
     const _question = `You are absolutely an English word master, please provide the json format of the following words:
@@ -78,25 +86,27 @@ ${wordsString}
 JSON format:
 
 {
-    "generic": {
+    "this is the word that you are going to use": {
         "ipa": "/dʒəˈnerɪk/",
         "level": "B1",
         "meaning": "adj. 一般的；普通的",
         "links": "generically,genericity",
+        "tags": "",
         "note": "This is a generic solution that can be applied to many different problems. 这是一个通用的解决方案，可以应用于许多不同的问题。\n\n"
     }
 }
 
 Requirements：
 
-1. The above json content is just a mock sample;
-2. All keys in the json must be lower case english, and all values are strings instead of numbers or arrays or objects;
-3. Only provide American pronunciation for "ipa";
-4. Choose only one proper value from "A1,A2,B1,B2,C1,C2" for "level";
-5. Chinese characters for meanings, short form (adj. n. v. ad. prep. etc.) for the part of speech;
-6. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
-7. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
-8. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
+*. The above json content is just a mock sample;
+*. All keys in the json must be lower case english, and all values are strings instead of numbers or arrays or objects;
+*. "ipa" is the phonetic transcription, not the word;
+*. Choose only one proper value from "A1,A2,B1,B2,C1,C2" for "level";
+*. Chinese characters for meanings, short form (adj. n. v. ad. prep. etc.) for the part of speech;
+*. Remove basic plural form of nouns, basic adjectives and adverbs, and NO basic -ing and -ed words as values of links;
+*. Strictly obey the format of the providing structure, the final json-like string must be parsed using 'JSON.parse()' function;
+*. Content of "note" should provide at least TWO examples that use different meanings of the word (including Chinese translations); More examples are accepted if the word has many varies meanings; Sentences MUST be separated by '\n\n';
+*. Just left "tags" as a blank string;
 `;
     // logger.log(_question);
     return _question;

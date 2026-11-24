@@ -91,23 +91,18 @@ export function isEditing(event: KeyboardEvent): boolean {
     return _r;
 }
 
-export function findNearestElementWithTag<T extends HTMLElement>(fromElem: HTMLElement | null, tagName: string): T | null {
-    tagName = tagName.toUpperCase();
-
-    while (fromElem) {
-        if (fromElem.tagName === tagName)
-            return fromElem as T;
-
-        fromElem = fromElem.parentElement;
-    }
-
-    return null;
+export function findNearestElement<T extends HTMLElement>(
+    fromElem: Node,
+    selector: string
+): T | null {
+    const elem = fromElem instanceof Element ? fromElem : fromElem.parentElement;
+    return elem ? elem.closest(selector) : null;
 }
 
 export function cloneDetail(from: Detail, time_modify?: number, time_create?: number): Detail {
     return {
         word: from.word,
-        ipa: from.word,
+        ipa: from.ipa,
         meaning: from.meaning,
         level: from.level,
         tags: from.tags,
@@ -115,5 +110,38 @@ export function cloneDetail(from: Detail, time_modify?: number, time_create?: nu
         links: from.links,
         time_create: time_create ?? from.time_create,
         time_modify: time_modify ?? from.time_modify,
+    }
+}
+
+export function objectToBase64(obj: any): string {
+    const bytes = new TextEncoder().encode(JSON.stringify(obj));
+
+    let binary = "";
+    for (const byte of bytes) {
+        binary += String.fromCharCode(byte);
+    }
+
+    return btoa(binary);
+}
+
+export function base64ToObject(base64: string): any {
+    const binary = atob(base64.replace(/\s/g, ""));
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    const text = new TextDecoder().decode(bytes);
+    return JSON.parse(text);
+}
+
+export function createDetail(note: string): Detail {
+    const _t = Date.now();
+    return {
+        word: "word",
+        ipa: "ipa",
+        meaning: "meaning",
+        level: "ALL",
+        tags: "",
+        note,
+        links: "",
+        time_create: _t,
+        time_modify: _t,
     }
 }

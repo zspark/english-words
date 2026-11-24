@@ -87,5 +87,5 @@ export class SectionBase {
     active() { }
     deactive() { }
     setSync(y) { }
-    keyEvent(event) { }
+    keyEvent(event, isKeyDown) { }
 }

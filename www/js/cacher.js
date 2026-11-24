@@ -1,10 +1,11 @@
 import { readOnly } from "./utils.js";
 import logger from "./logger.js";
-export class RuntimeCacher {
+export class RuntimeCacher extends EventTarget {
     #_name;
     #_isEmpty = true;
     #_obj;
     constructor(name, data = undefined) {
+        super();
         this.#_name = name;
         this.#_obj = (!!data) ? data : {};
     }
@@ -15,16 +16,20 @@ export class RuntimeCacher {
     data() {
         return readOnly(this.#_obj);
     }
-    append(data) {
+    append(data, event = false) {
         Object.assign(this.#_obj, data);
+        if (event)
+            this.dispatchEvent(new Event('changed'));
     }
     /**
      * key will be separated by '.';
      */
-    set(key, value) {
+    set(key, value, event = false) {
         const _arr = key.split('.');
         let _obj = this.#_createObject(_arr);
         _obj[_arr[_arr.length - 1]] = value;
+        if (event)
+            this.dispatchEvent(new Event('changed'));
     }
     get(key, defaultValue = undefined) {
         const _arr = key.split('.');
@@ -56,11 +61,18 @@ export class RuntimeCacher {
     has(key) {
         return !!this.#_obj[key];
     }
-    remove(key) {
+    remove(key, event = false) {
         delete this.#_obj[key];
+        if (event)
+            this.dispatchEvent(new Event('changed'));
     }
-    clear(data = undefined) {
+    clear(data = undefined, event = false) {
         this.#_obj = (!!data) ? data : {};
+        if (event)
+            this.dispatchEvent(new Event('changed'));
+    }
+    broadcast() {
+        this.dispatchEvent(new Event('changed'));
     }
     toString() {
         return JSON.stringify(this.#_obj);
@@ -81,20 +93,20 @@ export class StorageCacher extends RuntimeCacher {
         super(name, _obj);
         this.#_delayMS = delayMS;
     }
-    append(data) {
-        super.append(data);
+    append(data, event = false) {
+        super.append(data, event);
         this.#_delaySave();
     }
-    set(key, value) {
-        super.set(key, value);
+    set(key, value, event = false) {
+        super.set(key, value, event);
         this.#_delaySave();
     }
-    remove(key) {
-        super.remove(key);
+    remove(key, event = false) {
+        super.remove(key, event);
         this.#_delaySave();
     }
-    clear(data = undefined) {
-        super.clear(data);
+    clear(data = undefined, event = false) {
+        super.clear(data, event);
         this.#_delaySave();
     }
     #_delaySave() {
@@ -119,14 +131,14 @@ export class StorageCacher extends RuntimeCacher {
     }
 }
 const localProxy = new StorageCacher('__localCache__');
-const metaProxy = new StorageCacher('__metaCache__');
+const metaProxy = new RuntimeCacher('__metaCache__');
 const lemmatizerProxy = new StorageCacher('__lemmatizerCache__');
 const recordsProxy = new StorageCacher('__recordCache__');
-const wordsProxy = new StorageCacher('__wordCache__');
+const configProxy = new RuntimeCacher('__configCache__');
 export default {
     localProxy,
     metaProxy,
     recordsProxy,
-    wordsProxy,
     lemmatizerProxy,
+    configProxy,
 };

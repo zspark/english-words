@@ -1,5 +1,6 @@
 var _b;
 import { isMobile } from "./utils.js";
+import { genMeaning } from "./ai.js";
 import cacher from "./cacher.js";
 import cmp from "./components.js";
 import Dictionary from "./dictionary.js";
@@ -43,6 +44,7 @@ const source = `
                 </div>
             </div>
             <div class="vocab-header mt10px">
+                <div id="id_dragger" class="tag word-level">Da</div>
                 <div id="level" class="tag word-level"></div>
                 <div id="tags" class="tag word-tag"></div>
             </div>
@@ -78,6 +80,7 @@ const MODE_READ = 2;
 class Card extends EventTarget {
     static CARD_EVT_MODE_EDIT = "evt_mode_edit";
     static CARD_EVT_MODE_READ = "evt_mode_read";
+    static EVT_DROPPED = "EVT_DROPPED";
     #_ui;
     #_dict;
     currentWord = '';
@@ -209,7 +212,12 @@ class Card extends EventTarget {
             const _index = e.target.dataset.index;
             if (_index === "1") {
                 //fill by ai
-                //ai.genMeaning(this.ele_new_voc.value.trim());
+                const _ai_api = cacher.localProxy.get('sec_setting.ai_key', '');
+                const _ai_provider = cacher.localProxy.get('sec_setting.ai_provider', "_NONE_");
+                const result = await genMeaning(_ai_provider, _ai_api, this.ele_new_voc.value.trim());
+                if (result.success) {
+                    this.#_renderEditPanel(result.detail.word, result.detail);
+                }
             }
             else if (_index === "0") {
                 //canel
@@ -300,46 +308,41 @@ class Card extends EventTarget {
         }
         const _out = this.#_dict.hasWord(word);
         if (_out) {
-            if (this.#_dict.hasWordDetail(word)) {
-                elem.classList.remove("color-red", "color-yellow");
-            }
-            else {
-                elem.classList.remove("color-red");
-                elem.classList.add("color-yellow");
-            }
+            elem.classList.remove("color-red");
         }
         else {
             elem.classList.add("color-red");
-            elem.classList.remove("color-yellow");
         }
     }
-    async keyEvent(event) {
-        const c = this.#_ui.isConnected;
-        if (!c)
-            return;
-        if (this._currentMode == MODE_READ) {
-            if (event.key === 'Enter') {
-                this.ele_searchInput.focus();
-            }
-            else if (event.key === "t") {
-                this.#_renderEditPanel(this.currentWord);
-                this.#_enterEditMode();
-            }
-        }
-        else if (this._currentMode == MODE_EDIT) {
-            if (event.key === "Escape") {
-                this.#_enterReadMode();
-            }
-            else if (event.key === 'Enter') {
-                /*
-                if (event.altKey) {
-                    const word = this.ele_new_voc.value.trim();
-                    ai.genMeaning(word);
-                    return;
+    async keyEvent(event, isKeyDown) {
+        if (isKeyDown) {
+            const c = this.#_ui.isConnected;
+            if (!c)
+                return;
+            if (this._currentMode == MODE_READ) {
+                if (event.key === 'Enter') {
+                    this.ele_searchInput.focus();
                 }
-                */
-                if (event.ctrlKey) {
-                    this.#_save();
+                else if (event.key === "t") {
+                    this.#_renderEditPanel(this.currentWord);
+                    this.#_enterEditMode();
+                }
+            }
+            else if (this._currentMode == MODE_EDIT) {
+                if (event.key === "Escape") {
+                    this.#_enterReadMode();
+                }
+                else if (event.key === 'Enter') {
+                    /*
+                    if (event.altKey) {
+                        const word = this.ele_new_voc.value.trim();
+                        ai.genMeaning(word);
+                        return;
+                    }
+                    */
+                    if (event.ctrlKey) {
+                        this.#_save();
+                    }
                 }
             }
         }
@@ -441,7 +444,6 @@ class Card extends EventTarget {
             this.#_ui.addAttrib('#id-body', 'hidden');
         }
         this.ele_voc.textContent = word;
-        this.ele_ipa.textContent = detail.ipa;
         this.ele_ipa.textContent = detail.ipa;
         this.ele_meaning.textContent = detail.meaning;
         this.ele_level.textContent = detail.level;

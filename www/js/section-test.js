@@ -372,5 +372,4 @@ ${JSON.stringify(_requirement, null, 4)}`);
         this.ui.setInnerHTML("#id-result #wordList", _s);
     }
     setSync(scrollY) { }
-    keyEvent(event) { }
 }

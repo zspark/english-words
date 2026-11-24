@@ -1,6 +1,5 @@
 
-
-import { isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
+import { findNearestElement, isDesktop, isMobile, readOnly, shuffle } from "./utils.js"
 import logger from "./logger.js"
 import { HTMLString, Detail, WordLevelType } from "../types.d.js"
 import Cacher from "./cacher.js"
@@ -9,6 +8,7 @@ import Dictionary from "./dictionary.js"
 import prpc from "./pronunciation.js"
 import Card from "./card.js"
 import Notebook from "./notebook.js"
+import serverProxy from "./server-proxy.js"
 import { SectionBase, SectionUIBase } from "./section-base.js"
 
 type SortOrder = "N" | "R";
@@ -56,10 +56,10 @@ const wordListSource = `
     </div>
 
     <div id="current-status" class="status-bar">
-        <span id="selectedCount">0</span> selected / <span id="id_filteredCount">0</span> filtered / <span id="_total">0</span> total.
+        <span id="id_filteredCount">0</span> filtered / <span id="_total">0</span> total.
     </div>
 
-    <ul id="id-wordList" class="word-list"></ul>
+    <ul id="id-wordList" class="word-list cur-default"></ul>
 </div>
 
 <div id="id-cardContainer"> </div>
@@ -84,7 +84,7 @@ class WordsHandler {
     #_previousStartIndex = -1;
     #_previousEndIndex = -1;
 
-    selectedCountSpan: HTMLElement;
+    // selectedCountSpan: HTMLElement;
     filteredCountSpan: HTMLElement;
     totalCountSpan: HTMLElement;
 
@@ -121,7 +121,7 @@ class WordsHandler {
         this.#_levelFilter.addEventListener('change', _disp);
         this.#_tagFilter.addEventListener('change', _disp);
 
-        this.selectedCountSpan = ui.get('#selectedCount');
+        // this.selectedCountSpan = ui.get('#selectedCount');
         this.filteredCountSpan = ui.get('#id_filteredCount');
         this.totalCountSpan = ui.get('#_total');
 
@@ -133,6 +133,13 @@ class WordsHandler {
         this.#_words = [];
         this.#_previousStartIndex = -1;
         this.#_previousEndIndex = -1;
+
+        serverProxy.addEventListener<'getConfig'>(serverProxy.EVT_GET_CONFIG, (event) => {
+            const _data = event.detail;
+            if (_data?.content) {
+                this.#_tagFilter.innerHTML = cmp.dropdownOptionSource(["ALL", ..._data.content.tags], 0);
+            }
+        });
     }
 
     #_updateStatus(): void {
@@ -181,7 +188,7 @@ class WordsHandler {
     updateWordList(): void {
         let level = this.#_levelFilter.value as WordLevelType;
         let tag = this.#_tagFilter.value;
-        this.#_words = Object.entries(this.#_nb.getWords('', level, tag));
+        this.#_words = Object.entries(this.#_nb.getWords('', level, tag)!);
         this.#_filteredCount = this.#_words.length;
         this.#_ele_wordList.style.height = `${this.#_filteredCount * _ITEM_HEIGHT}px`;
     }
@@ -209,10 +216,11 @@ class WordsHandler {
                 // const _isSelected = selectedWords.includes(_word) ? 'select' : '';
                 const _isActived = _rts.activedWord === _word ? 'active' : '';
 
-                htmlBuffer += `<li class="cls-word-item"
+                htmlBuffer += `
+                <li class="cls-word-item"
                     style="top:${startY + (i - startIndex) * _ITEM_HEIGHT}px;"
                     data-word="${_word}"
-                    ${_isActived}>
+                ${_isActived}>
                     ${this.#_genWordHTMLSource(i, _word, _detail)}
                 </li>`;
             }
@@ -267,6 +275,8 @@ class WordsHandler {
 export default class SectionWords extends SectionBase {
     static TIME_SHRESHOLD = 200; //ms
 
+    #_notebook: Notebook;
+    #_isCtrlDown: boolean = false;
     #_wordsHandler: WordsHandler;
     ele_cardContainer: HTMLElement;
     ele_wordList: HTMLElement;
@@ -274,9 +284,71 @@ export default class SectionWords extends SectionBase {
     constructor(dict: Dictionary, nb: Notebook, card: Card) {
         super("container", wordListSource, dict, nb, card);
 
+        this.#_notebook = nb;
         this.ele_cardContainer = this.ui.get("#id-cardContainer");
         this.ele_wordList = this.ui.get('#id-wordList');
         this.#_wordsHandler = new WordsHandler(this._nb, this.ui, this.ele_wordList);
+
+        let _mask: HTMLElement | null;
+        this.ele_wordList.addEventListener('dragstart', (e) => {
+            logger.log("drag start!");
+            if (!this.#_isCtrlDown) {
+                return;
+            }
+            const _elem = findNearestElement(e.target as HTMLElement, "li[data-word]");
+            if (!_elem) return;
+
+
+            const word: string = _elem.dataset.word as string;
+            logger.log("drag start!", "current word:", word);
+            e.dataTransfer!.setData("text/plain", word);
+            e.dataTransfer!.setDragImage(_elem.querySelector("span.word-name")!, 0, 0);
+
+            const _content: HTMLString = `
+<div class="containerAA">
+    ${this.#_notebook.getNotebookNames().map(n => `<div class="blockAA" data-nb="${n}">${n}</div>`).join('')}
+    ${this.#_notebook.isDefaultNotebook ? '' : `<div class="blockAA" data-nb="delete">DELETE</div>`}
+</div>
+`;
+            _mask = cmp.showMask(_content);
+            const blocks = _mask.querySelectorAll<HTMLElement>(".blockAA");
+            blocks.forEach(block => {
+                block.addEventListener("dragenter", () => {
+                    logger.log("drag enter");
+                });
+
+                block.addEventListener("dragover", e => {
+                    e.preventDefault(); // enables dropping
+                });
+
+                block.addEventListener("dragleave", () => {
+                    logger.log("drag level");
+                });
+
+                block.addEventListener("drop", (event) => {
+                    logger.log("drop ");
+                    event.preventDefault();
+
+                    //@ts-ignore
+                    const word = event.dataTransfer?.getData("text/plain") as string;
+                    const notebook = block.dataset.nb!;
+                    logger.log(`${word} dropped on ${notebook}`);
+                    if (notebook === 'delete') {
+                        this.#_notebook.removeWords(undefined, word);
+                    } else {
+                        this.#_notebook.addWords(notebook, word);
+                    }
+                    //this.dispatchEvent(new CustomEvent(Card.EVT_DROPPED, { detail: { word, notebook } }));
+                });
+            });
+        });
+        this.ele_wordList.addEventListener('dragend', (e) => {
+            if (!this.#_isCtrlDown) {
+                return;
+            }
+            logger.log("drag end!");
+            _mask?.remove();
+        });
 
         let _timeStart = 0;
         let _timeEnd = 0;
@@ -375,9 +447,12 @@ export default class SectionWords extends SectionBase {
         dict.addEventListener(Dictionary.EVT_WORD_DELETE, _fn);
         dict.addEventListener(Dictionary.EVT_WORD_MODIFY, _fn);
 
-        this.#_wordsHandler.updateWordList();
-        this.#_wordsHandler.sortWordList();
-        this.#_wordsHandler.renderWords(true);
+        nb.addEventListener(Notebook.EVT_CONTENT_FETCHED, () => {
+            logger.debug("render words list");
+            this.#_wordsHandler.updateWordList();
+            this.#_wordsHandler.sortWordList();
+            this.#_wordsHandler.renderWords(true);
+        });
 
     }
 
@@ -445,20 +520,36 @@ export default class SectionWords extends SectionBase {
         this._card.setParent(this.ele_cardContainer);
     }
 
-    keyEvent(event: KeyboardEvent): void {
-        const _tmp = [...this.ele_wordList.querySelectorAll("li")];
-        if (_tmp.length <= 0) return;
+    keyEvent(event: KeyboardEvent, isKeyDown: boolean): void {
+        if (isKeyDown) {
+            const _tmp = [...this.ele_wordList.querySelectorAll("li")];
+            if (_tmp.length <= 0) return;
 
-        let _activedWordElem = _tmp.filter(ele => ele.hasAttribute('active'))[0];
-        if (event.key === "d") {
-            const _w = ((_activedWordElem?.nextElementSibling ?? _tmp[0]) as HTMLElement).dataset.word ?? "";
-            this.#_activeWord(_w);
-        } else if (event.key === "e") {
-            const _w = ((_activedWordElem?.previousElementSibling ?? _tmp[_tmp.length - 1]) as HTMLElement).dataset.word ?? "";
-            this.#_activeWord(_w);
-        } else if (event.key === "f") {
-            prpc.pronounce(_activedWordElem.dataset.word as string)
-        } else if (event.key === "s") {
+            let _activedWordElem = _tmp.filter(ele => ele.hasAttribute('active'))[0];
+            if (event.key === "d") {
+                const _w = ((_activedWordElem?.nextElementSibling ?? _tmp[0]) as HTMLElement).dataset.word ?? "";
+                this.#_activeWord(_w);
+            } else if (event.key === "e") {
+                const _w = ((_activedWordElem?.previousElementSibling ?? _tmp[_tmp.length - 1]) as HTMLElement).dataset.word ?? "";
+                this.#_activeWord(_w);
+            } else if (event.key === "f") {
+                prpc.pronounce(_activedWordElem.dataset.word as string)
+            } else if (event.key === "s") {
+            } else if (event.key === "Control") {
+                this.ui.addClass("#id-wordList", ["cur-grab", "not-selectable"]);
+                this.#_isCtrlDown = true;
+                this.ui.getAll("li[data-word]").forEach(e => {
+                    e.setAttribute("draggable", "true");
+                })
+            }
+        } else {
+            if (event.key === "Control") {
+                this.ui.removeClass("#id-wordList", ["cur-grab", "not-selectable"]);
+                this.#_isCtrlDown = false;
+                this.ui.getAll("li[data-word]").forEach(e => {
+                    e.removeAttribute("draggable");
+                })
+            }
         }
     }
 }

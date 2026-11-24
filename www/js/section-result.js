@@ -75,17 +75,19 @@ export default class SectionResult extends SectionBase {
         const ele_card = this.ui.get("#id-cardContainer");
         this._card.setParent(ele_card);
     }
-    keyEvent(event) {
-        if (!this._activedWordElem)
-            return;
-        if (event.key === "d") {
-            this._activeWord(this._activedWordElem.nextElementSibling);
-        }
-        else if (event.key === "e") {
-            this._activeWord(this._activedWordElem.previousElementSibling);
-        }
-        else if (event.key === "a") {
-            prpc.pronounce(this._activedWordElem.dataset.word);
+    keyEvent(event, isKeyDown) {
+        if (isKeyDown) {
+            if (!this._activedWordElem)
+                return;
+            if (event.key === "d") {
+                this._activeWord(this._activedWordElem.nextElementSibling);
+            }
+            else if (event.key === "e") {
+                this._activeWord(this._activedWordElem.previousElementSibling);
+            }
+            else if (event.key === "a") {
+                prpc.pronounce(this._activedWordElem.dataset.word);
+            }
         }
     }
     _renderResult() {
